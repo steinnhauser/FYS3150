@@ -1,2 +1,2 @@
 # FYS3150
-Computational Physics public repository
+Computational Physics public repository.
