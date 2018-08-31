@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cmath>
-#include "lib.h"
 #include <vector>
 #include <fstream>
 #include <string>
@@ -8,6 +7,8 @@
 using namespace std;
 ofstream ofile;
 //First, build vectors d and b.
+//Segmentation fault... sjekk indexer
+//Hvis ikke, skriv .at(index)
 int main(int argc, char* argv[])
 {
     //Variable n.
@@ -24,15 +25,10 @@ int main(int argc, char* argv[])
       int n;
       n=pow(10.0, i);
       fname.append(to_string(n));
-      //double *d_vec = new double [n+1];
-      //double *dt_vec = new double [n+1];
-      //double *f_vec = new double [n+1];
-      //double *ft_vec = new double [n+1];
-      //double *a_vec = new double [n+1];
-      //double *c_vec = new double [n+1];
-      //double *u_vec = new double [n+1];
+      double *d_vec = new double [n+2]; double *dt_vec = new double [n+2]; double *f_vec = new double [n+2];
+      double *ft_vec = new double [n+2]; double *a_vec = new double [n+1]; double *c_vec = new double [n+1]; double *u_vec = new double [n+2];
 
-      double d_vec[n+2]; double dt_vec[n+2]; double f_vec[n+2]; double ft_vec[n+2]; double a_vec[n+1]; double c_vec[n+1]; double u_vec[n+2];
+      //double d_vec[n+2]; double dt_vec[n+2]; double f_vec[n+2]; double ft_vec[n+2]; double a_vec[n+1]; double c_vec[n+1]; double u_vec[n+2];
 
       double x0=0, h, x;
       h=1/(double(n+1));
@@ -81,8 +77,8 @@ int main(int argc, char* argv[])
           ofile << setprecision(10) << setw(20) << log10(fabs((- (1-(1-exp(-10))*h*i - exp(-10*h*i)) + u_vec[int(i)])/(1-(1-exp(-10))*h*i - exp(-10*h*i)))) << endl;
       }
       ofile.close();
-      //delete [] d_vec; delete [] dt_vec; delete [] f_vec; delete [] ft_vec;
-      //delete [] a_vec; delete [] c_vec; delete [] u_vec;
+      delete [] d_vec; delete [] dt_vec; delete [] f_vec; delete [] ft_vec;
+      delete [] a_vec; delete [] c_vec; delete [] u_vec;
     }
     cout << "Calculation complete." << endl;
     return 0;

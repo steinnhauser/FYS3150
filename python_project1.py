@@ -1,8 +1,61 @@
 #!/usr/bin/python3
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
+
+exponent = int(sys.argv[1])
+
+maxerrors = []
+h_list = []
+
+for i in range(1, exponent+1):
+	n = int(10**i)
+	h = 1./(n+1)
+	infile = open("results%i.txt" % n, "r")
+	steps = [0]
+	exact = [0]
+	comp  = [0]
+	err   = []
+	for line in infile:
+		a, b, c, d = line.split()
+		steps.append(eval(a))
+		exact.append(eval(b))
+		comp.append(eval(c))
+		err.append(eval(d))
+	steps.append(1)
+	exact.append(0)
+	comp.append(0)
+
+	maxerrors.append(max(err))
+	h_list.append(h)
+	'''
+	plt.plot(steps, exact, "r.", label="Analytical solution")
+	plt.plot(steps, comp, "b.", label="Numerical solution")
+	plt.title("Analytical vs Numerical solution for $n=%i$" %n)
+	plt.legend(loc="best")
+	plt.show()
+	'''
+
+plt.plot(h_list, maxerrors, "ro")
+plt.title("Max errors as a function of the step length.")
+plt.show()
+
+print(maxerrors)
+
+h_arr = np.asarray(h_list)
+me_arr = abs(np.asarray(maxerrors))
+
+print(h_arr, me_arr)
+
+lg_a = np.log10(h_arr)
+lg_m = np.log10(me_arr)
+
+plt.plot(lg_a, lg_m)
+plt.show()
 
 
+
+"""
 infile=open("results10.txt", "r")
 stepsize1=[]
 exactsol=[]
@@ -67,3 +120,4 @@ plt.plot(stepsize3, err3, label="Error for $n=1000$")
 plt.title("Absolute errors of the numerical calculations.")
 plt.legend(loc="best")
 plt.show()
+"""
