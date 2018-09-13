@@ -16,6 +16,7 @@ const double pi = 3.141592;
 
 double analytic_eigenvalues(int N);
 double max_value_indexes(mat A, int N);
+double t(double tau);
 
 int main(int argc, char* argv[])
 {
@@ -36,9 +37,17 @@ double analytic_eigenvalues(int N){
     lambda_analytic(j) = ana;
   }
   cout << lambda_analytic << endl;
-
-
 }
+
+
 double max_value_indexes(mat A, int N){
   return k, l
+}
+
+double t(double tau) {
+  if (tau > 0) {
+    return 1.0/(tau + sqrt(1 + tau*tau));
+  } else {
+    return -1.0/(tau - sqrt(1 + tau*tau));
+  }
 }
