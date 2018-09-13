@@ -9,7 +9,7 @@
 using namespace std;
 using namespace arma;
 ofstream ofile;
-
+// test
 void ThomasAlgorithmGeneralized(string fname, int maxexp);
 void LUDecompFunc(string fname, int maxexp);
 void ThomasAlgorithmSpecialized(string fname, int maxexp);
@@ -205,7 +205,7 @@ void ThomasAlgorithmSpecialized(string fname, int maxexp){
         ofile << setprecision(10) << setw(20) << log10(fabs((- (1-(1-exp(-10))*h*i - exp(-10*h*i)) + u_vec[int(i)])/(1-(1-exp(-10))*h*i - exp(-10*h*i)))) << endl;
     }
     ofile.close();
-    
+
     delete [] dt_vec; delete [] f_vec; delete [] ft_vec;
     delete [] u_vec;
   }
