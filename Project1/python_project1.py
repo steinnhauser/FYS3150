@@ -32,8 +32,11 @@ for i in range(1, exponent+1):
 	"""
 	plt.plot(steps, exact, "r.", label="Analytical solution")
 	plt.plot(steps, comp, "b.", label="Numerical solution")
-	plt.title("Analytical vs Numerical solution for $n=%i$" %n)
+	plt.title("LU-decomposition solution for $n=10^%i$\n compared to the analytical expression." %i)
 	plt.legend(loc="best")
+	plt.ylabel("f(x) [$C$]")
+	plt.xlabel("x [$m$]")
+	plt.grid()
 	plt.show()
 	"""
 

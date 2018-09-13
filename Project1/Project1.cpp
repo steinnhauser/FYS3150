@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 
     //ThomasAlgorithmGeneralized(fname, maxexp);
     //LUDecompFunc(fname, maxexp);
-    //ThomasAlgorithmSpecialized(fname, maxexp);
+    ThomasAlgorithmSpecialized(fname, maxexp);
 }
 
 
@@ -77,7 +77,7 @@ void ThomasAlgorithmGeneralized(string fname, int maxexp){
     double timeElapsed = clocks/CLOCKS_PER_SEC;
     cout << "N=10^" << i << ": " << timeElapsed << "s" << endl;
 
-    /*
+
     //write file with current i and n:
     filename.append(".txt");
     ofile.open(filename);
@@ -91,7 +91,7 @@ void ThomasAlgorithmGeneralized(string fname, int maxexp){
         ofile << setprecision(10) << setw(20) << log10(fabs((- (1-(1-exp(-10))*h*i - exp(-10*h*i)) + u_vec[int(i)])/(1-(1-exp(-10))*h*i - exp(-10*h*i)))) << endl;
     }
     ofile.close();
-    */
+
     delete [] d_vec; delete [] dt_vec; delete [] f_vec; delete [] ft_vec;
     delete [] a_vec; delete [] c_vec; delete [] u_vec;
   }
@@ -101,7 +101,7 @@ void ThomasAlgorithmGeneralized(string fname, int maxexp){
 void LUDecompFunc(string fname, int maxexp){
   clock_t start, finish;
   string filename;
-  for (float i=0.5; i<=maxexp; i++){
+  for (int i=1; i<=maxexp; i++){
     filename = fname;
     filename.append(to_string(i));
     int n=pow(10.0,i);
@@ -135,7 +135,7 @@ void LUDecompFunc(string fname, int maxexp){
     double timeElapsed = clocks/CLOCKS_PER_SEC;
     cout << "N=10^" << i << ": " << timeElapsed << "s" << endl;
 
-    /*
+
     filename.append(".txt");
     ofile.open(filename);
     //ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -148,7 +148,7 @@ void LUDecompFunc(string fname, int maxexp){
         ofile << setprecision(10) << setw(20) << log10(fabs((- (1-(1-exp(-10))*h*i - exp(-10*h*i)) + u(int(i)))/(1-(1-exp(-10))*h*i - exp(-10*h*i)))) << endl;
     }
     ofile.close();
-    */
+
   }
 }
 
@@ -191,7 +191,7 @@ void ThomasAlgorithmSpecialized(string fname, int maxexp){
     double timeElapsed = clocks/CLOCKS_PER_SEC;
     cout << "N=10^" << i << ": " << timeElapsed << "s" << endl;
 
-    /*
+
     //write file with current i and n:
     filename.append(".txt");
     ofile.open(filename);
@@ -205,9 +205,47 @@ void ThomasAlgorithmSpecialized(string fname, int maxexp){
         ofile << setprecision(10) << setw(20) << log10(fabs((- (1-(1-exp(-10))*h*i - exp(-10*h*i)) + u_vec[int(i)])/(1-(1-exp(-10))*h*i - exp(-10*h*i)))) << endl;
     }
     ofile.close();
-    */
+    
     delete [] dt_vec; delete [] f_vec; delete [] ft_vec;
     delete [] u_vec;
   }
   cout << "Calculation complete." << endl;
 }
+
+
+/*
+Generalized Thomas alogrithm:
+
+steinn@steinn-VirtualBox:~/Desktop/FYS3150/Project1$ ./a.out results 7
+N=10^1: 4e-06s
+N=10^2: 4e-06s
+N=10^3: 3.1e-05s
+N=10^4: 0.000327s
+N=10^5: 0.003473s
+N=10^6: 0.038868s
+N=10^7: 0.354114s
+Calculation complete.
+
+
+LU - decomposition:
+
+steinn@steinn-VirtualBox:~/Desktop/FYS3150/Project1$ ./a.out results 4
+N=10^1: 0.000117s
+N=10^2: 0.000811s
+N=10^3: 0.290671s
+N=10^4: 307.447s
+
+
+Specialized Thomas algorithm:
+
+steinn@steinn-VirtualBox:~/Desktop/FYS3150/Project1$ ./a.out results 7
+N=10^1: 3e-06s
+N=10^2: 4e-06s
+N=10^3: 2.7e-05s
+N=10^4: 0.000316s
+N=10^5: 0.003318s
+N=10^6: 0.035397s
+N=10^7: 0.334385s
+Calculation complete.
+
+*/
