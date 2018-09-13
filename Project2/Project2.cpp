@@ -19,7 +19,6 @@ double max_value_indexes(mat A, int N);
 
 int main(int argc, char* argv[])
 {
-  cout << "Hello, World!" << endl;
   int N=1000;
   analytic_eigenvalues(N);
   double h=1/(N+1);
