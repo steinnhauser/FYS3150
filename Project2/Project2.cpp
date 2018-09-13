@@ -15,6 +15,7 @@ const double infi = 10e10;   //Same for infinity point
 const double pi = 3.141592;
 
 double Analytic_Eigenvalues(int N);
+double maxval();
 
 int main(int argc, char* argv[])
 {
