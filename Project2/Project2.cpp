@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
   double maxval, epsilon=10e-8;
   while(maxval>epsilon && iteration<=explode){ //Main algorithm loop. Checks the current (nondiagonal) maxval is sufficiently large for another iteration.
     //Do something
+
     iteration++
   }
 
