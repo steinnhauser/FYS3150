@@ -13,7 +13,7 @@ const double zero = 10e-10;  //Constant which defines the zero point
 const double infi = 10e10;   //Same for infinity point
 const double pi = 3.141592; //M_pi
 // g++ -o test.x Project2.cpp -larmadillo -llapack -lblas
-void analytic_eigenvalues(mat A, int N); //Generates analytic eigenvalues using the definition from the exercise text
+void analytic_eigenvalues(mat A); //Generates analytic eigenvalues using the definition from the exercise text
 double max_value_indexes(mat A, int N, int &k, int &l); // Returns indexes for max absolute value in matrix A, as (row, column)
 mat generate_A_matrix(int N, vec a, vec d); //Generates the matrix A with diagonal vec d and upper and lower diagonals vec a.
 void Jacobi_Rotation_algorithm(mat& A, int N, int k, int l); //Takes as an input the matrix A and S. Outputs B such that B=S^T  A   S
@@ -36,17 +36,20 @@ int main(int argc, char* argv[])
   int k, l;
   while(maxvalue>epsilon && iteration<=explode){ //Main algorithm loop. Checks the current (nondiagonal) maxval is sufficiently large for another iteration.
     //Do something
-    double maxval = max_value_indexes(A, N, k, l);
+    maxvalue = max_value_indexes(A, N, k, l);
     iteration++;
     Jacobi_Rotation_algorithm(A, N, k, l);
-    maxvalue = maxval;
   }
-
+  A.print();
+  cout << endl;
+  for(int i=0; i<N-1; i++){
+    cout << A(i,i) << ", ";
+  }
   cout << "number of iterations: " << iteration << endl;
   return 0;
 }
 
-void analytic_eigenvalues(mat A,int N){
+void analytic_eigenvalues(mat A){
   vec eigval;
   mat eigvec;
   eig_sym(eigval, eigvec, A);
@@ -86,7 +89,7 @@ void Jacobi_Rotation_algorithm(mat& A, int N, int k, int l){
   if (tau >= 0) {
     t = 1.0/(tau + sqrt(1 + tau*tau));
   } else {
-    t = -1.0/(tau - sqrt(1 + tau*tau));
+    t = -1.0/(-tau + sqrt(1 + tau*tau));
   }
   c = 1/(sqrt(1 + t*t));
   s = c*t;
@@ -97,20 +100,21 @@ void Jacobi_Rotation_algorithm(mat& A, int N, int k, int l){
 
   a_kk = A(k,k)*cc - 2*A(k,l)*cs + A(l,l)*ss;
   a_ll = A(l,l)*cc + 2*A(k,l)*cs + A(k,k)*ss;
-  A(k,l) = 0;//(a_kk - a_ll)*cs + A(k,l)*cc_ss;
+  A(k,l) = 0; //(A(k,k) - A(l,l))*cs + A(k,l)*cc_ss;
   //cout << A(k,l) << " ";
   A(l,k) = A(k,l);
   A(k,k) = a_kk;
   A(l,l) = a_ll;
 
-  for (int i=1; i<N-1; i++) {
-    if (i == k || i == l) {}
-    else {
+  for (int i=0; i<N-1; i++) {
+    if (i != k && i != l) {
       a_ik = A(i,k)*c - A(i,l)*s;
       a_il = A(i,l)*c + A(i,k)*s;
 
       A(i,k) = a_ik;
       A(i,l) = a_il;
+
+
       A(k,i) = a_ik;
       A(l,i) = a_il;
     }
