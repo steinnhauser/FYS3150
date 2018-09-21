@@ -1,10 +1,11 @@
-// Compile: g++ -o test.x main.cpp test_functions.cpp -larmadillo -llapack -lblas
+// Compile: g++ -o test.x main.cpp functions.cpp test_functions.cpp -larmadillo -llapack -lblas
 #include <iostream>
 #include <cmath>
 #include <fstream>
 //#include <iomanip>
 #include <armadillo>
 #include "test_functions.h"
+#include "functions.h"
 
 using namespace std;
 using namespace arma;
