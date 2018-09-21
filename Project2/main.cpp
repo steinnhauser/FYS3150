@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   // The generate_A_matrix function can reset it to its original state.
 
   double maxvalue = 10.;
-  double epsilon = 10e-12;
+  double epsilon = 1e-12;
   int explode = 50000;
   int k, l;
   while(maxvalue>epsilon && iteration<=explode){ //Main algorithm loop. Checks the current (nondiagonal) maxval is sufficiently large for another iteration.
@@ -39,5 +39,6 @@ int main(int argc, char* argv[])
   cout << "number of iterations: " << iteration << endl;
   test_max_value_indices();
   test_eigenvalues();
+  test_orthogonality();
   return 0;
 }

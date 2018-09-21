@@ -56,7 +56,7 @@ void Jacobi_Rotation_algorithm(mat& A, int N, int k, int l){
 
   a_kk = A(k,k)*cc - 2*A(k,l)*cs + A(l,l)*ss;
   A(l,l) = A(l,l)*cc + 2*A(k,l)*cs + A(k,k)*ss;
-  A(k,l) = 0;
+  A(k,l) = 0; // required
   A(l,k) = 0;
   A(k,k) = a_kk;
 
