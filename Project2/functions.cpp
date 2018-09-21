@@ -14,13 +14,14 @@ void analytic_eigenvalues(mat A){
 double max_value_indexes(mat A, int N, int& k, int& l){
   double maxval=0, val;
   for (int i=0; i<(N-1); i++){ // nested loop over upper triangle of A (symmetry)
-      val = A(i, j);
-      if (fabs(val)>maxval){ // test for largest absolute value
-        k=i; l=j; // A(k,l) has the largest absolute value
-        maxval = fabs(val);
+    for (int j=i+1; j<(N-1); j++){
+        val = A(i, j);
+        if (fabs(val)>maxval){ // test for largest absolute value
+          k=i; l=j; // A(k,l) has the largest absolute value
+          maxval = fabs(val);
+        }
       }
     }
-  }
   return maxval;
 }
 
