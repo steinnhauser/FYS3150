@@ -5,20 +5,9 @@
 #include <armadillo>
 #include "test_function.h"
 
-
 using namespace std;
 using namespace arma;
-ofstream ofile;
-/*
-const double zero = 10e-10;  //Constant which defines the zero point
-const double infi = 10e10;   //Same for infinity point
-const double pi = 3.141592; //M_pi
-// g++ -o test.x Project2.cpp -larmadillo -llapack -lblas
-void analytic_eigenvalues(mat A); //Generates analytic eigenvalues using the definition from the exercise text
-double max_value_indexes(mat A, int N, int &k, int &l); // Returns indexes for max absolute value in matrix A, as (row, column)
-mat generate_A_matrix(int N, vec a, vec d); //Generates the matrix A with diagonal vec d and upper and lower diagonals vec a.
-void Jacobi_Rotation_algorithm(mat& A, int N, int k, int l); //Takes as an input the matrix A and S. Outputs B such that B=S^T  A   S
-*/
+
 int main(int argc, char* argv[])
 {
   int N=10, iteration=0;

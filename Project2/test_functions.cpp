@@ -8,7 +8,6 @@
 #include <armadillo>
 using namespace std;
 using namespace arma;
-ofstream ofile;
 
 void analytic_eigenvalues(mat A){
   vec eigval;
