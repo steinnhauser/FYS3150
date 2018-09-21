@@ -1,8 +1,9 @@
 #include <armadillo>
-#include "catch.hpp"
+#include <iostream>
 #include "test_functions.h"
 #include "functions.h"
 
+using namespace std;
 using namespace arma;
 
 void test_max_value_indexes() {
@@ -14,9 +15,10 @@ void test_max_value_indexes() {
   int k,l;
   double maxval;
   maxval = max_value_indexes(A,N,k,l);
-  REQUIRE( maxval == 5.0 );
-  REQUIRE( k == 2 );
-  REQUIRE( l == 4 );
+  if (maxval != 5.0 || k != 2 || l != 4) {
+    cout << "test_max_value_indexes failed!" << endl;
+    exit(1);
+  }
 }
 
 void test_eigenvalues() {
@@ -38,11 +40,9 @@ void test_eigenvalues() {
   eigval1 = A(0,0);
   eigval2 = A(1,1);
   eigval3 = A(2,2);
-
+  cout << eigval1 << " " << eigval2 << " " << eigval3 << " " << endl; //compare with d + 2a cos...
 }
 
 void test_orthogonality() {
   // test two random column vectors and that orthogonality is preserved
-
-
 }

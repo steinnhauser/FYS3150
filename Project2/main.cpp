@@ -37,5 +37,7 @@ int main(int argc, char* argv[])
     cout << A(i,i) << ", ";
   }
   cout << "number of iterations: " << iteration << endl;
-  return 1;
+  test_max_value_indexes();
+  test_eigenvalues();
+  return 0;
 }
