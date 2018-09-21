@@ -1,10 +1,5 @@
-//#include "Project2.h"
 #include "test_functions.h"
-#include <iostream>
 #include <cmath>
-#include <fstream>
-#include <iomanip>
-#include <time.h>
 #include <armadillo>
 using namespace std;
 using namespace arma;
