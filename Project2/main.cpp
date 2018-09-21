@@ -37,5 +37,5 @@ int main(int argc, char* argv[])
     cout << A(i,i) << ", ";
   }
   cout << "number of iterations: " << iteration << endl;
-  return 0;
+  return 1;
 }

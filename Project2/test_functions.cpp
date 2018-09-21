@@ -1,4 +1,3 @@
-#define CATCH_CONFIG_MAIN
 #include <armadillo>
 #include "catch.hpp"
 #include "test_functions.h"
@@ -11,8 +10,9 @@ void test_max_value_indexes() {
   vec a = ones<vec>(N-2) * -1.0;
   vec d = ones<vec>(N-1) * 2.0;
   mat A = generate_A_matrix(N, a, d);
-  A(2,4) = -5.0 // indices k = 2, l = 4
+  A(2,4) = -5.0; // indices k = 2, l = 4
   int k,l;
+  double maxval;
   maxval = max_value_indexes(A,N,k,l);
   REQUIRE( maxval == 5.0 );
   REQUIRE( k == 2 );
@@ -20,7 +20,7 @@ void test_max_value_indexes() {
 }
 
 void test_eigenvalues() {
-  int N = 4 // yields 3x3 matrix
+  int N = 4; // yields 3x3 matrix
   vec a = ones<vec>(N-2) * -1.0;
   vec d = ones<vec>(N-1) * 2.0;
   mat A = generate_A_matrix(N, a, d); // has analytic eigenvalues
@@ -28,6 +28,7 @@ void test_eigenvalues() {
   double epsilon = 10e-12;
   int explode = 50000;
   int k, l;
+  int iteration=0;
   while(maxvalue>epsilon && iteration<=explode){
     maxvalue = max_value_indexes(A, N, k, l);
     iteration++;
