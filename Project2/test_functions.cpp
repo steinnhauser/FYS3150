@@ -1,12 +1,13 @@
 #include <armadillo>
 #include <iostream>
+#include <vector>
 #include "test_functions.h"
 #include "functions.h"
 
 using namespace std;
 using namespace arma;
 
-void test_max_value_indexes() {
+void test_max_value_indices() {
   int N = 10;
   vec a = ones<vec>(N-2) * -1.0;
   vec d = ones<vec>(N-1) * 2.0;
@@ -22,7 +23,11 @@ void test_max_value_indexes() {
 }
 
 void test_eigenvalues() {
-  int N = 4; // yields 3x3 matrix
+  /* Generating a 3x3 matrix,
+  then performing jacobi's algo,
+  then sorting the eigenvalues from smallest to largest.
+  finally testing the eigenvalues vs. analytic eigenvalues */
+  int N = 4; // 3 x 3 matrix
   vec a = ones<vec>(N-2) * -1.0;
   vec d = ones<vec>(N-1) * 2.0;
   mat A = generate_A_matrix(N, a, d); // has analytic eigenvalues
@@ -36,11 +41,12 @@ void test_eigenvalues() {
     iteration++;
     Jacobi_Rotation_algorithm(A, N, k, l);
   }
-  double eigval1, eigval2, eigval3;
-  eigval1 = A(0,0);
-  eigval2 = A(1,1);
-  eigval3 = A(2,2);
-  cout << eigval1 << " " << eigval2 << " " << eigval3 << " " << endl; //compare with d + 2a cos...
+  vector<double> numerical_eigenvalues;
+  for (int i=0; i<3; i++) {
+    numerical_eigenvalues.push_back(A(i,i));
+  }
+  sort(numerical_eigenvalues.begin(), numerical_eigenvalues.end());
+  //compare with d + 2a cos...
 }
 
 void test_orthogonality() {

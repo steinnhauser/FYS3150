@@ -3,7 +3,7 @@
 #include <armadillo>
 using namespace arma;
 
-void test_max_value_indexes();
+void test_max_value_indices();
 void test_eigenvalues();
 void test_orthogonality();
 
