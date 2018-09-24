@@ -12,11 +12,23 @@ using namespace arma;
 
 int main(int argc, char* argv[])
 {
-  int N=10, iteration=0;
+  int N=200, iteration=0;
   // Initialization of the program. Generate special case diagonals and initial A matrix.
-  double h=1.0/(N);
-  vec a = ones<vec>(N-2) * -1.0/(h*h); // Generating special case diagonal
-  vec d = ones<vec>(N-1) * 2.0/(h*h); // Generating off the two diagonals above/below main diagonal
+  //double h=1.0/(N);
+  vec a = ones<vec>(N-2); // Generating special case diagonal
+  vec d = ones<vec>(N-1); // Generating off the two diagonals above/below main diagonal
+
+  // QUANTUM EXTENSION
+  double rho_0 = 0;
+  double rho_max = 10;
+  double h = (rho_max - rho_0)/N;
+  a *= -1.0/(h*h);
+  d *= 2.0/(h*h);
+  double rho_i;
+  for (int i=0; i<N-1; i++) {
+    rho_i = rho_0 + (i+1)*h;
+    d(i) += rho_i*rho_i;
+  }
   mat A = generate_A_matrix(N, a, d);
   // This matrix will be updated throughout the algorithm.
   // The generate_A_matrix function can reset it to its original state.
@@ -31,12 +43,20 @@ int main(int argc, char* argv[])
     iteration++;
     Jacobi_Rotation_algorithm(A, N, k, l);
   }
-  A.print();
+  //A.print("matrix A:" );
   cout << endl;
+  vec eigvals = zeros<vec>(N-1);
   for(int i=0; i<N-1; i++){
-    cout << A(i,i) << ", ";
+    eigvals(i) = A(i,i);
   }
-  cout << "number of iterations: " << iteration << endl;
+  sort(eigvals.begin(), eigvals.end());
+
+  cout << "eigenvalues:" << endl;
+  for (int i=0; i<5; i++) {
+    cout << eigvals(i) << ", ";
+  }
+  cout << endl;
+  //cout << "number of iterations: " << iteration << endl;
   test_max_value_indices();
   test_eigenvalues();
   test_orthogonality();
