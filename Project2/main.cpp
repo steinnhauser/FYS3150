@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
   // This matrix will be updated throughout the algorithm.
   // The generate_A_matrix function can reset it to its original state.
   double maxvalue = 10.;
-  double epsilon = 1e-12;
+  double epsilon = 1e-14;
   int explode = 100000;
   int k, l;
   // loop until nondiagonal maxvalue is smaller than epsilon OR max iterations
@@ -61,22 +61,27 @@ int main(int argc, char* argv[])
     iteration++;
     Jacobi_Rotation_algorithm(A, R, N, k, l);
   }
+  cout << "Jacobi's method done, number of iterations: " << iteration << endl;
 
   double eigval;
   vec eigvec = zeros<vec>(N-1);
-  find_lowest_eigval_eigvec_pair(eigval, eigvec, A_original, R, N);
+  find_lowest_eigval_eigvec_pair(eigval, eigvec, A, A_original, R, N);
+  cout << "lowest eigenpair found, with eigenvalue: " << eigval << endl;
   // file writing
+  ofile.open("project2.txt", std::ofstream::out | std::ofstream::trunc);
   ofile << setw(10) << "lambda: " << eigval << endl;
   ofile << setw(20) << "rho:" << setw(20) << "eigvec: " << endl;
-  ofile.open("project2.txt", ofstream::out | ofstream::trunc);
   for (int i=0; i<N-1; i++) {
     ofile << setw(20) << setprecision(10) << rho(i);
     ofile << setw(20) << setprecision(10) << eigvec(i) << endl;
   }
+  ofile.close();
+  cout << "file written" << endl;
 
-  cout << "number of iterations: " << iteration << endl;
   test_max_value_indices();
   test_eigenvalues();
   test_orthogonality();
+  cout << "test functions passed" << endl;
+
   return 0;
 }

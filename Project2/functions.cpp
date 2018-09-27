@@ -1,5 +1,6 @@
 #include "functions.h"
 #include <cmath>
+#include <math.h>
 #include <armadillo>
 using namespace std;
 using namespace arma;
@@ -76,27 +77,26 @@ void Jacobi_Rotation_algorithm(mat& A, mat& R, int N, int k, int l){
   }
 }
 
-void find_lowest_eigval_eigvec_pair(double& eigval, vec& eigvec, mat A, mat R, int N) {
+void find_lowest_eigval_eigvec_pair(double& eigval, vec& eigvec, mat A, mat A_original, mat R, int N) {
   // NB: make sure A is the original A matrix, not the rotated one
   int minIndex = 0;
-  vec eigvals;
-  for(int i=0; i<N-1; i++){
-    eigvals(i) = A(i,i); // store eigenvalues in a vector
+  for(int i=1; i<N-1; i++){
     // find the index of the smallest element
-    if (eigvals(i) < eigvals(minIndex)) {
+    if ( A(i,i) < A(minIndex,minIndex) ) {
       minIndex = i;
-      eigval = eigvals(minIndex);
+      eigval = A(i,i);
     }
   }
   // test that eigenpair is correct:
   eigvec = R.col(minIndex);
-  vec x = A*eigvec;
+  vec x = A_original*eigvec;
   vec y = eigval*eigvec;
+  double tolerance = 1e-10;
   for (int i=0; i<N-1; i++) { // x and y should analytically be the same
-    if (fabs(x(i) - y(i)) > 1e-10) {
-      cout << "Error: eigenvalue/eigenvector pair is incorrect (A*x != lambda*x)" << endl;
+    if (fabs(x(i) - y(i)) > tolerance) {
+      cout << "Error: eigenvalue/eigenvector pair is incorrect (A*x != lambda*x), with tolerance: " << tolerance << endl;
+      cout << "index: " << i << " value: " << y(i) << " error: " << fabs(x(i) - y(i)) << endl;
       exit(1);
     }
   }
-  cout << "success" << endl;
 }
