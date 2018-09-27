@@ -74,5 +74,29 @@ void Jacobi_Rotation_algorithm(mat& A, mat& R, int N, int k, int l){
     R(i,k) = c*r_ik - s*r_il;
     R(i,l) = c*r_il + s*r_ik;
   }
+}
 
+void find_lowest_eigval_eigvec_pair(double& eigval, vec& eigvec, mat A, mat R, int N) {
+  // NB: make sure A is the original A matrix, not the rotated one
+  int minIndex = 0;
+  vec eigvals;
+  for(int i=0; i<N-1; i++){
+    eigvals(i) = A(i,i); // store eigenvalues in a vector
+    // find the index of the smallest element
+    if (eigvals(i) < eigvals(minIndex)) {
+      minIndex = i;
+      eigval = eigvals(minIndex);
+    }
+  }
+  // test that eigenpair is correct:
+  eigvec = R.col(minIndex);
+  vec x = A*eigvec;
+  vec y = eigval*eigvec;
+  for (int i=0; i<N-1; i++) { // x and y should analytically be the same
+    if (fabs(x(i) - y(i)) > 1e-10) {
+      cout << "Error: eigenvalue/eigenvector pair is incorrect (A*x != lambda*x)" << endl;
+      exit(1);
+    }
+  }
+  cout << "success" << endl;
 }

@@ -2,13 +2,15 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
-//#include <iomanip>
+#include <iomanip>
 #include <armadillo>
 #include "test_functions.h"
 #include "functions.h"
 
 using namespace std;
 using namespace arma;
+
+ofstream ofile;
 
 int main(int argc, char* argv[])
 {
@@ -32,50 +34,47 @@ int main(int argc, char* argv[])
   }
   */
   // QUANTUM EXTENSION: with two electrons. initial matrix
-
   double wr = 1;//0.01;
-  double wr2 = wr*wr;
   double rho_max = 10;
   double rho_0 = 0;
-  double rho_i;
+  vec rho = zeros<vec>(N-1);
   double h = (rho_max - rho_0)/(N);
   a *= -1.0/(h*h);
   d *= 2.0/(h*h);
   // loop over diagonal elements:
   for (int i=0; i<N-1; i++) {
-    rho_i = rho_0 + (i+1)*h;
-    d(i) += wr2*rho_i*rho_i + 1.0/rho_i;
+    rho(i) = rho_0 + (i+1)*h;
+    d(i) += wr*wr*rho(i)*rho(i) + 1.0/rho(i);
   }
 
   mat A = generate_A_matrix(N, a, d);
+  mat A_original = generate_A_matrix(N, a, d);//A;
   // This matrix will be updated throughout the algorithm.
   // The generate_A_matrix function can reset it to its original state.
-
   double maxvalue = 10.;
   double epsilon = 1e-12;
   int explode = 100000;
   int k, l;
-  while(maxvalue>epsilon && iteration<explode){ //Main algorithm loop. Checks the current (nondiagonal) maxval is sufficiently large for another iteration.
-    //Do something
+  // loop until nondiagonal maxvalue is smaller than epsilon OR max iterations
+  while ( maxvalue > epsilon && iteration < explode ) { // Main algorithm loop
     maxvalue = max_value_indexes(A, N, k, l);
     iteration++;
     Jacobi_Rotation_algorithm(A, R, N, k, l);
   }
-  //A.print("matrix A:" );
-  cout << iteration << " iterations" << endl;
-  vec eigvals = zeros<vec>(N-1);
-  for(int i=0; i<N-1; i++){
-    eigvals(i) = A(i,i);
-  }
-  sort(eigvals.begin(), eigvals.end());
 
-  cout << "eigenvalues:" << endl;
-  for (int i=0; i<5; i++) {
-    cout << eigvals(i) << ", ";
+  double eigval;
+  vec eigvec = zeros<vec>(N-1);
+  find_lowest_eigval_eigvec_pair(eigval, eigvec, A_original, R, N);
+  // file writing
+  ofile << setw(10) << "lambda: " << eigval << endl;
+  ofile << setw(20) << "rho:" << setw(20) << "eigvec: " << endl;
+  ofile.open("project2.txt", ofstream::out | ofstream::trunc);
+  for (int i=0; i<N-1; i++) {
+    ofile << setw(20) << setprecision(10) << rho(i);
+    ofile << setw(20) << setprecision(10) << eigvec(i) << endl;
   }
-  cout << endl;
-  //cout << "number of iterations: " << iteration << endl;
 
+  cout << "number of iterations: " << iteration << endl;
   test_max_value_indices();
   test_eigenvalues();
   test_orthogonality();

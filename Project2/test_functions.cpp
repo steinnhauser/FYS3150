@@ -38,13 +38,14 @@ void test_eigenvalues() {
   vec a = ones<vec>(N-2) * -1.0;
   vec d = ones<vec>(N-1) * 2.0;
   mat A = generate_A_matrix(N, a, d); // has analytic eigenvalues
+  mat R = eye<mat>(N-1,N-1);
   double maxvalue=10.0;
   double epsilon=1e-12;
   // Jacobi algorithm
   while(maxvalue>epsilon && iteration<=explode){
     maxvalue = max_value_indexes(A, N, k, l);
     iteration++;
-    Jacobi_Rotation_algorithm(A, N, k, l);
+    Jacobi_Rotation_algorithm(A, R, N, k, l);
   }
   // Test of analytical vs. numerical eigenvalues
   vector<double> numerical_eigenvalues;
@@ -75,11 +76,12 @@ void test_orthogonality() {
   mat A = generate_A_matrix(N, a, d); // has analytic eigenvalues
   double maxvalue=10.0;
   double epsilon=1e-12;
+  mat R = eye<mat>(N-1,N-1);
   // Jacobi algorithm for 70 iterations
   for (int j=0; j<70; j++){
     maxvalue = max_value_indexes(A, N, k, l);
     iteration++;
-    Jacobi_Rotation_algorithm(A, N, k, l);
+    Jacobi_Rotation_algorithm(A, R, N, k, l);
   }
   // test of dot product of column 2 and 5
   double dotProduct;
