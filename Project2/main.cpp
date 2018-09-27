@@ -17,11 +17,12 @@ int main(int argc, char* argv[])
   //double h=1.0/(N);
   vec a = ones<vec>(N-2); // Generating special case diagonal
   vec d = ones<vec>(N-1); // Generating off the two diagonals above/below main diagonal
-
-  // QUANTUM EXTENSION
+  mat R = eye<mat>(N-1,N-1);
+  // QUANTUM EXTENSION: with one electron. initial matrix
+  /*
   double rho_0 = 0;
   double rho_max = 10;
-  double h = (rho_max - rho_0)/N;
+  double h = (rho_max - rho_0)/(N);
   a *= -1.0/(h*h);
   d *= 2.0/(h*h);
   double rho_i;
@@ -29,22 +30,39 @@ int main(int argc, char* argv[])
     rho_i = rho_0 + (i+1)*h;
     d(i) += rho_i*rho_i;
   }
+  */
+  // QUANTUM EXTENSION: with two electrons. initial matrix
+
+  double wr = 1;//0.01;
+  double wr2 = wr*wr;
+  double rho_max = 10;
+  double rho_0 = 0;
+  double rho_i;
+  double h = (rho_max - rho_0)/(N);
+  a *= -1.0/(h*h);
+  d *= 2.0/(h*h);
+  // loop over diagonal elements:
+  for (int i=0; i<N-1; i++) {
+    rho_i = rho_0 + (i+1)*h;
+    d(i) += wr2*rho_i*rho_i + 1.0/rho_i;
+  }
+
   mat A = generate_A_matrix(N, a, d);
   // This matrix will be updated throughout the algorithm.
   // The generate_A_matrix function can reset it to its original state.
 
   double maxvalue = 10.;
   double epsilon = 1e-12;
-  int explode = 50000;
+  int explode = 100000;
   int k, l;
-  while(maxvalue>epsilon && iteration<=explode){ //Main algorithm loop. Checks the current (nondiagonal) maxval is sufficiently large for another iteration.
+  while(maxvalue>epsilon && iteration<explode){ //Main algorithm loop. Checks the current (nondiagonal) maxval is sufficiently large for another iteration.
     //Do something
     maxvalue = max_value_indexes(A, N, k, l);
     iteration++;
-    Jacobi_Rotation_algorithm(A, N, k, l);
+    Jacobi_Rotation_algorithm(A, R, N, k, l);
   }
   //A.print("matrix A:" );
-  cout << endl;
+  cout << iteration << " iterations" << endl;
   vec eigvals = zeros<vec>(N-1);
   for(int i=0; i<N-1; i++){
     eigvals(i) = A(i,i);
@@ -57,6 +75,7 @@ int main(int argc, char* argv[])
   }
   cout << endl;
   //cout << "number of iterations: " << iteration << endl;
+
   test_max_value_indices();
   test_eigenvalues();
   test_orthogonality();

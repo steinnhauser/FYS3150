@@ -37,10 +37,10 @@ mat generate_A_matrix(int N, vec a, vec d){
   return A;
 }
 
-void Jacobi_Rotation_algorithm(mat& A, int N, int k, int l){
+void Jacobi_Rotation_algorithm(mat& A, mat& R, int N, int k, int l){
   // 35 FLOPS
   // Obtaining values tau, t (tan), c (cos), s (sin)
-  double tau, t, s, c, a_ik, a_il, a_kk, a_ll;
+  double tau, t, s, c, a_ik, a_il, a_kk, a_ll, r_ik, r_il;
   tau = (A(l,l) - A(k,k))/(2*A(k,l));
   if (tau >= 0) {
     t = 1.0/(tau + sqrt(1 + tau*tau));
@@ -69,5 +69,10 @@ void Jacobi_Rotation_algorithm(mat& A, int N, int k, int l){
       A(k,i) = a_ik;
       A(l,i) = a_il;
     }
+    r_ik = R(i,k);
+    r_il = R(i,l);
+    R(i,k) = c*r_ik - s*r_il;
+    R(i,l) = c*r_il + s*r_ik;
   }
+
 }
