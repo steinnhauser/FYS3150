@@ -2,8 +2,12 @@
 #include <cmath>
 #include <math.h>
 #include <armadillo>
+#include <fstream>
+#include <iomanip>
+
 using namespace std;
 using namespace arma;
+
 
 void analytic_eigenvalues(mat A){
   vec eigval;
@@ -99,4 +103,21 @@ void find_lowest_eigval_eigvec_pair(double& eigval, vec& eigvec, mat A, mat A_or
       exit(1);
     }
   }
+}
+
+void write_file(int N, int j, double eigval, double wr, vec rho, vec eigvec) {
+  string filename = "./data/project2_";
+  filename.append(to_string(j) + ".txt");
+  ofstream ofile;
+  ofile.open(filename, std::ofstream::out | std::ofstream::trunc);
+
+  ofile << setw(10) << "lambda: " << eigval << endl;
+  ofile << setw(10) << "wr: " << wr << endl;
+  ofile << setw(20) << "rho:" << setw(20) << "eigvec: " << endl;
+
+  for (int i=0; i<N-1; i++) {
+    ofile << setw(20) << setprecision(10) << rho(i);
+    ofile << setw(20) << setprecision(10) << eigvec(i) << endl;
+  }
+  ofile.close();
 }
