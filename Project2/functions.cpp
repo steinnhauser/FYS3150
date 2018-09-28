@@ -82,7 +82,6 @@ void Jacobi_Rotation_algorithm(mat& A, mat& R, int N, int k, int l){
 }
 
 void find_lowest_eigval_eigvec_pair(double& eigval, vec& eigvec, mat A, mat A_original, mat R, int N) {
-  // NB: make sure A is the original A matrix, not the rotated one
   int minIndex = 0;
   for(int i=1; i<N-1; i++){
     // find the index of the smallest element
@@ -120,4 +119,133 @@ void write_file(int N, int j, double eigval, double wr, vec rho, vec eigvec) {
     ofile << setw(20) << setprecision(10) << eigvec(i) << endl;
   }
   ofile.close();
+}
+
+void buckling_beam(int N) {
+  double h = 1.0/N;
+  vec a = ones<vec>(N-2); // upper and lower diagonals
+  vec d = ones<vec>(N-1); // main diagonal
+  a *= -1.0/(h*h);
+  d *= 2.0/(h*h);
+  mat A = generate_A_matrix(N, a, d);
+  mat R = zeros<mat>(N-1,N-1);
+
+  // Jacobi's algorithm
+  double maxvalue = 10.;
+  double epsilon = 1e-16;
+  int iteration = 0;
+  int maxIterations = 100000;
+  int k, l;
+  // loop until nondiagonal maxvalue is smaller than epsilon OR max iterations
+  while ( maxvalue > epsilon && iteration < maxIterations ) { // Main algorithm loop that performs rmatrix otations
+    maxvalue = max_value_indexes(A, N, k, l);
+    iteration++;
+    Jacobi_Rotation_algorithm(A, R, N, k, l);
+  }
+
+  // storing and sorting eigenvalues:
+  vec eigvals = zeros<vec>(N-1);
+  for (int i=0; i<N-1; i++) {
+    eigvals(i) = A(i,i);
+  }
+  sort(eigvals.begin(), eigvals.end());
+
+  // terminal print:
+  cout << "\n  num. eigval: ana. eigval:" << endl;
+  for (int j=0; j<N-1; j++) {
+    cout << "  " << setw(11) << left << eigvals(j) << "  ";
+    cout << d(0) + 2*a(0)*cos((j+1)*M_PI/N) << endl;
+  }
+}
+
+void one_electron_system(int N, double rho_max) {
+  double rho_0 = 0;
+  double h = (rho_max - rho_0)/N;
+  vec a = ones<vec>(N-2); // upper and lower diagonals
+  vec d = ones<vec>(N-1); // main diagonal
+  a *= -1.0/(h*h);
+  d *= 2.0/(h*h);
+  double rho_i;
+  for (int i=0; i<N-1; i++) {
+    rho_i = rho_0 + (i+1)*h;
+    d(i) += rho_i*rho_i;
+  }
+
+  double maxvalue = 10.;
+  double epsilon = 1e-10;
+  int iteration = 0;
+  int maxIterations = 100000;
+  int k, l;
+  mat R = eye<mat>(N-1,N-1); // matrix where columns will store eigenvectors
+  mat A = generate_A_matrix(N, a, d); // this will be changed
+  // loop until nondiagonal maxvalue is smaller than epsilon OR max iterations
+  while ( maxvalue > epsilon && iteration < maxIterations ) { // Main algorithm loop that performs rmatrix otations
+    maxvalue = max_value_indexes(A, N, k, l);
+    iteration++;
+    Jacobi_Rotation_algorithm(A, R, N, k, l);
+  }
+  vec eigvals = zeros<vec>(N-1);
+  for (int i=0; i<N-1; i++) {
+    eigvals(i) = A(i,i);
+  }
+  sort(eigvals.begin(), eigvals.end());
+  cout << "\n  first 5 eigenvalues:" << endl;
+  for (int j=0; j<5; j++) {
+    cout << "  " << eigvals(j) << endl;
+  }
+}
+
+void two_electron_system(int N, double rho_max) {
+  vec wrvec = zeros<vec>(4);
+  wrvec(0) = 0.01;
+  wrvec(1) = 0.5;
+  wrvec(2) = 1.0;
+  wrvec(3) = 5.0;
+
+  double rho_0 = 0;
+  double h = (rho_max - rho_0)/N;
+  vec a = ones<vec>(N-2); // upper and lower diagonals
+  a *= -1.0/(h*h);
+
+  // loop over different omega_r = wr
+  for (int j=0; j<4; j++) {
+    double wr = wrvec(j);
+    vec d = ones<vec>(N-1); // main diagonal
+    d *= 2.0/(h*h);
+
+    // adding of the extra term V (potential) to the main diagonal d
+    vec rho = zeros<vec>(N-1);
+    for (int i=0; i<N-1; i++) { // loop over diagonal elements:
+      rho(i) = rho_0 + (i+1)*h;
+      d(i) += wr*wr*rho(i)*rho(i) + 1.0/rho(i); // potential term
+    }
+
+    // Jacobi's method:
+    mat R = eye<mat>(N-1,N-1); // matrix where columns will store eigenvectors
+    mat A = generate_A_matrix(N, a, d); // this will be changed
+    mat A_original = generate_A_matrix(N, a, d); // this will remain unchanged
+    double maxvalue = 10.;
+    double epsilon = 1e-10;
+    int iteration = 0;
+    int maxIterations = 100000;
+    int k, l;
+    // loop until nondiagonal maxvalue is smaller than epsilon OR max iterations
+    while ( maxvalue > epsilon && iteration < maxIterations ) { // Main algorithm loop that performs rmatrix otations
+      maxvalue = max_value_indexes(A, N, k, l);
+      iteration++;
+      Jacobi_Rotation_algorithm(A, R, N, k, l);
+    }
+    cout << "\n  Jacobi's method done, number of iterations: " << iteration << endl;
+
+    // finding the ground state eigenpair:
+    double eigval;
+    vec eigvec = zeros<vec>(N-1);
+    find_lowest_eigval_eigvec_pair(eigval, eigvec, A, A_original, R, N);
+    cout << "  lowest eigenpair found, with eigenvalue: " << eigval << endl;
+
+    // file writing
+    write_file(N, j, eigval, wr, rho, eigvec);
+    cout << "  file written." << endl;
+    cout << "  wr = " << wr << " is done." << endl;
+  }
 }
