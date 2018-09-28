@@ -31,8 +31,7 @@ for i in range(4):
     lab = r"$\lambda = %5.2f, \omega_r = %4.2f$" % (eigval, wr)
     plt.plot(rho,psi,color[i],label=lab)
 
-plt.title(r"Two electron in a harmonic oscillator with coulomb interaction \n \
-            Ground state wave function for different angular frequencies, $\omega_r$")
+plt.title("Two electron in a harmonic oscillator with coulomb interaction")
 plt.xlabel(r"natural length scale: $\rho$")
 plt.ylabel(r"probability distribution: $|\psi|^2$")
 plt.grid()
