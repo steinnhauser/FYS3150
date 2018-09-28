@@ -15,14 +15,14 @@ int main(int argc, char* argv[])
   cout << "Test functions passed." << endl;
 
   // the three different systems:
-  cout << "\nBuckling beam system:" << endl;
-  buckling_beam(10);
+  //cout << "\nBuckling beam system:" << endl;
+  //buckling_beam(10);
 
   cout << "\nOne electron in a harmonic oscillator:" << endl;
-  one_electron_system(200, 10.0);
+  one_electron_system(300, 10.0);
 
-  cout << "\nTwo electrons in a harmonic oscillator:" << endl;
-  two_electron_system(200, 5.0);
+  //cout << "\nTwo electrons in a harmonic oscillator:" << endl;
+  //two_electron_system(200, 5.0);
 
   cout << "\nDone." << endl;
   return 0;

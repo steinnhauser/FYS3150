@@ -172,9 +172,9 @@ void one_electron_system(int N, double rho_max) {
   }
 
   double maxvalue = 10.;
-  double epsilon = 1e-10;
+  double epsilon = 1e-8;
   int iteration = 0;
-  int maxIterations = 100000;
+  int maxIterations = 2000000;
   int k, l;
   mat R = eye<mat>(N-1,N-1); // matrix where columns will store eigenvectors
   mat A = generate_A_matrix(N, a, d); // this will be changed
