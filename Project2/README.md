@@ -1,7 +1,7 @@
-# project 2
+# Project 2
 ## Files
-###
-There is a makefile, which allow for an easy compile, run:
+### Makefile
+Which allows for an easy compile, run:
 ```
 > make -j
 > ./test.x
