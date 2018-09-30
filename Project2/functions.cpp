@@ -4,6 +4,7 @@
 #include <armadillo>
 #include <fstream>
 #include <iomanip>
+#include <time.h>
 
 using namespace std;
 using namespace arma;
@@ -137,11 +138,15 @@ void buckling_beam(int N) {
   int maxIterations = 100000;
   int k, l;
   // loop until nondiagonal maxvalue is smaller than epsilon OR max iterations
+  double start, finish;
+  start = clock();
   while ( maxvalue > epsilon && iteration < maxIterations ) { // Main algorithm loop that performs rmatrix otations
     maxvalue = max_value_indexes(A, N, k, l);
     iteration++;
     Jacobi_Rotation_algorithm(A, R, N, k, l);
   }
+  finish = clock();
+  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
 
   // storing and sorting eigenvalues:
   vec eigvals = zeros<vec>(N-1);
@@ -151,9 +156,11 @@ void buckling_beam(int N) {
   sort(eigvals.begin(), eigvals.end());
 
   // terminal print:
-  cout << "\n  num. eigval: ana. eigval:" << endl;
+  cout << "  time: " << timeElapsed << " s" << endl;
+  cout << "  iterations: " << iteration << endl;
+  cout << "\n  numerical eigvals: analytic eigvals:" << endl;
   for (int j=0; j<N-1; j++) {
-    cout << "  " << setw(11) << left << eigvals(j) << "  ";
+    cout << "  " << setw(17) << setprecision(16) << left << eigvals(j) << "  ";
     cout << d(0) + 2*a(0)*cos((j+1)*M_PI/N) << endl;
   }
 }
@@ -179,16 +186,24 @@ void one_electron_system(int N, double rho_max) {
   mat R = eye<mat>(N-1,N-1); // matrix where columns will store eigenvectors
   mat A = generate_A_matrix(N, a, d); // this will be changed
   // loop until nondiagonal maxvalue is smaller than epsilon OR max iterations
+  double start, finish;
+  start = clock();
   while ( maxvalue > epsilon && iteration < maxIterations ) { // Main algorithm loop that performs rmatrix otations
     maxvalue = max_value_indexes(A, N, k, l);
     iteration++;
     Jacobi_Rotation_algorithm(A, R, N, k, l);
   }
+  finish = clock();
+  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
+
   vec eigvals = zeros<vec>(N-1);
   for (int i=0; i<N-1; i++) {
     eigvals(i) = A(i,i);
   }
   sort(eigvals.begin(), eigvals.end());
+  // terminal print:
+  cout << "  time: " << timeElapsed << " s" << endl;
+  cout << "  iterations: " << iteration << endl;
   cout << "\n  first 5 eigenvalues:" << endl;
   for (int j=0; j<5; j++) {
     cout << "  " << eigvals(j) << endl;
@@ -230,12 +245,17 @@ void two_electron_system(int N, double rho_max) {
     int maxIterations = 100000;
     int k, l;
     // loop until nondiagonal maxvalue is smaller than epsilon OR max iterations
+    double start, finish;
+    start = clock();
     while ( maxvalue > epsilon && iteration < maxIterations ) { // Main algorithm loop that performs rmatrix otations
       maxvalue = max_value_indexes(A, N, k, l);
       iteration++;
       Jacobi_Rotation_algorithm(A, R, N, k, l);
     }
+    finish = clock();
+    double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
     cout << "\n  Jacobi's method done, number of iterations: " << iteration << endl;
+    cout << "  time: " << timeElapsed << " s" << endl;
 
     // finding the ground state eigenpair:
     double eigval;
