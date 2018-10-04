@@ -1,2 +1,2 @@
-#Project3, Solar system simulator
-##Object oriented code and results
+# Project3, Solar system simulator
+## Object oriented code and results
