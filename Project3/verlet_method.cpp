@@ -3,7 +3,6 @@
 #include "verlet_method.h"
 
 using namespace arma;
-using namespace std;
 //Method to calculate the VELOCITY VERLET
 //This Verlet method is chosen since it conserves the energy and angular momentum of the planets.
 vec verlet_method_calculate(double x0, double y0, double z0, double xv0, double yv0, double zv0, int N, double dt,
@@ -50,5 +49,5 @@ vec verlet_method_calculate(double x0, double y0, double z0, double xv0, double 
     y_vel(i+1) = y_vel(i) + factor3*(y_acc + y_acc_new);
     z_vel(i+1) = z_vel(i) + factor3*(z_acc + z_acc_new);
   }
-  cout << "Velocity Verlet calculation complete." << endl;
+  std::cout << "Velocity Verlet calculation complete." << endl;
 }

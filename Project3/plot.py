@@ -7,12 +7,13 @@ import sys
 fn = sys.argv[1]
 
 with open("./data/" + str(fn) + ".txt","r") as infile:
-    # first three lines
+    # first two lines
     line = infile.readline()
     title = line.split()[0]
     line = infile.readline()
     Parameters = line.split()
     x=[]; y=[]; z=[]; t=[]
+    # the remaining lines with data
     for line in infile:
         xval, yval, zval, tval = line.split()
         x.append(eval(xval))

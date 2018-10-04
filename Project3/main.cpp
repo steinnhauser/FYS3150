@@ -5,7 +5,6 @@
 #include "verlet_method.h"
 #include "write_vectors_function.h"
 
-using namespace std;
 using namespace arma;
 
 int main(int argc, char* argv[])
@@ -18,8 +17,8 @@ int main(int argc, char* argv[])
   double y0 = 0;
   double z0 = 0;
   double xv0 = 0;
-  double yv0 = 2*M_PI; // One rotation per year
-  double zv0 = 5.0;
+  double yv0 = 2*M_PI; // One rotation per year + circular motion
+  double zv0 = 0;
 
   vec x_pos1 = zeros<vec>(N);
   vec y_pos1 = zeros<vec>(N);

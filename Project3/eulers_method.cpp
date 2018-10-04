@@ -2,6 +2,7 @@
 #include <armadillo>
 #include <math.h>
 #include "eulers_method.h"
+#include "test_functions.h"
 
 using namespace arma;
 
@@ -32,6 +33,9 @@ void eulers_method_calculate(double x0, double y0, double z0, double xv0, double
     x_pos(i+1) = x_pos(i) + dt*x_vel(i);
     y_pos(i+1) = y_pos(i) + dt*y_vel(i);
     z_pos(i+1) = z_pos(i) + dt*z_vel(i);
+
+    energy
   }
+  test_energy_conservation(vel... pos...)
   std::cout << "Eulers method calculation complete." << endl;
 }
