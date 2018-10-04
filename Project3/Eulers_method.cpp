@@ -33,6 +33,6 @@ void Eulers_method_calculate()
     xvel(i+1) = xvel(i) + dt*Acceleration_Earth_x;
     yvel(i+1) = yvel(i) + dt*Acceleration_Earth_y;
     yvel(i+1) = yvel(i) + dt*Acceleration_Earth_y;
-    cout << i << endl;
   }
+  cout << "Eulers method calculation complete." << endl;
 }
