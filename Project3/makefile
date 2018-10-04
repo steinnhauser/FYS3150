@@ -3,8 +3,8 @@ PROG= test
 LDLIBS = -llapack -larmadillo -lblas
 
 
-test.x: main.o Eulers_method.o Verlet_method.o Write_Vectors_function.o
-	${CXX} -o test.x main.o Eulers_method.o Verlet_method.o Write_Vectors_function.o ${LDLIBS}
+test.x: main.o eulers_method.o verlet_method.o write_vectors_function.o
+	${CXX} -o test.x main.o eulers_method.o verlet_method.o write_vectors_function.o ${LDLIBS}
 
 %.o: %.cpp %.h
 	$(CXX) -c $<

@@ -1,13 +1,13 @@
-#include<iomanip>
-#include<iostream>
-#include<armadillo>
-#include"Write_Vectors_function.h"
-#include<string>
+#include <iomanip>
+#include <iostream>
+#include <armadillo>
+#include "write_vectors_function.h"
+#include <string>
 
 using namespace std;
 using namespace arma;
 
-void Write_Vectors(vec x, vec y, vec z, vec t, string fn, string title)
+void write_vectors(vec x, vec y, vec z, vec t, string fn, string title)
 {
   if(x.n_elem!=y.n_elem || x.n_elem!=z.n_elem || x.n_elem!=t.n_elem){
     cout << "Value error: Vectors do not have the same lengths." << endl;
@@ -16,7 +16,7 @@ void Write_Vectors(vec x, vec y, vec z, vec t, string fn, string title)
   else{
     //string filename = "./data/project2_";
     //filename.append(to_string(j) + ".txt");
-    string FN = "./Data/";
+    string FN = "./data/";
     FN.append(fn + ".txt");
     ofstream ofile;
     ofile.open(FN, std::ofstream::out | std::ofstream::trunc);
