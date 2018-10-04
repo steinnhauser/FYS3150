@@ -16,8 +16,10 @@ void Write_Vectors(vec x, vec y, vec z, vec t, string fn, string title)
   else{
     //string filename = "./data/project2_";
     //filename.append(to_string(j) + ".txt");
+    string FN = "./Data/";
+    FN.append(fn + ".txt");
     ofstream ofile;
-    ofile.open(fn, std::ofstream::out | std::ofstream::trunc);
+    ofile.open(FN, std::ofstream::out | std::ofstream::trunc);
 
     ofile << title << endl;
     ofile << setw(20) << "x: " << setw(20) << "y: " << setw(20) << "z: " << setw(20) << "t: " << endl;
@@ -30,5 +32,6 @@ void Write_Vectors(vec x, vec y, vec z, vec t, string fn, string title)
       ofile << setw(20) << setprecision(10) << t(i) << endl;
     }
     ofile.close();
+    cout << "File " << FN << " written." << endl;
   }
 }

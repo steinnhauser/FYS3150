@@ -5,11 +5,8 @@ using namespace arma;
 using namespace std;
 //Method to calculate the VELOCITY VERLET
 //This Verlet method is chosen since it conserves the energy and angular momentum of the planets.
-void Verlet_method_calculate()
+vec Verlet_method_calculate(double x0, double y0, double z0, double xv0, double yv0, double zv0, int N, double dt)
 {
-  int N=10;
-  double Simulation_Time = 1;   //One year
-  double dt = Simulation_Time/N;
   const double G_MassSun = 4*M_PI*M_PI; //This has units AU^3/year^2
   vec xpos = zeros<vec>(N);
   vec ypos = zeros<vec>(N);
@@ -17,6 +14,13 @@ void Verlet_method_calculate()
   vec xvel = zeros<vec>(N);
   vec yvel = zeros<vec>(N);
   vec zvel = zeros<vec>(N);
+  xpos(0) = x0;
+  ypos(0) = y0;
+  zpos(0) = z0;
+  xvel(0) = xv0;
+  yvel(0) = yv0;
+  zvel(0) = zv0;
+
   double Acceleration_Earth, r;
   for (int i=0; i<(N-1); i++)
   {
@@ -40,7 +44,13 @@ void Verlet_method_calculate()
 
     xvel(i+1) = xvel(i) + dt*(ax_New+ax)/2;
     yvel(i+1) = yvel(i) + dt*(ay_New+ay)/2;
-    yvel(i+1) = yvel(i) + dt*(az_New+az)/2;
+    zvel(i+1) = zvel(i) + dt*(az_New+az)/2;
   }
   cout << "Velocity Verlet calculation complete." << endl;
+  vec t = zeros<vec>(N);
+  for (int i=0; i<N; i++)
+  {
+    t(i)=i*dt;
+  }
+  return xpos, ypos, zpos, t;
 }

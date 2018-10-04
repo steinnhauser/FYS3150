@@ -4,6 +4,9 @@
 #include<armadillo>
 #include<math.h>
 
-void Eulers_method_calculate();
+using namespace arma;
+
+void Eulers_method_calculate(double x0, double y0, double z0, double xv0, double yv0, double zv0, int N, double dt, 
+  vec &xpos, vec &ypos, vec &zpos, vec &t);
 
 #endif
