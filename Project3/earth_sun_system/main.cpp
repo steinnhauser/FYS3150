@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
   double y0 = 0;
   double z0 = 0;
   double xv0 = 0;
-  double yv0 = 0.99*2*M_PI; // One rotation per year + circular motion
+  double yv0 = 2*M_PI; // One rotation per year + circular motion
   double zv0 = 0;
 
   vec x_pos1 = zeros<vec>(N);
@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
   vec x_pos2 = zeros<vec>(N);
   vec y_pos2 = zeros<vec>(N);
   vec z_pos2 = zeros<vec>(N);
-  vec kin_energy2 = zeros<vec>(N);
+  vec kin_energy2 = zeros<vec>(N);2
   vec pot_energy2 = zeros<vec>(N);
 
   vec t = linspace<vec>(0,(N-1)*dt,N);
