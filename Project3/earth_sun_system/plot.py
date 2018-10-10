@@ -34,7 +34,7 @@ t = np.asarray(t)
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.plot(x, y, z, "r--", label="x")
+ax.plot(x, y, z, "r,", label="x")
 plt.show()
 
 

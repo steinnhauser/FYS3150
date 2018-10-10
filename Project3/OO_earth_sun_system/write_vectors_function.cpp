@@ -25,8 +25,9 @@ void write_vectors(vec x, vec y, vec z, vec kin_energy, vec pot_energy, vec t, s
     ofile << setw(20) << "x: " << setw(20) << "y: " << setw(20) << "z: ";
     ofile << setw(20) << "Ek:" << setw(20) << "Ep:" << setw(20) << "t: " << endl;
 
-    int Length = x.n_elem;
-    for (int i=0; i<Length; i++) {
+    double factor = 100.0;
+    int Length = x.n_elem/factor;
+    for (int i=0; i<Length; i*=factor) {
       ofile << setw(20) << setprecision(10) << x(i);
       ofile << setw(20) << setprecision(10) << y(i);
       ofile << setw(20) << setprecision(10) << z(i);

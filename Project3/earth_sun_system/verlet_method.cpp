@@ -6,7 +6,7 @@ using namespace arma;
 //Method to calculate the VELOCITY VERLET
 //This Verlet method is chosen since it conserves the energy and angular momentum of the planets.
 vec verlet_method_calculate(double x0, double y0, double z0, double xv0, double yv0, double zv0, int N, double dt,
-  vec& x_pos, vec& y_pos, vec& z_pos, vec& kin_energy, vec& pot_energy)
+  vec& x_pos, vec& y_pos, vec& z_pos, vec& kin_energy, vec& pot_energy, double beta)
 {
   const double G_MassSun = 4*M_PI*M_PI; //This has units AU^3/year^2
   vec x_vel = zeros<vec>(N);
@@ -24,11 +24,12 @@ vec verlet_method_calculate(double x0, double y0, double z0, double xv0, double 
   double r_squared, factor1;
   double factor2 = dt*dt/2.0;
   double factor3 = dt/2.0;
+  double beta_factor = (beta + 1)/2.0; // The gravity force, F = GMm/r^beta, where beta is usually 2
 
   for (int i=0; i<(N-1); i++) {
     // Calculate the new positions using the current velocity and acceleration
     r_squared = x_pos(i)*x_pos(i) + y_pos(i)*y_pos(i) + z_pos(i)*z_pos(i);
-    factor1 = - G_MassSun/(pow(r_squared, 1.5));
+    factor1 = - G_MassSun/(pow(r_squared, beta_factor));
     x_acc = x_pos(i) * factor1;
     y_acc = y_pos(i) * factor1;
     z_acc = z_pos(i) * factor1;
@@ -38,13 +39,14 @@ vec verlet_method_calculate(double x0, double y0, double z0, double xv0, double 
     y_pos(i+1) = y_pos(i) + dt*y_vel(i) + factor2*y_acc;
     z_pos(i+1) = z_pos(i) + dt*z_vel(i) + factor2*z_acc;
 
-    //Calculate the velocities using the next acceleration point r(i+1)=r_New
+    // Acceleration at step i+1, using positions at i+1:
     r_squared = x_pos(i+1)*x_pos(i+1) + y_pos(i+1)*y_pos(i+1) + z_pos(i+1)*z_pos(i+1); // new r_squared
-    factor1 = - G_MassSun/(pow(r_squared, 1.5));
+    factor1 = - G_MassSun/(pow(r_squared, beta_factor));
     x_acc_new = x_pos(i+1) * factor1;
     y_acc_new = y_pos(i+1) * factor1;
     z_acc_new = z_pos(i+1) * factor1;
 
+    // Update of velocities:
     x_vel(i+1) = x_vel(i) + factor3*(x_acc + x_acc_new);
     y_vel(i+1) = y_vel(i) + factor3*(y_acc + y_acc_new);
     z_vel(i+1) = z_vel(i) + factor3*(z_acc + z_acc_new);
