@@ -4,7 +4,11 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import sys
 
-fn = sys.argv[1]
+if len(sys.argv)!=2:
+    print("Bad usage: Input name of data file as argument.")
+    exit(1)
+else:
+    fn = sys.argv[1]
 
 with open("./data/" + str(fn) + ".txt","r") as infile:
     # first two lines
