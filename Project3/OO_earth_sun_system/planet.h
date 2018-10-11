@@ -5,21 +5,25 @@
 class planet
 {
 public:
-  //properties mass, pos, vel, pot, kin
-  string name;
-  vec pos =
-  //initializer
+  // initial values
+  double x;
+  double y;
+  double z;
+  double xv;
+  double yv;
+  double zv;
+  double mass;
+
+  // constructor
   planet();
-  string name
-  //planet(...props...)
+  planet(x, y, z, xv, yv, zv, mass);
 
   // functions
-  distance();
-  acceleration();
-  //etc.
+  distance(planet otherplanet);
+  acceleration(planet otherplanet, G_constant);
 
-
+  kin_energy();
+  pot_energy();
 };
-
 
 #endif // PLANET_H
