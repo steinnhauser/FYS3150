@@ -10,7 +10,7 @@ public:
   // initial values
   double dt;
   double T;
-  int N=T/dt +1;
+  int N = T/dt + 1;
   int number_of_planets = 0;
   vector<planet> planets_list;
 
@@ -19,10 +19,9 @@ public:
   solver(dt, T, system);
 
   // functions
-  sum_forces(planet planet1);
-  addplanet(name);
+  addplanet(planet name);
   velocity_verlet_solve();
-  void solve();
+  find_acc_for_all_planets(mat& acceleration_matrix);
 };
 
 #endif // SOLVER_H
