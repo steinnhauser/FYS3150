@@ -16,6 +16,8 @@ public:
   double Fy;
   double Fz;
   double mass;
+  
+  const grav = 4*M_PI*M_PI;
 
   // constructor
   planet();

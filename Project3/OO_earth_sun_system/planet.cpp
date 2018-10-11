@@ -1,5 +1,6 @@
 #include <planet.h>
 #include <cmath>
+#include <math.h>
 
 //functions
 double planet::distance(const planet& otherplanet) {
@@ -9,4 +10,8 @@ double planet::distance(const planet& otherplanet) {
   return sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff);
 }
 
+
+double planet::acceleration(double r, const planet& otherplanet) {
+  return grav * otherplanet.mass / (r*r);
+}
 // and so on...

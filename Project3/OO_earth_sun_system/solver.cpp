@@ -60,7 +60,7 @@ void find_acc_for_all_planets(mat& acceleration_matrix)
       for (int op=0; op<number_of_planets; op++){
         if (op != p) {
           double r = planets_list[p].distance(planets_list[op]);
-          double acc = planets_list[p].acceleration(planets_list[op]);
+          double acc = planets_list[p].acceleration(planets_list[op]); // total acceleration 
           acceleration_matrix(0, p)= acc * planets_list[p].x/r;
           acceleration_matrix(1, p)= acc * planets_list[p].y/r;
           acceleration_matrix(2, p)= acc * planets_list[p].z/r;
