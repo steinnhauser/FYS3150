@@ -14,7 +14,8 @@ int main(int argc, char* argv[])
   double dt = 0.0001;
   int N = T/dt + 1;
 
-
+  solsrs
+  solver(dt, T, method, solarsystem)
   planet earth(initial_values...);
 
   return 0;

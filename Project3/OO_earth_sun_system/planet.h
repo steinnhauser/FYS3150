@@ -12,6 +12,9 @@ public:
   double xv;
   double yv;
   double zv;
+  double Fx;
+  double Fy;
+  double Fz;
   double mass;
 
   // constructor
@@ -19,8 +22,8 @@ public:
   planet(x, y, z, xv, yv, zv, mass);
 
   // functions
-  distance(planet otherplanet);
-  acceleration(planet otherplanet, G_constant);
+  double distance(planet otherplanet);
+  double acceleration(planet otherplanet, G_constant);
 
   kin_energy();
   pot_energy();
