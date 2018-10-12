@@ -10,15 +10,15 @@ class solver
 {
 public:
   // initial values
-  const double dt;
-  const double totaltime;
-  const int N = totaltime/dt + 1;
+  double dt;
+  double totaltime;
+  int N = totaltime/dt + 1;
   std::vector<planet> planets_list;
   int number_of_planets = planets_list.size();
 
   // constructor
   solver();
-  solver(double dt, double totaltime, std::vector<planet> planets_list);
+  solver(double DT, double TotalTime, std::vector<planet> Planets_List);
 
   // functions
   void velocity_verlet_solve();

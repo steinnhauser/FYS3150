@@ -2,15 +2,15 @@
 #include <cmath>
 
 planet::planet(){}
-planet::planet(double mass, double x, double y, double z, double vx, double vy, double vz)
+planet::planet(double Mass, double X, double Y, double Z, double VX, double VY, double VZ)
 {
-  this->mass = mass;
-  this->x = x;
-  this->y = y;
-  this->z = z;
-  this->vx = vx;
-  this->vy = vy;
-  this->vz = vz;
+  this->mass = Mass;
+  this->x = X;
+  this->y = Y;
+  this->z = Z;
+  this->vx = VX;
+  this->vy = VY;
+  this->vz = VZ;
 }
 
 double planet::distance(const planet& otherplanet) {
