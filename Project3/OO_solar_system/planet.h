@@ -2,6 +2,9 @@
 #define PLANET_H
 #include <armadillo>
 #include <math.h> // for M_PI
+#include <string>
+
+using namespace std;
 
 class planet
 {
@@ -15,8 +18,7 @@ public:
   double vz;
   double mass;
   double gravity_factor = 4*M_PI*M_PI;
-
-  //String name
+  string name;
 
   // constructor
   planet();
@@ -26,7 +28,7 @@ public:
   double distance(const planet& otherplanet);
   double acceleration(double r, const planet& otherplanet);
 
-  //void setName(string name);
+  void setName(string Name);
 
   // kin_energy();
   // pot_energy();

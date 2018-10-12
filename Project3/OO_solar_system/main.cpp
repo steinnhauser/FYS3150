@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <armadillo>
 #include "initializer.h"
 #include "solver.h"
 #include "planet.h"
@@ -19,12 +20,33 @@ int main(int argc, char* argv[])
 
   double T = 10;
   double dt = 0.1;
+  double N = T/dt +1;
 
+  vector<planet*> planets_list;
+  string filename;
+  filename = "./data/initial_values.txt";
+  planets_list = init_planet_list(filename); // read input variables and create a vector containing planet objects
+  int number_of_planets = planets_list.size();
+  cout << number_of_planets << endl;
+
+
+  solver VelVerlet_Solarsystem;
+  VelVerlet_Solarsystem = new solver(dt, T, planets_list);
+
+  VelVerlet_Solarsystem.velocity_verlet_solve();
+
+
+
+
+  /*
   string filename = "./data/initial_values.txt";
   vector<planet*> planets_list;
   planets_list = init_planet_list(filename); // read input variables and create a vector containing planet objects
   cout << "Planet list initialized." << endl;
   cout << planets_list[0]->mass << endl;
+  */
+
+
   /*
   solver(dt, totaltime, planets_list); // solve solar system simulation by using velocity verlet method
   cout << "Solver done." << endl;

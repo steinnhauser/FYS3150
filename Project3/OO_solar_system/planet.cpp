@@ -23,3 +23,8 @@ double planet::distance(const planet& otherplanet) {
 double planet::acceleration(double r, const planet& otherplanet) {
   return - gravity_factor * otherplanet.mass / (r*r);
 }
+
+void planet::setName(string Name)
+{
+  this->name = Name;
+}
