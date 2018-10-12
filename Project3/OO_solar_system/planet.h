@@ -16,6 +16,8 @@ public:
   double mass;
   const double gravity_factor = 4*M_PI*M_PI;
 
+  //String name
+
   // constructor
   planet();
   planet(double mass, double x, double y, double z, double vx, double vy, double vz);
@@ -23,6 +25,8 @@ public:
   // functions
   double distance(const planet& otherplanet);
   double acceleration(double r, const planet& otherplanet);
+
+  //void setName(string name);
 
   // kin_energy();
   // pot_energy();

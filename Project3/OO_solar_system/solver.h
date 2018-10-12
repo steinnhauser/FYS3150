@@ -18,7 +18,7 @@ public:
 
   // constructor
   solver();
-  solver(const double dt, const double totaltime, std::vector<planet> planets_list);
+  solver(double dt, double totaltime, std::vector<planet> planets_list);
 
   // functions
   void velocity_verlet_solve();

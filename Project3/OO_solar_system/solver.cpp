@@ -1,5 +1,12 @@
 #include "solver.h"
 
+solver::solver(){}
+solver::solver(double dt, double totaltime, std::vector<planet> planets_list)
+{
+  this->dt = dt;
+  this->totaltime = totaltime;
+  this->planets_list = planets_list;
+}
 
 void solver::velocity_verlet_solve()
 {

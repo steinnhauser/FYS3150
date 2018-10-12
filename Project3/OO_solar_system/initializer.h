@@ -7,6 +7,6 @@
 
 using namespace std;
 
-vector<planet> init_planet_list(string filename);
+vector<planet*> init_planet_list(string filename);
 
 #endif // INITIALIZER_H
