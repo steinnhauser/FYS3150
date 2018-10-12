@@ -46,7 +46,7 @@ def animate_3D(data):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-
+ 
 
     def update_lines(num, dataLines, lines):
         for line, data in zip(lines, dataLines):
