@@ -3,9 +3,9 @@
 #include <vector>
 #include "initializer.h"
 #include "solver.h"
+#include "planet.h"
 //#include "write_file.h"
 
-using namespace arma;
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -20,10 +20,11 @@ int main(int argc, char* argv[])
   double T = 10;
   double dt = 0.1;
 
-  string filename = "./data/initial_values.txt"; // vec planet_list =
-  init_planet_list(filename); // read input variables and create a vector containing planet objects
+  string filename = "./data/initial_values.txt";
+  vector<planet> planets_list;
+  planets_list = init_planet_list(filename); // read input variables and create a vector containing planet objects
   cout << "Planet list initialized." << endl;
-
+  cout << planets_list[0].mass << endl;
   /*
   solver(dt, totaltime, planets_list); // solve solar system simulation by using velocity verlet method
   cout << "Solver done." << endl;

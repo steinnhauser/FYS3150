@@ -13,15 +13,14 @@ public:
   const double dt;
   const double totaltime;
   const int N = totaltime/dt + 1;
-  int number_of_planets = 0;
   std::vector<planet> planets_list;
+  int number_of_planets = planets_list.size();
 
   // constructor
   solver();
-  solver(const double dt, const double totaltime);
+  solver(const double dt, const double totaltime, std::vector<planet> planets_list);
 
   // functions
-  void addplanet(planet name);
   void velocity_verlet_solve();
   void find_acc_for_all_planets(mat& acceleration_matrix);
 };

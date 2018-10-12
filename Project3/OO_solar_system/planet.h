@@ -13,11 +13,12 @@ public:
   double vx;
   double vy;
   double vz;
-  const double mass;
+  double mass;
   const double gravity_factor = 4*M_PI*M_PI;
 
   // constructor
-  planet(double x, double y, double z, double vx, double vy, double vz, const double mass);
+  planet();
+  planet(double mass, double x, double y, double z, double vx, double vy, double vz);
 
   // functions
   double distance(const planet& otherplanet);

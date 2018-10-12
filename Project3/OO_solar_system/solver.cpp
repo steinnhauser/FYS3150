@@ -1,10 +1,5 @@
 #include "solver.h"
 
-void solver::addplanet(planet name)
-{
-  planets_list.push_back(name);
-  number_of_planets++;
-}
 
 void solver::velocity_verlet_solve()
 {

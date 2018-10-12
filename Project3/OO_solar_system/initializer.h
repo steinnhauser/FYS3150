@@ -5,6 +5,8 @@
 #include <string>
 #include "planet.h"
 
-void init_planet_list(std::string filename);
+using namespace std;
+
+vector<planet> init_planet_list(string filename);
 
 #endif // INITIALIZER_H
