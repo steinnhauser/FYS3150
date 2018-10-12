@@ -20,24 +20,25 @@ int main(int argc, char* argv[])
 
   double T = 10;
   double dt = 0.1;
-  double N = T/dt +1;
+  double N = T/dt + 1;
 
-  vector<planet*> planets_list;
+  vector<planet> planets_list;
   string filename;
   filename = "./data/initial_values.txt";
   planets_list = init_planet_list(filename); // read input variables and create a vector containing planet objects
+
+
   int number_of_planets = planets_list.size();
-  cout << number_of_planets << endl;
 
 
   solver VelVerlet_Solarsystem;
-  VelVerlet_Solarsystem = new solver(dt, T, planets_list);
+  VelVerlet_Solarsystem = solver(dt, T, planets_list);
 
-  VelVerlet_Solarsystem.velocity_verlet_solve();
+  arma::cube positional_tensor = zeros<cube>(3,N,number_of_planets);
+  VelVerlet_Solarsystem.velocity_verlet_solve(positional_tensor);
 
-
-
-
+  arma::vec time_vec = linspace<vec>(0,T,N);
+  write_file(positional_tensor, time_vec, planets_list);
   /*
   string filename = "./data/initial_values.txt";
   vector<planet*> planets_list;

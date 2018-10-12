@@ -1,17 +1,16 @@
 #include "write_file.h"
 
-void write_new_file(arma::mat positions, arma::vec time, vector<planets*> planets_list)
+void write_new_file(arma::mat positions, arma::vec time_vec, vector<planets> planets_list)
 {
   // assuming matrix with the form positions(3, N, j);
-  string FN = "./data/";
-  string fn = "test_system"
-  FN.append(fn + ".txt");
-  ofstream ofile;
-  ofile.open(FN, std::ofstream::out | std::ofstream::trunc);
   for (int j=0; j<number_of_planets; j++){
+    string FN = "./data/planet";
+    ofstream ofile;
+    FN.append(string(j));
+    FN.append(".txt");
+    ofile.open(FN, std::ofstream::out | std::ofstream::trunc);
     // write name of planet
-    string title;
-    title = planets_list[j].name;
+    string title = planets_list[j].name;
 
     ofile << title << endl;
     ofile << setw(20) << "x: " << setw(20) << "y: " << setw(20) << "z: ";
@@ -21,14 +20,13 @@ void write_new_file(arma::mat positions, arma::vec time, vector<planets*> planet
       ofile << setw(20) << setprecision(10) << positions(0, t, j);
       ofile << setw(20) << setprecision(10) << positions(1, t, j);
       ofile << setw(20) << setprecision(10) << positions(2, t, j);
-      ofile << setw(20) << setprecision(10) << time(t);
+      ofile << setw(20) << setprecision(10) << time_vec(t);
 
       //write file with these
-
+      cout << "File " << FN << " written." << endl;
     }
   }
   ofile.close();
-  cout << "File " << FN << " written." << endl;
 }
 
 

@@ -14,6 +14,7 @@ def readfile(file_number):
     xl = []; yl = []; zl = []; tl = []
     with open(filename, 'r') as infile:
         planet = infile.readline().split()[0]
+        infile.readline();
         for line in infile:
             xval, yval, zval, tval = line.split()
             xl.append(eval(xval))
@@ -46,7 +47,7 @@ def animate_3D(data):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
- 
+
 
     def update_lines(num, dataLines, lines):
         for line, data in zip(lines, dataLines):

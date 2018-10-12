@@ -4,13 +4,13 @@
 planet::planet(){}
 planet::planet(double Mass, double X, double Y, double Z, double VX, double VY, double VZ)
 {
-  this->mass = Mass;
-  this->x = X;
-  this->y = Y;
-  this->z = Z;
-  this->vx = VX;
-  this->vy = VY;
-  this->vz = VZ;
+  mass = Mass;
+  x = X;
+  y = Y;
+  z = Z;
+  vx = VX;
+  vy = VY;
+  vz = VZ;
 }
 
 double planet::distance(const planet& otherplanet) {
@@ -26,5 +26,5 @@ double planet::acceleration(double r, const planet& otherplanet) {
 
 void planet::setName(string Name)
 {
-  this->name = Name;
+  name = Name;
 }
