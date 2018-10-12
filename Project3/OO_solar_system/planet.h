@@ -14,15 +14,14 @@ public:
   double vy;
   double vz;
   const double mass;
-  const double grav = 4*M_PI*M_PI;
+  const double gravity_factor = 4*M_PI*M_PI;
 
   // constructor
-  planet();
-  planet(x, y, z, vx, vy, vz, mass);
+  planet(double x, double y, double z, double vx, double vy, double vz, const double mass);
 
   // functions
-  double distance(planet otherplanet);
-  double acceleration(planet otherplanet, G_constant);
+  double distance(const planet& otherplanet);
+  double acceleration(double r, const planet& otherplanet);
 
   // kin_energy();
   // pot_energy();

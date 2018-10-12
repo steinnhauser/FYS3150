@@ -1,17 +1,12 @@
 #include "solver.h"
-#include "planet.h"
-#include <vector>
-#include <armadillo>
 
-using namespace arma;
-
-void addplanet(planet name)
+void solver::addplanet(planet name)
 {
   planets_list.push_back(name);
   number_of_planets++;
 }
 
-void velocity_verlet_solve();
+void solver::velocity_verlet_solve()
 {
   double factor2 = dt*dt/2.0;
   double factor3 = dt/2.0;
@@ -29,9 +24,9 @@ void velocity_verlet_solve();
     for (int j=0; j<number_of_planets; j++) {
 
       // find acceleration components at step t
-      double ax = acceleration_matrix(0, j);
-      double ay = acceleration_matrix(1, j);
-      double az = acceleration_matrix(2, j);
+      double ax = acceleration_matrix_old(0, j);
+      double ay = acceleration_matrix_old(1, j);
+      double az = acceleration_matrix_old(2, j);
 
       // update x with a second degree Taylor polynomial
       planets_list[j].x += planets_list[j].vx*dt + factor2*ax;
@@ -53,7 +48,7 @@ void velocity_verlet_solve();
   }
 }
 
-void find_acc_for_all_planets(mat& acceleration_matrix) {
+void solver::find_acc_for_all_planets(mat& acceleration_matrix) {
   // p is index for current planet and op is index for other planet
   // find acceleration contribution from all other planets
   for (int p=0; p<number_of_planets; p++) {
@@ -61,7 +56,7 @@ void find_acc_for_all_planets(mat& acceleration_matrix) {
       // avoid finding acceleration contribution from current planet itself
       if (op != p) {
         double r = planets_list[p].distance(planets_list[op]);
-        double acc = planets_list[p].acceleration(planets_list[op])/r; // total acceleration/r
+        double acc = planets_list[p].acceleration(r, planets_list[op])/r; // total acceleration/r
         // each acceleration component: i.e -x/r * total acceleration
         acceleration_matrix(0, p) += acc * planets_list[p].x;
         acceleration_matrix(1, p) += acc * planets_list[p].y;

@@ -1,27 +1,29 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 #include <armadillo>
-#include "planet.h"
 #include <vector>
+#include "planet.h"
+
+using namespace arma;
 
 class solver
 {
 public:
   // initial values
-  double dt;
-  double T;
-  int N = T/dt + 1;
+  const double dt;
+  const double totaltime;
+  const int N = totaltime/dt + 1;
   int number_of_planets = 0;
-  vector<planet> planets_list;
+  std::vector<planet> planets_list;
 
   // constructor
   solver();
-  solver(dt, T, system);
+  solver(const double dt, const double totaltime);
 
   // functions
-  addplanet(planet name);
-  velocity_verlet_solve();
-  find_acc_for_all_planets(mat& acceleration_matrix);
+  void addplanet(planet name);
+  void velocity_verlet_solve();
+  void find_acc_for_all_planets(mat& acceleration_matrix);
 };
 
 #endif // SOLVER_H

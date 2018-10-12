@@ -2,8 +2,8 @@ CXX= g++
 PROG= test
 LDLIBS = -llapack -larmadillo -lblas
 
-test.x: main.o eulers_method.o verlet_method.o write_vectors_function.o
-	${CXX} -o test.x main.o eulers_method.o verlet_method.o write_vectors_function.o ${LDLIBS}
+test.x: main.o planet.o solver.o initializer.o
+	${CXX} -o test.x main.o planet.o solver.o initializer.o ${LDLIBS}
 
 %.o: %.cpp %.h
 	$(CXX) -c $<
