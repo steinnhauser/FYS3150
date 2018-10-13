@@ -1,14 +1,16 @@
 #include "write_file.h"
 
-void write_new_file(arma::mat positions, arma::vec time_vec, vector<planets> planets_list)
+void write_new_file(cube positions, vec time_vec, vector<planet> planets_list)
 {
   // assuming matrix with the form positions(3, N, j);
-  for (int j=0; j<number_of_planets; j++){
+  int number_of_planets = planets_list.size();
+  int N = time_vec.n_elem;
+  for (int j=0; j<number_of_planets; j++) {
     string FN = "./data/planet";
     ofstream ofile;
-    FN.append(string(j));
+    FN.append(to_string(j));
     FN.append(".txt");
-    ofile.open(FN, std::ofstream::out | std::ofstream::trunc);
+    ofile.open(FN, ofstream::out | ofstream::trunc);
     // write name of planet
     string title = planets_list[j].name;
 
@@ -20,13 +22,11 @@ void write_new_file(arma::mat positions, arma::vec time_vec, vector<planets> pla
       ofile << setw(20) << setprecision(10) << positions(0, t, j);
       ofile << setw(20) << setprecision(10) << positions(1, t, j);
       ofile << setw(20) << setprecision(10) << positions(2, t, j);
-      ofile << setw(20) << setprecision(10) << time_vec(t);
-
-      //write file with these
-      cout << "File " << FN << " written." << endl;
+      ofile << setw(20) << setprecision(10) << time_vec(t) << endl;
     }
+    cout << "File " << FN << " written." << endl;
+    ofile.close();
   }
-  ofile.close();
 }
 
 

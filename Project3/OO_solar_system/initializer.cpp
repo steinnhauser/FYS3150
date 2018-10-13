@@ -22,6 +22,7 @@ vector<planet> init_planet_list(string filename) {
       vz *= vel_convertion;
       planet planetName;
       planetName = planet(mass, x, y, z, vx, vy, vz);
+      planetName.setName(name);
       planets_list.push_back(planetName);
     }
     planets_list.pop_back(); // last element is empty

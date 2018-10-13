@@ -3,7 +3,13 @@
 #include <armadillo>
 #include <fstream>
 #include <vector>
+#include <iomanip>
+#include <iostream>
+#include "planet.h"
 
-void write_new_file(arma::mat positions, arma::vec time, vector<planets> planets_list);
+using namespace std;
+using namespace arma;
+
+void write_new_file(cube positions, vec time, vector<planet> planets_list);
 
 #endif // WRITE_FILE_H
