@@ -13,14 +13,14 @@ int main(int argc, char* argv[])
 {
   /*
   Units used:
-  1 unit of time = 1 day
+  1 unit of time = 1 yr
   1 unit of length = 1 AU
-  1 unit of velocity = 1 AU/day
+  1 unit of velocity = 1 AU/yr
   1 unit of mass = 1.99*10^30 kg = 1 mass_sun
   */
 
-  double T = 10;
-  double dt = 0.00001;
+  double T = 30;
+  double dt = 0.001;
   double N = T/dt + 1;
 
   vector<planet> planets_list;

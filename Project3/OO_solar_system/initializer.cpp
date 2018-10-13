@@ -5,7 +5,7 @@ vector<planet> init_planet_list(string filename) {
   string line;
   vector<planet> planets_list;
   const double mass_convertion = 1e-6/1.99; // from 10^24 kg to sun masses
-  const double vel_convertion = 365.25; // from au/day to au/yr
+  const double vel_convertion = 365.25;
   ifstream file(filename);
   if (file.is_open()) {
     // first 7 lines
@@ -17,9 +17,9 @@ vector<planet> init_planet_list(string filename) {
       double mass, x, y, z, vx, vy, vz;
       file >> name >> mass >> x >> y >> z >> vx >> vy >> vz;
       mass *= mass_convertion;
-      vx *= vel_convertion;
-      vy *= vel_convertion;
-      vz *= vel_convertion;
+      x *= vel_convertion;
+      y *= vel_convertion;
+      z *= vel_convertion;
       planet planetName;
       planetName = planet(mass, x, y, z, vx, vy, vz);
       planetName.setName(name);

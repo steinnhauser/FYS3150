@@ -4,7 +4,7 @@ import mpl_toolkits.mplot3d.axes3d as p3
 import matplotlib.animation as ani
 import numpy as np
 
-number_of_planets = 4
+number_of_planets = 10
 
 def readfile(file_number):
     """read data from one data file,
@@ -26,7 +26,7 @@ def readfile(file_number):
     y = np.asarray(yl)
     z = np.asarray(zl)
     t = np.asarray(tl)
-    return planet, x[0:-1:30], y[0:-1:30], z[0:-1:30], t[0:-1:30]
+    return planet, x, y, z, t
 
 
 def planetdata(number_of_planets):
@@ -44,7 +44,7 @@ def animate_3D(data):
     N = len(data[0][0])
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    limit = [-2, 2]
+    limit = [-20, 20]
     ax.set_xlim3d(limit)
     ax.set_ylim3d(limit)
     ax.set_zlim3d(limit)

@@ -4,7 +4,7 @@ void write_new_file(cube positions, vec time_vec, vector<planet> planets_list)
 {
   // assuming matrix with the form positions(3, N, j);
   int number_of_planets = planets_list.size();
-  int N = time_vec.n_elem;
+  int N = time_vec.n_elem/1000.0;
   for (int j=0; j<number_of_planets; j++) {
     string FN = "./data/planet";
     ofstream ofile;
@@ -18,7 +18,7 @@ void write_new_file(cube positions, vec time_vec, vector<planet> planets_list)
     ofile << setw(20) << "x: " << setw(20) << "y: " << setw(20) << "z: ";
     ofile << setw(20) << "t: " << endl;
 
-    for (int t=0; t<N; t++){
+    for (int t=0; t<N; t+=1000){
       ofile << setw(20) << setprecision(10) << positions(0, t, j);
       ofile << setw(20) << setprecision(10) << positions(1, t, j);
       ofile << setw(20) << setprecision(10) << positions(2, t, j);
@@ -28,32 +28,3 @@ void write_new_file(cube positions, vec time_vec, vector<planet> planets_list)
     ofile.close();
   }
 }
-
-
-
-/*
-else{
-    //string filename = "./data/project2_";
-    //filename.append(to_string(j) + ".txt");
-    string FN = "./data/";
-    FN.append(fn + ".txt");
-    ofstream ofile;
-    ofile.open(FN, std::ofstream::out | std::ofstream::trunc);
-
-    ofile << title << endl;
-    ofile << setw(20) << "x: " << setw(20) << "y: " << setw(20) << "z: ";
-    ofile << setw(20) << "Ek:" << setw(20) << "Ep:" << setw(20) << "t: " << endl;
-
-    int Length = x.n_elem;
-    for (int i=0; i<Length; i++) {
-      ofile << setw(20) << setprecision(10) << x(i);
-      ofile << setw(20) << setprecision(10) << y(i);
-      ofile << setw(20) << setprecision(10) << z(i);
-      ofile << setw(20) << setprecision(10) << kin_energy(i);
-      ofile << setw(20) << setprecision(10) << pot_energy(i);
-      ofile << setw(20) << setprecision(10) << t(i) << endl;
-    }
-    ofile.close();
-    cout << "File " << FN << " written." << endl;
-  }
-*/
