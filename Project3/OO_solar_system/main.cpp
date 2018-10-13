@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
   */
 
   double T = 3;
-  double dt = 0.00001;
+  double dt = 0.01;
   double N = T/dt + 1;
 
   vector<planet> planets_list;
@@ -38,9 +38,18 @@ int main(int argc, char* argv[])
   arma::cube positional_tensor = zeros<cube>(3,N,number_of_planets);
   VelVerlet_Solarsystem.velocity_verlet_solve(positional_tensor);
 
-  arma::vec time_vec = linspace<vec>(0,T,N);
-  write_new_file(positional_tensor, time_vec, planets_list);
-  cout << "Files written." << endl;
+  for (int j=0; j<number_of_planets; j++)
+  {
+    cout << planets_list[j].name << " mass: " << planets_list[j].mass << endl;
+  }
+  for (int j=1; j<number_of_planets; j++)
+  {
+    cout << planets_list[j].name << " distance from sun in AU: " <<  planets_list[j].distance(planets_list[0]) << endl;
+  }
+
+  //arma::vec time_vec = linspace<vec>(0,T,N);
+  //write_new_file(positional_tensor, time_vec, planets_list);
+  //cout << "Files written." << endl;
 
   return 0;
 }

@@ -1,5 +1,4 @@
 #include "planet.h"
-#include <cmath>
 
 planet::planet(){}
 planet::planet(double Mass, double X, double Y, double Z, double VX, double VY, double VZ)

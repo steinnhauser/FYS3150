@@ -3,6 +3,7 @@
 #include <armadillo>
 #include <math.h> // for M_PI
 #include <string>
+#include <cmath>
 
 using namespace std;
 

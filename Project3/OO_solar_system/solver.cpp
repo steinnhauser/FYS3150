@@ -20,7 +20,7 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
     positional_tensor(1, 0, j) = planets_list[j].y;
     positional_tensor(2, 0, j) = planets_list[j].z;
   }
-  cout << N << endl;
+
   for (int t=1; t<N; t++) {
     /*
     matrices acceleration_matrix_old, acceleration_matrix_new
@@ -68,7 +68,7 @@ void solver::find_acc_for_all_planets(mat& acceleration_matrix) {
   // find acceleration contribution from all other planets
   for (int p=0; p<number_of_planets; p++) {
     for (int op=0; op<number_of_planets; op++){
-      // avoid finding acceleration contribution from current planet itself
+      // avoid finding acceleration contribution from current planet
       if (op != p) {
         double r = planets_list[p].distance(planets_list[op]);
         double acc = planets_list[p].acceleration(r, planets_list[op])/r; // total acceleration/r
