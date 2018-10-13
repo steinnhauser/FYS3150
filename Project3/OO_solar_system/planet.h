@@ -28,6 +28,8 @@ public:
   // functions
   double distance(const planet& otherplanet);
   double acceleration(double r, const planet& otherplanet);
+  double potential_energy(double r, const planet& otherplanet); //Only calculating the potential in relation to the Sun.
+  double kinetic_energy();
 
   void setName(string Name);
 

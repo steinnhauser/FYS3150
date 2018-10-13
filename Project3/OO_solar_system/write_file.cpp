@@ -14,7 +14,8 @@ void write_new_file(cube positions, vec time_vec, vector<planet> planets_list)
     // write name of planet
     string title = planets_list[j].name;
 
-    ofile << title << endl;
+
+    ofile << title << " , Mass in solar masses: " << planets_list[j].mass << endl;
     ofile << setw(20) << "x: " << setw(20) << "y: " << setw(20) << "z: ";
     ofile << setw(20) << "t: " << endl;
 

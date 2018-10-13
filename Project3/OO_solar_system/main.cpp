@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
   1 unit of mass = 1.99*10^30 kg = 1 mass_sun
   */
 
-  double T = 40;
+  double T = 10;
   double dt = 0.0001;
   double N = T/dt + 1;
 
@@ -32,11 +32,24 @@ int main(int argc, char* argv[])
   int number_of_planets = planets_list.size();
   cout << "N = " << N << endl;
 
+
+  for (int j=1; j<number_of_planets; j++){
+    double Etot = planets_list[j].potential_energy(planets_list[j].distance(planets_list[0]), planets_list[0]) + planets_list[j].kinetic_energy();
+    cout << planets_list[j].name << "'s initial energy: " << Etot << endl;
+  }
+
   solver VelVerlet_Solarsystem;
   VelVerlet_Solarsystem = solver(dt, T, planets_list);
-
+fuck it up
   arma::cube positional_tensor = zeros<cube>(3,N,number_of_planets);
   VelVerlet_Solarsystem.velocity_verlet_solve(positional_tensor);
+
+  cout << endl;
+  for (int j=1; j<number_of_planets; j++){
+    double Etot = planets_list[j].potential_energy(planets_list[j].distance(planets_list[0]), planets_list[0]) + planets_list[j].kinetic_energy();
+    cout << planets_list[j].name << "'s final energy: " << Etot << endl;
+  }
+
 
   /*
   for (int j=0; j<number_of_planets; j++)

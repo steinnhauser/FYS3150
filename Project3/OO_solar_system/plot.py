@@ -45,7 +45,7 @@ def animate_3D(data):
     N = len(data[0][0])
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    limit = [-40, 40]
+    limit = [-2, 2]
     ax.set_xlim3d(limit)
     ax.set_ylim3d(limit)
     ax.set_zlim3d(limit)
