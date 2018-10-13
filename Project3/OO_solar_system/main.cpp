@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
   */
 
   double T = 30;
-  double dt = 0.001;
+  double dt = 0.0001;
   double N = T/dt + 1;
 
   vector<planet> planets_list;

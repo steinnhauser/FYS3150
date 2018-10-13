@@ -14,6 +14,7 @@ def readfile(file_number):
     xl = []; yl = []; zl = []; tl = []
     with open(filename, 'r') as infile:
         planet = infile.readline().split()[0]
+        print(planet)
         infile.readline();
         for line in infile:
             xval, yval, zval, tval = line.split()
@@ -57,7 +58,7 @@ def animate_3D(data):
         for line, data in zip(lines, dataLines):
             line.set_data(data[0:2, :num])
             line.set_3d_properties(data[2, :num])
-            #line.set_marker("o")
+            line.set_marker("o")
         return lines
 
     lines = [ax.plot(dat[0, 0:1], dat[1, 0:1], dat[2, 0:1])[0] for dat in data]
