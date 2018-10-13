@@ -17,9 +17,9 @@ vector<planet> init_planet_list(string filename) {
       double mass, x, y, z, vx, vy, vz;
       file >> name >> mass >> x >> y >> z >> vx >> vy >> vz;
       mass *= mass_convertion;
-      x *= vel_convertion;
-      y *= vel_convertion;
-      z *= vel_convertion;
+      vx *= vel_convertion;
+      vy *= vel_convertion;
+      vz *= vel_convertion;
       planet planetName;
       planetName = planet(mass, x, y, z, vx, vy, vz);
       planetName.setName(name);

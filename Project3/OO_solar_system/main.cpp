@@ -19,8 +19,8 @@ int main(int argc, char* argv[])
   1 unit of mass = 1.99*10^30 kg = 1 mass_sun
   */
 
-  double T = 30;
-  double dt = 0.0001;
+  double T = 3;
+  double dt = 0.00001;
   double N = T/dt + 1;
 
   vector<planet> planets_list;
