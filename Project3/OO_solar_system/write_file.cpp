@@ -4,7 +4,7 @@ void write_new_file(cube positions, vec time_vec, vector<planet> planets_list)
 {
   // assuming matrix with the form positions(3, N, j);
   int number_of_planets = planets_list.size();
-  int N = time_vec.n_elem/100.0;
+  int N = time_vec.n_elem;
   for (int j=0; j<number_of_planets; j++) {
     string FN = "./data/planet";
     ofstream ofile;
@@ -18,7 +18,7 @@ void write_new_file(cube positions, vec time_vec, vector<planet> planets_list)
     ofile << setw(20) << "x: " << setw(20) << "y: " << setw(20) << "z: ";
     ofile << setw(20) << "t: " << endl;
 
-    for (int t=0; t<N; t+=100){
+    for (int t=0; t<N; t+=1000){
       ofile << setw(20) << setprecision(10) << positions(0, t, j);
       ofile << setw(20) << setprecision(10) << positions(1, t, j);
       ofile << setw(20) << setprecision(10) << positions(2, t, j);
