@@ -20,9 +20,15 @@ double planet::distance(const planet& otherplanet)
   return sqrt(xdiff*xdiff + ydiff*ydiff + zdiff*zdiff);
 }
 
-double planet::acceleration(double r, const planet& otherplanet)
+vec planet::acceleration(double r, const planet& otherplanet)
 {
-  return - gravity_factor * otherplanet.mass / (r*r);
+  double G = - gravity_factor * otherplanet.mass / (r*r*r);
+  vec acc = zeros<vec>(3);
+  // treat other planet as origin, to find x, y and z component: i.e. (x/r * G)
+  acc[0] = (x - otherplanet.x)*G;
+  acc[1] = (y - otherplanet.y)*G;
+  acc[2] = (z - otherplanet.z)*G;
+  return acc;
 }
 
 double planet::potential_energy(double r, const planet& otherplanet)

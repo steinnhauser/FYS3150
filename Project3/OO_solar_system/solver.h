@@ -2,6 +2,7 @@
 #define SOLVER_H
 #include <armadillo>
 #include <vector>
+#include <cmath>
 #include "planet.h"
 
 using namespace arma;
@@ -23,7 +24,7 @@ public:
 
   // functions
   void velocity_verlet_solve(cube& positional_tensor);
-  void find_acc_for_all_planets(mat& acceleration_matrix, cube& positional_tensor, int t);
+  void find_acc_for_all_planets(mat& acceleration_matrix);
 };
 
 #endif // SOLVER_H

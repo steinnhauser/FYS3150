@@ -6,6 +6,7 @@
 #include <cmath>
 
 using namespace std;
+using namespace arma;
 
 class planet
 {
@@ -27,7 +28,7 @@ public:
 
   // functions
   double distance(const planet& otherplanet);
-  double acceleration(double r, const planet& otherplanet);
+  vec acceleration(double r, const planet& otherplanet); // acceleration in x,y,z direction
   double potential_energy(double r, const planet& otherplanet); //Only calculating the potential in relation to the Sun.
   double kinetic_energy();
 

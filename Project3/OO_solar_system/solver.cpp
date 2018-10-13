@@ -29,7 +29,7 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
     */
     mat acceleration_matrix_old = zeros<mat>(3,number_of_planets); // store a_t-1
     mat acceleration_matrix_new = zeros<mat>(3,number_of_planets); // store a_t
-    find_acc_for_all_planets(acceleration_matrix_old, positional_tensor, t); // fill a_t-1 matrix
+    find_acc_for_all_planets(acceleration_matrix_old); // fill a_t-1 matrix
 
     for (int j=0; j<number_of_planets; j++)
     {
@@ -40,7 +40,7 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
     }
 
     // find acceleration components at step t
-    find_acc_for_all_planets(acceleration_matrix_new, positional_tensor, t+1);
+    find_acc_for_all_planets(acceleration_matrix_new);
 
     for (int j=0; j<number_of_planets; j++)
     {
@@ -57,20 +57,20 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
   }
 }
 
-void solver::find_acc_for_all_planets(mat& acceleration_matrix, cube& positional_tensor, int t) {
+void solver::find_acc_for_all_planets(mat& acceleration_matrix) {
   // p is index for current planet and op is index for other planet
   // find acceleration contribution from all other planets
-  double r, acc;
+  double r;
+  vec acc;
   for (int p=0; p<number_of_planets; p++) {
     for (int op=0; op<number_of_planets; op++){
       // avoid finding acceleration contribution from current planet
       if (op != p) {
         r = planets_list[p].distance(planets_list[op]);
-        acc = planets_list[p].acceleration(r, planets_list[op])/r; // total acceleration/r
-        // each acceleration component: i.e -x/r * total acceleration
-        acceleration_matrix(0, p) += acc * positional_tensor(0, t, p);
-        acceleration_matrix(1, p) += acc * positional_tensor(1, t, p);
-        acceleration_matrix(2, p) += acc * positional_tensor(2, t, p);
+        acc = planets_list[p].acceleration(r, planets_list[op]); // acceleration vector
+        acceleration_matrix(0, p) += acc[0];
+        acceleration_matrix(1, p) += acc[1];
+        acceleration_matrix(2, p) += acc[2];
       }
     }
   }
