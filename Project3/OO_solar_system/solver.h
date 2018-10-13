@@ -23,7 +23,7 @@ public:
 
   // functions
   void velocity_verlet_solve(cube& positional_tensor);
-  void find_acc_for_all_planets(mat& acceleration_matrix);
+  void find_acc_for_all_planets(mat& acceleration_matrix, cube& positional_tensor, int t);
 };
 
 #endif // SOLVER_H
