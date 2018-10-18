@@ -19,7 +19,7 @@ void write_new_file(cube positions, vec time_vec, vector<planet> planets_list)
     ofile << setw(20) << "x: " << setw(20) << "y: " << setw(20) << "z: ";
     ofile << setw(20) << "t: " << endl;
 
-    for (int t=0; t<N; t+=10){
+    for (int t=0; t<N; t+=500){
       ofile << setw(20) << setprecision(10) << positions(0, t, j);
       ofile << setw(20) << setprecision(10) << positions(1, t, j);
       ofile << setw(20) << setprecision(10) << positions(2, t, j);

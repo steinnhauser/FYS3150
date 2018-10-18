@@ -19,10 +19,11 @@ int main(int argc, char* argv[])
   1 unit of velocity = 1 AU/yr
   1 unit of mass = 1.99*10^30 kg = 1 mass_sun
   */
-
-  double T = 248; // one Pluto year
-  double dt = 0.0001; // unstable results when dt > 0.001
+  double mercuryyear = 0.240 846;
+  double T = 100*mercuryyear; // 248 = one Pluto year
+  double dt = 0.00001; // unstable results when dt > 0.001
   double N = T/dt + 1;
+
 
   vector<planet> planets_list;
   string filename;
@@ -46,6 +47,7 @@ int main(int argc, char* argv[])
   cout << "Simulating Solar System..." << endl;
   // solve: most time consuming part of program
   VelVerlet_Solarsystem.velocity_verlet_solve(positional_tensor);
+  // study of Mercury:
   /*
   cout << endl;
   for (int j=1; j<number_of_planets; j++){
