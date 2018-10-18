@@ -5,5 +5,5 @@ values from: nasa.gov at time 2458395.500000000 = A.D. 2018-Oct-04 00:00:00.0000
 perspective: origo at mass center
 
 Name     mass     x                       y                       z                       vx                      vy                      vz
-Sun      1988500  0                       0                       0                       0                       0                       0
-Mercury  0.3302   0.3075                  0                       0                       0                       0.03405886379192334     0
+Sun      1988500  -5.100928540668903e-08  0                       0                       0                       0                       0
+Mercury  0.3302   0.3074989489907146      0                       0                       0                       12.44                   0

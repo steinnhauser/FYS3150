@@ -39,6 +39,14 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
       positional_tensor(2, t+1, j) = planets_list[j].z + dt*planets_list[j].vz + factor2*acceleration_matrix_old(2, j);
     }
 
+    for (int j=0; j<number_of_planets; j++)
+    {
+      // update positions
+      planets_list[j].x = positional_tensor(0, t+1, j);
+      planets_list[j].y = positional_tensor(1, t+1, j);
+      planets_list[j].z = positional_tensor(2, t+1, j);
+    }
+
     // find acceleration components at step t
     find_acc_for_all_planets(acceleration_matrix_new);
 
@@ -48,11 +56,6 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
       planets_list[j].vx += factor3*(acceleration_matrix_new(0, j) + acceleration_matrix_old(0, j));
       planets_list[j].vy += factor3*(acceleration_matrix_new(1, j) + acceleration_matrix_old(1, j));
       planets_list[j].vz += factor3*(acceleration_matrix_new(2, j) + acceleration_matrix_old(2, j));
-
-      // update positions
-      planets_list[j].x = positional_tensor(0, t+1, j);
-      planets_list[j].y = positional_tensor(1, t+1, j);
-      planets_list[j].z = positional_tensor(2, t+1, j);
     }
   }
 }
