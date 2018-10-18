@@ -12,19 +12,15 @@ using namespace arma;
 class Integrator
 {
 public:
-  // initial values
-  double dt;
-  double totaltime;
-  int N;
-  body p1;
-  body p2;
+  Body p1;
+  Body p2;
 
   // constructor
   Integrator();
-  Integrator(double DT, double TotalTime, body P1, body P2);
+  Integrator(Body P1, Body P2);
 
   // functions
-  cube solve_motion(void method);
+  cube solve_motion(double dt, double totaltime, void (*method)(double, Body, Body));
 };
 
 #endif // INTEGRATOR_H

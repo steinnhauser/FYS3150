@@ -19,9 +19,9 @@ int main(int argc, char* argv[])
   sun = Body(3e-6, 1, 0, 0, 0, 2*M_PI, 0);
 
   Integrator integrator_instance;
-  integrator_instance = Integrator(dt,T,earth,sun);
-  cube euler_pos = integrator_instance.solve_motion(euler_step);
-  cube verlet_pos = integrator_instance.solve_motion(verlet_step);
+  integrator_instance = Integrator(earth,sun);
+  cube euler_pos = integrator_instance.solve_motion(dt,T,euler_step);
+  cube verlet_pos = integrator_instance.solve_motion(dt,T,verlet_step);
 
   return 0;
 }

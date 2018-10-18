@@ -19,16 +19,14 @@ public:
   double vy;
   double vz;
   double mass;
-  double acc_factor = 4*M_PI*M_PI
-  string name;
+  double acc_factor = 4*M_PI*M_PI;
 
   // constructor
-  body();
-  body(double Mass, double X, double Y, double Z, double VX, double VY, double VZ);
+  Body();
+  Body(double Mass, double X, double Y, double Z, double VX, double VY, double VZ);
 
   // functions
-  double distance(const body& otherbody);
-  void setName(string Name);
+  double distance(const Body& otherbody);
 };
 
 #endif // BODY_H

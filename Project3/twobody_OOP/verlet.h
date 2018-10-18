@@ -5,6 +5,6 @@
 #include "body.h"
 using namespace arma;
 
-void verlet_step(body& p1, body& p2, double dt);
+void verlet_step(Body& p1, Body& p2, double dt);
 
 #endif // VERLET_H
