@@ -1,4 +1,4 @@
-F #include <iostream>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <armadillo>
@@ -24,8 +24,8 @@ int main(int argc, char* argv[])
   1 unit of mass = 1.99*10^30 kg = 1 mass_sun
   */
   double mercuryyear = 0.240846;
-  double T = 500*mercuryyear; // 248 = one Pluto year
-  double dt = 0.000001; // unstable results when dt > 0.001
+  double T = 1000*mercuryyear; // 248 = one Pluto year
+  double dt = 0.00001; // for full solar system use: <= 0.001, mercury precession: use 0.000001
   int N = T/dt + 1;
 
   vector<planet> planets_list;
@@ -72,23 +72,36 @@ void mercur_perihelion_precession(cube positions, int N, double T, double dt)
   x = positions(0,1,1) - positions(0,1,0);
   y = positions(1,1,1) - positions(1,1,0);
   r = sqrt(x*x + y*y);
+  vector<double> times;
+  vector<double> angles;
 
-  for (int i=1; i<N-1; i++) {
+  for (int i=1; i<N-1; i++)
+  {
     xn = positions(0,i,1) - positions(0,i,0);
     yn = positions(1,i,1) - positions(1,i,0);
     rn = sqrt(xn*xn + yn*yn);
-
+    // if test passes, i-1 was a perihelion point
     if (r < rn && r < rp)
     {
       x = positions(0,i-1,1);
       y = positions(1,i-1,1);
-      angle = atan(y/x)*180*3600/M_PI;
-      t = time_vec(i);
-      cout << "perihelion, time: " << t << " angle: " << angle << endl;
+      angles.push_back(atan(y/x)*180*3600/M_PI);
+      times.push_back(time_vec(i));
     }
     x=xn;y=yn;rp=r;r=rn;
   }
 
-  double arc_sec_century = angle*t/100; // arc sec per century
-  cout << arc_sec_century << "''/century" << endl;
+  // Linear regression for angle/time:
+  double n = angles.size();
+  double avg_time = accumulate(times.begin(), times.end(), 0.0) / n;
+  double avg_angle = accumulate(angles.begin(), angles.end(), 0.0) / n;
+  double top = 0.0;
+  double bottom = 0.0;
+  for(int i=0; i<n; i++)
+  {
+    top += (times[i] - avg_time) * (angles[i] - avg_angle);
+    bottom += (times[i] - avg_time) * (times[i] - avg_time);
+  }
+  double slope = top/bottom*100; // arc sec per century
+  cout << "perihelion precession: " << slope << "''/century" << endl;
 }

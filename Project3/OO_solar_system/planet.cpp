@@ -22,18 +22,19 @@ double planet::distance(const planet& otherplanet)
 
 vec planet::acceleration(double r, const planet& otherplanet)
 {
+  double GR_factor = 1;
   // GENERAL RELATIVITY extension
   // cross product squared:
-
-  double c1 = otherplanet.y*otherplanet.vz - otherplanet.z*otherplanet.vy;
-  double c2 = otherplanet.z*otherplanet.vx - otherplanet.x*otherplanet.vz;
-  double c3 = otherplanet.x*otherplanet.vy - otherplanet.y*otherplanet.vx;
+  /*
+  double c1 = (y - otherplanet.y)*(vz - otherplanet.vz) - (z - otherplanet.z)*(vy - otherplanet.vy);
+  double c2 = (z - otherplanet.z)*(vx - otherplanet.vx) - (x - otherplanet.x)*(vz - otherplanet.vz);
+  double c3 = (x - otherplanet.x)*(vy - otherplanet.vy) - (y - otherplanet.y)*(vx - otherplanet.vx);
   double ll = c1*c1 + c2*c2 + c3*c3;
-  double general_relativity = 1 + ll/(cc*r*r);
-
+  GR_factor += 3*ll/(cc*r*r);
+  */
   // End of general relativity extension
 
-  double G = - general_relativity * gravity_factor * otherplanet.mass / (r*r*r);
+  double G = - GR_factor * gravity_factor * otherplanet.mass / (r*r*r);
   vec acc = zeros<vec>(3);
   // treat other planet as origin, to find x, y and z component: i.e. (x/r * G)
   acc[0] = (x - otherplanet.x)*G;
