@@ -19,7 +19,7 @@ public:
   double vy;
   double vz;
   double mass;
-  double gravity_factor = 4*M_PI*M_PI;
+  double acc_factor = 4*M_PI*M_PI
   string name;
 
   // constructor
@@ -28,14 +28,7 @@ public:
 
   // functions
   double distance(const planet& otherplanet);
-  vec acceleration(double r, const planet& otherplanet); // acceleration in x,y,z direction
-  double potential_energy(double r, const planet& otherplanet); //Only calculating the potential in relation to the Sun.
-  double kinetic_energy();
-
   void setName(string Name);
-
-  // kin_energy();
-  // pot_energy();
 };
 
 #endif // PLANET_H
