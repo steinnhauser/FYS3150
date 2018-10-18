@@ -1,6 +1,6 @@
 #include "verlet_method.h"
 
-void verlet_method_step(planet& p1, planet& p2, double dt)
+void verlet_step(body& p1, body& p2, double dt)
 {
   double r = p1.distance(p2);
   double rrr = r*r*r;

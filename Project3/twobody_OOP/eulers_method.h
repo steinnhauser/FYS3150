@@ -1,9 +1,10 @@
-#ifndef EULERS_METHOD_H
-#define EULERS_METHOD_H
+#ifndef EULER_H
+#define EULER_H
 #include <armadillo>
 #include <math.h>
+#include "body.h"
 using namespace arma;
 
-void eulers_method_step(planet& p1, planet& p2, double dt);
+void euler_step(body& p1, body& p2, double dt);
 
-#endif // EULERS_METHOD_H
+#endif // EULER_H

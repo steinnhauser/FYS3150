@@ -1,16 +1,16 @@
-#include "solver.h"
+#include "integrator.h"
 
-solver::solver(){}
-solver::solver(double DT, double TotalTime, std::vector<planet> Planets_List)
+integrator::integrator(){}
+integrator::integrator(double DT, double TotalTime, body P1, body P2)
 {
   dt = DT;
   totaltime = TotalTime;
-  planet p1 = P1;
-  planet p2 = P2;
+  body p1 = P1;
+  body p2 = P2;
   N = totaltime/dt + 1;
 }
 
-cube solver::solve_motion(void function)
+cube integrator::solve_motion(void function)
 {
   cube positional_tensor;
   positional_tensor = zeros<cube>(3,N,2);
@@ -23,5 +23,5 @@ cube solver::solve_motion(void function)
     positional_tensor[1,t,1] = p2.y;
     positional_tensor[2,t,1] = p2.z;
   }
-  return positional_tensor
+  return positional_tensor;
 }

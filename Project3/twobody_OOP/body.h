@@ -1,5 +1,5 @@
-#ifndef PLANET_H
-#define PLANET_H
+#ifndef BODY_H
+#define BODY_H
 #include <armadillo>
 #include <math.h> // for M_PI
 #include <string>
@@ -8,7 +8,7 @@
 using namespace std;
 using namespace arma;
 
-class planet
+class Body
 {
 public:
   // initial values
@@ -23,12 +23,12 @@ public:
   string name;
 
   // constructor
-  planet();
-  planet(double Mass, double X, double Y, double Z, double VX, double VY, double VZ);
+  body();
+  body(double Mass, double X, double Y, double Z, double VX, double VY, double VZ);
 
   // functions
-  double distance(const planet& otherplanet);
+  double distance(const body& otherbody);
   void setName(string Name);
 };
 
-#endif // PLANET_H
+#endif // BODY_H

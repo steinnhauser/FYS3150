@@ -1,6 +1,6 @@
 #include "eulers_method.h"
 
-void eulers_method_step(planet& p1, planet& p2, double dt)
+void euler_step(body& p1, body& p2, double dt)
 {
   double r = p1.distance(p2);
   double rrr = r*r*r;

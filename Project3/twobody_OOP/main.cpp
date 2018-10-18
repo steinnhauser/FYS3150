@@ -1,11 +1,10 @@
 #include <iostream>
 #include <string>
 #include <math.h>
-#include "planet.h"
-#include "solver.h"
-#include "eulers_method.h"
-#include "verlet_method.h"
-#include "write_vectors_function.h"
+#include "body.h"
+#include "integrator.h"
+#include "euler.h"
+#include "verlet.h"
 
 using namespace arma;
 
@@ -15,14 +14,14 @@ int main(int argc, char* argv[])
   double dt = 0.001;
   int N = T/dt + 1;
   // initial conditions in AU and AU/yr
-  planet earth; planet sun;
-  earth = planet(1, 0, 0, 0, 0, 0, 0);
-  sun = planet(3e-6, 1, 0, 0, 0, 2*M_PI, 0);
+  Body earth; Body sun;
+  earth = Body(1, 0, 0, 0, 0, 0, 0);
+  sun = Body(3e-6, 1, 0, 0, 0, 2*M_PI, 0);
 
-  solver solver_instance;
-  solver_instance = solver(dt,T,earth,sun);
-  cube euler_pos = solver_instance.solve_motion();
-  cube verlet_pos = solver_instance.solve_motion();
+  Integrator integrator_instance;
+  integrator_instance = Integrator(dt,T,earth,sun);
+  cube euler_pos = integrator_instance.solve_motion(euler_step);
+  cube verlet_pos = integrator_instance.solve_motion(verlet_step);
 
   return 0;
 }
