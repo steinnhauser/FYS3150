@@ -29,9 +29,12 @@ vec planet::acceleration(double r, const planet& otherplanet)
   double c1 = (y - otherplanet.y)*(vz - otherplanet.vz) - (z - otherplanet.z)*(vy - otherplanet.vy);
   double c2 = (z - otherplanet.z)*(vx - otherplanet.vx) - (x - otherplanet.x)*(vz - otherplanet.vz);
   double c3 = (x - otherplanet.x)*(vy - otherplanet.vy) - (y - otherplanet.y)*(vx - otherplanet.vx);
-  double ll = c1*c1 + c2*c2 + c3*c3;
-  GR_factor += 3*ll/(cc*r*r);
   */
+  double c1 = y*vz - z*vy;
+  double c2 = z*vx - x*vz;
+  double c3 = x*vy - y*vx;
+  double ll = c1*c1 + c2*c2 + c3*c3;
+  //GR_factor += 3*ll/(cc*r*r);
   // End of general relativity extension
 
   double G = - GR_factor * gravity_factor * otherplanet.mass / (r*r*r);

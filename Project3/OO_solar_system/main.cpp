@@ -24,8 +24,8 @@ int main(int argc, char* argv[])
   1 unit of mass = 1.99*10^30 kg = 1 mass_sun
   */
   double mercuryyear = 0.240846;
-  double T = 1000*mercuryyear; // 248 = one Pluto year
-  double dt = 0.00001; // for full solar system use: <= 0.001, mercury precession: use 0.000001
+  double T = 100*mercuryyear; // 248 = one Pluto year
+  double dt = 0.000001; // for full solar system use: <= 0.001, mercury precession: use 0.000001
   int N = T/dt + 1;
 
   vector<planet> planets_list;
@@ -101,6 +101,7 @@ void mercur_perihelion_precession(cube positions, int N, double T, double dt)
   {
     top += (times[i] - avg_time) * (angles[i] - avg_angle);
     bottom += (times[i] - avg_time) * (times[i] - avg_time);
+    cout << angles[i] << endl;
   }
   double slope = top/bottom*100; // arc sec per century
   cout << "perihelion precession: " << slope << "''/century" << endl;
