@@ -17,10 +17,11 @@ public:
   std::vector<planet> planets_list;
   int number_of_planets;
   cube positional_tensor;
+  int start;
 
   // constructor
   solver();
-  solver(double DT, double TotalTime, std::vector<planet> Planets_List);
+  solver(double DT, double TotalTime, std::vector<planet> Planets_List, bool sunfixed);
 
   // functions
   void velocity_verlet_solve(cube& positional_tensor);

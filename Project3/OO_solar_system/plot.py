@@ -4,7 +4,7 @@ import mpl_toolkits.mplot3d.axes3d as p3
 import matplotlib.animation as ani
 import numpy as np
 
-number_of_planets = 3
+number_of_planets = 10
 
 def readfile(file_number):
     """read data from one data file,
@@ -34,18 +34,40 @@ def planetdata(number_of_planets):
     """generate an array data, set up
     correctly for a 3d animation"""
     data = []
+    names = []
     for i in range(number_of_planets):
         planet, x, y, z, t = readfile(i)
         data_one_planet = [x, y, z]
         data.append(data_one_planet)
-    return np.asarray(data)
+        names.append(planet)
+    return np.asarray(data), names
 
 
-def animate_3D(data):
+def plot_3D(data,names):
+    """plot a 3D plot of the number of planets
+    specify limit (in AU) in the limit list"""
+    fig = plt.figure()
+    ax = p3.Axes3D(fig)
+    limit = [-40, 40]
+    ax.set_xlim3d(limit)
+    ax.set_ylim3d(limit)
+    ax.set_zlim3d(limit)
+    ax.set_xlabel('X [AU]')
+    ax.set_ylabel('Y [AU]')
+    ax.set_zlabel('Z [AU]')
+    for i in range(number_of_planets):
+        x,y,z = data[i]
+        ax.plot(x,y,z, label=names[i])
+    plt.legend()
+    plt.show()
+
+
+def animate_3D(data,names):
+    """3D animation of all planets"""
     N = len(data[0][0])
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    limit = [-0.5, 0.5]
+    limit = [-36, 36]
     ax.set_xlim3d(limit)
     ax.set_ylim3d(limit)
     ax.set_zlim3d(limit)
@@ -63,10 +85,12 @@ def animate_3D(data):
     lines = [ax.plot(dat[0, 0:1], dat[1, 0:1], dat[2, 0:1])[0] for dat in data]
     line_ani = ani.FuncAnimation(fig, update_lines, N, fargs=(data, lines),
                                  interval=1, blit=False)
+
     plt.show()
 
 
 def lin(x,y,deg=1):
+    """Linear fit to data points with uncertainty"""
     p = np.polyfit(x,y,deg)
     yline = np.polyval(p,x)
     n = len(x)
@@ -81,6 +105,10 @@ def lin(x,y,deg=1):
 
 
 def mercury(gr,filename):
+    """Study of Mercury's perihelion precession.
+    Read's data of perihelion events with corresponding
+    time and angle. Returns angular velocity and
+    uncertainty obtained from lin()"""
     times = []; angles = []
     with open(filename, 'r') as infile:
         for line in infile:
@@ -101,15 +129,15 @@ def mercury(gr,filename):
 
 
 def main():
-    """
     m1,dm1 = mercury('pure: ','./data/mercury.txt')
     m2,dm2 = mercury('GR:   ','./data/mercury_GR.txt')
     diff = float(m2-m1)
-    u = diff*np.sqrt((dm1/m1)**2 + (dm2/m2)**2)
+    u = np.sqrt(dm1**2 + dm2**2)
     plt.title(r"Difference in slopes: (%3.1f $\pm$ %1.1f) arc sec/century" % (diff,u))
-    plt.savefig("./data/perihel.pdf")"""
-    animate_3D(planetdata(number_of_planets))
-
+    plt.show()
+    #data,names = planetdata(number_of_planets)
+    #animate_3D(data,names)
+    #plot_3D(data,names)
 
 if __name__=='__main__':
     main()

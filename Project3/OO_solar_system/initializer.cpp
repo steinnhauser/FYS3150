@@ -5,7 +5,7 @@ vector<planet> init_planet_list(string filename) {
   string line;
   vector<planet> planets_list;
   const double mass_convertion = 1.0/(1.99e6); // from 10^24 kg to sun masses
-  const double vel_convertion = 1; // 365.25;
+  const double vel_convertion = 1;//365.25;
   ifstream file(filename);
   if (file.is_open()) {
     // first 7 lines

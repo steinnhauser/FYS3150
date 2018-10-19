@@ -33,7 +33,6 @@ vec planet::acceleration(double r, const planet& otherplanet)
   GR_factor += 3*ll/(cc*r*r);
   */
   // End of general relativity extension
-
   double G = - GR_factor * gravity_factor * otherplanet.mass / (r*r*r);
   vec acc = zeros<vec>(3);
   // treat other planet as origin, to find x, y and z component: i.e. (x/r * G)
