@@ -8,7 +8,7 @@ using namespace arma;
 using namespace std;
 
 void eulers_method_calculate(double x0, double y0, double z0, double xv0, double yv0, double zv0, int N, double dt,
-  vec& x_pos, vec& y_pos, vec& z_pos, vec& kin_energy, vec& pot_energy)
+  vec& x_pos, vec& y_pos, vec& z_pos, vec& kin_energy, vec& pot_energy, vec& ang_mom)
 {
   const double G_MassSun = 4*M_PI*M_PI; // [AU^3/yr^2]
   vec x_vel = zeros<vec>(N);
@@ -22,7 +22,7 @@ void eulers_method_calculate(double x0, double y0, double z0, double xv0, double
   z_vel(0) = zv0;
 
   double x_acc, y_acc, z_acc; // accelerations
-  double r_squared, factor; // will be updated each iteration for less FLOPS
+  double r_squared, factor, c1, c2, c3; // will be updated each iteration for less FLOPS
 
   for (int i=0; i<(N-1); i++) {
     r_squared = x_pos(i)*x_pos(i) + y_pos(i)*y_pos(i) + z_pos(i)*z_pos(i);
@@ -39,9 +39,17 @@ void eulers_method_calculate(double x0, double y0, double z0, double xv0, double
 
     kin_energy(i) = 0.5*(x_vel(i)*x_vel(i) + y_vel(i)*y_vel(i) + z_vel(i)*z_vel(i)); // except mass
     pot_energy(i) = - G_MassSun/(sqrt(r_squared)); // except mass
+    c1 = y_pos(i)*z_vel(i) - z_pos(i)*y_vel(i);
+    c2 = z_pos(i)*x_vel(i) - x_pos(i)*z_vel(i);
+    c3 = x_pos(i)*y_vel(i) - y_pos(i)*x_vel(i);
+    ang_mom(i) = sqrt(c1*c1 + c2*c2 + c3*c3); // except mass
   }
-  // last value for energies:
+  // last value for energies and angular momentum:
   kin_energy(N-1) = 0.5*(x_vel(N-1)*x_vel(N-1) + y_vel(N-1)*y_vel(N-1) + z_vel(N-1)*z_vel(N-1)); // except mass
   pot_energy(N-1) = - G_MassSun/(sqrt(r_squared));
+  c1 = y_pos(N-1)*z_vel(N-1) - z_pos(N-1)*y_vel(N-1);
+  c2 = z_pos(N-1)*x_vel(N-1) - x_pos(N-1)*z_vel(N-1);
+  c3 = x_pos(N-1)*y_vel(N-1) - y_pos(N-1)*x_vel(N-1);
+  ang_mom(N-1) = sqrt(c1*c1 + c2*c2 + c3*c3);
   cout << "Eulers method calculation complete." << endl;
 }

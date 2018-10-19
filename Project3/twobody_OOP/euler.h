@@ -2,6 +2,7 @@
 #define EULER_H
 #include <armadillo>
 #include <math.h>
+#include <iostream>
 #include "body.h"
 using namespace arma;
 

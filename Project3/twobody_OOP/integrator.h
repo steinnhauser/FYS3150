@@ -20,7 +20,8 @@ public:
   Integrator(Body P1, Body P2);
 
   // functions
-  cube solve_motion(double dt, double totaltime, void (*method)(double, Body, Body));
+  cube solve_motion_euler(double dt, double totaltime);
+  cube solve_motion_verlet(double dt, double totaltime);
 };
 
 #endif // INTEGRATOR_H

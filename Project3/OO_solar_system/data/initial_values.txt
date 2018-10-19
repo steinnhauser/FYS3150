@@ -1,9 +1,9 @@
 masses: 10e24 kg
 positions: au
-velocities: au/day
+velocities: au/yr
 values from: nasa.gov at time 2458395.500000000 = A.D. 2018-Oct-04 00:00:00.0000 TDB
 perspective: origo at mass center
 
-Name     mass     x                       y                       z                       vx                      vy                      vz
-Sun      1988500  -5.100928540668903e-08  0                       0                       0                       0                       0
-Mercury  0.3302   0.3074989489907146      0                       0                       0                       12.44                   0
+Name     mass     x                       y  z  vx  vy                      vz
+Sun      1988500  -5.100928540668903e-08  0  0  0   -5.100928540668903e-08  0
+Mercury  0.3302   0.3074989489907146      0  0  0   12.44                   0

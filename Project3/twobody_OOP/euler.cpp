@@ -2,6 +2,7 @@
 
 void euler_step(Body& p1, Body& p2, double dt)
 {
+  cout << p1.x << " " << p2.x << endl;
   double r = p1.distance(p2);
   double rrr = r*r*r;
   double acc_p1 = p2.acc_factor/rrr;

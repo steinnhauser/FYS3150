@@ -3,6 +3,7 @@
 #include <armadillo>
 #include <math.h> // for M_PI
 #include <string>
+#include <iostream>
 #include <cmath>
 
 using namespace std;
@@ -19,7 +20,7 @@ public:
   double vy;
   double vz;
   double mass;
-  double acc_factor = 4*M_PI*M_PI;
+  double acc_factor;
 
   // constructor
   Body();

@@ -1,10 +1,12 @@
-#ifndef Write_Vectors_H
-#define Write_Vectors_H
+#ifndef WRITE_VECTORS_FUNCTION_H
+#define WRITE_VECTORS_FUNCTION_H
 #include <armadillo>
 #include <string>
+#include <iomanip>
+#include <iostream>
 using namespace arma;
 using namespace std;
 
-void write_vectors(vec x, vec y, vec z, vec kin_energy, vec pot_energy, vec t, string fn, string title);
+void write_vectors(vec x, vec y, vec z, vec kin_energy, vec pot_energy, vec ang_mom, vec t, string fn, string title);
 
-#endif
+#endif // WRITE_VECTORS_FUNCTION_H

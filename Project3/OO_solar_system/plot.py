@@ -66,4 +66,49 @@ def animate_3D(data):
     plt.show()
 
 
-animate_3D(planetdata(number_of_planets))
+def lin(x,y,deg=1):
+    p = np.polyfit(x,y,deg)
+    yline = np.polyval(p,x)
+    n = len(x)
+    m = p[0]
+    c = p[1]
+    D = np.sum(x*x) - (np.sum(x))**2/n
+    E = np.sum(x*y) - np.sum(x)*np.sum(y)/n
+    F = np.sum(y*y) - (np.sum(y))**2/n
+    dm = np.sqrt((1/(n - 2))*(D*F - E**2)/D**2)
+    dc = np.sqrt((1/(n - 2))*(D/n + (np.mean(x))**2)*((D*F - E**2)/D**2))
+    return m,dm,c,dc,yline
+
+
+def mercury(gr,filename):
+    times = []; angles = []
+    with open(filename, 'r') as infile:
+        for line in infile:
+            t,a = line.split()
+            times.append(eval(t))
+            angles.append(eval(a))
+        infile.close()
+    times = np.asarray(times)/100
+    angles = np.asarray(angles)
+    m,dm,c,dc,yline = lin(times,angles)
+    plt.plot(times,angles,label=gr + 'recorded perihelion events')
+    plt.plot(times,yline,label=gr + r'slope = %3.1f $\pm$ %1.1f' % (m,dm))
+    plt.ylabel("arc sec")
+    plt.xlabel("100 yr")
+    plt.grid(True)
+    plt.legend()
+    return m,dm
+
+
+def main():
+    m1,dm1 = mercury('pure: ','./data/mercury.txt')
+    m2,dm2 = mercury('GR:   ','./data/mercury_GR.txt')
+    diff = float(m2-m1)
+    u = diff*np.sqrt((dm1/m1)**2 + (dm2/m2)**2)
+    plt.title(r"Difference in slopes: (%3.1f $\pm$ %1.1f) arc sec/century" % (diff,u))
+    plt.savefig("./data/perihel.pdf")
+    animate_3D(planetdata(number_of_planets))
+
+
+if __name__=='__main__':
+    main()
