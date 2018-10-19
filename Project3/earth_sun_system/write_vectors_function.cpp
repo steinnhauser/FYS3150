@@ -21,7 +21,7 @@ void write_vectors(vec x, vec y, vec z, vec kin_energy, vec pot_energy, vec ang_
     ofile << setw(20) << "t: " << endl;
 
     int Length = x.n_elem;
-    for (int i=0; i<Length; i++) {
+    for (int i=0; i<Length; i+=1) {
       ofile << setw(20) << setprecision(10) << x(i);
       ofile << setw(20) << setprecision(10) << y(i);
       ofile << setw(20) << setprecision(10) << z(i);

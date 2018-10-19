@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 #plt.rc("text", usetex=True)
 import numpy as np
 import sys
+plt.rcParams.update({'font.size': 10})
 
 if len(sys.argv)!=2:
     print("Bad usage: Input name of data file as argument.")
@@ -38,25 +39,31 @@ ek = np.asarray(ek)
 ep = np.asarray(ep)
 angm = np.asarray(angm)
 t = np.asarray(t)
-
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.plot(x, y, z, "r,", label="x")
-plt.show()
-
-plt.plot(t, angm, 'r--', label='Angular momentum/mass')
+plt.plot([0],[0],'yo', label="Sun")
+ax.plot(x, y, z, "b,", label="Earth")
+ax.set_xlabel('X [AU]')
+ax.set_ylabel('Y [AU]')
+ax.set_zlabel('Z [AU]')
+plt.legend()
+plt.show()#plt.savefig("./data/" + str(fn) + "pos.pdf")
+"""
+plt.figure()
+plt.plot(t, angm, 'g--', label='Angular momentum/mass')
 plt.xlabel(r'$yr$')
-plt.ylabel(r'$AU^2 yr^{-1} M_{sun}^{-1}$')
+plt.ylabel(r'$\frac{AU^2}{yr \cdot M_{sun}}$')
 plt.grid()
 plt.legend()
-plt.show()
+plt.show()#plt.savefig("./data/" + str(fn) + "ang.pdf")
 
-
+plt.figure()
 plt.plot(t, ek, 'r--', label='kinetic energy/mass')
 plt.plot(t, ep, 'b--', label='potential energy/mass')
 plt.plot(t, ep+ek, 'k-', label='total energy/mass')
 plt.xlabel(r'$yr$')
-plt.ylabel(r'$AU^2 yr^{-2}$')
+plt.ylabel(r'$\frac{AU^2}{yr^{2}|M_{sun}|}$')
 plt.grid()
 plt.legend()
-plt.show()
+plt.show()#plt.savefig("./data/" + str(fn) + "ene.pdf")
+"""
