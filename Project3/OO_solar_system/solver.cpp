@@ -31,7 +31,7 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
     mat acceleration_matrix_new = zeros<mat>(3,number_of_planets); // store a_t
     find_acc_for_all_planets(acceleration_matrix_old); // fill a_t-1 matrix
 
-    for (int j=0; j<number_of_planets; j++)
+    for (int j=0; j<number_of_planets; j++) // start j at 1 for Sun fixed
     {
       // update x with a second degree Taylor polynomial
       positional_tensor(0, t+1, j) = planets_list[j].x + dt*planets_list[j].vx + factor2*acceleration_matrix_old(0, j);

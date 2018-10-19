@@ -4,7 +4,7 @@ import mpl_toolkits.mplot3d.axes3d as p3
 import matplotlib.animation as ani
 import numpy as np
 
-number_of_planets = 2
+number_of_planets = 3
 
 def readfile(file_number):
     """read data from one data file,
@@ -101,12 +101,13 @@ def mercury(gr,filename):
 
 
 def main():
+    """
     m1,dm1 = mercury('pure: ','./data/mercury.txt')
     m2,dm2 = mercury('GR:   ','./data/mercury_GR.txt')
     diff = float(m2-m1)
     u = diff*np.sqrt((dm1/m1)**2 + (dm2/m2)**2)
     plt.title(r"Difference in slopes: (%3.1f $\pm$ %1.1f) arc sec/century" % (diff,u))
-    plt.savefig("./data/perihel.pdf")
+    plt.savefig("./data/perihel.pdf")"""
     animate_3D(planetdata(number_of_planets))
 
 

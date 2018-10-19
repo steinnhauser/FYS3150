@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
   */
   double mercuryyear = 0.240846;
   double T = 100*mercuryyear; // 248 = one Pluto year
-  double dt = 0.000001; // for full solar system use: <= 0.001, mercury precession: use 0.000001
+  double dt = 0.0001; // for full solar system use: <= 0.001, mercury precession: use 0.000001
   int N = T/dt + 1;
 
   vector<planet> planets_list;
