@@ -3,20 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def readfile():
-    filename = "./data/positions.txt"
-    xl = []; yl = [];
-    with open(filename, 'r') as infile:
-        for line in infile:
-            xval, yval = line.split()
-            xl.append(eval(xval))
-            yl.append(eval(yval))
-        infile.close()
-    x = np.asarray(xl)
-    y = np.asarray(yl)
-    plt.plot(x,y)
-
-
 def lin(x,y,deg=1):
     """Linear fit to data points with uncertainty"""
     p = np.polyfit(x,y,deg)
@@ -32,7 +18,7 @@ def lin(x,y,deg=1):
     return m,dm,c,dc,yline
 
 
-def mercury(gr,filename):
+def mercury(filename):
     """Study of Mercury's perihelion precession.
     Read's data of perihelion events with corresponding
     time and angle. Returns angular velocity and
@@ -47,23 +33,18 @@ def mercury(gr,filename):
     times = np.asarray(times)/100
     angles = np.asarray(angles)
     m,dm,c,dc,yline = lin(times,angles)
-    plt.plot(times,angles,label=gr + 'recorded perihelion events')
-    plt.plot(times,yline,label=gr + r'slope = %3.1f $\pm$ %1.1f' % (m,dm))
+    plt.plot(times,angles,'bo',label='recorded perihelion events')
+    plt.plot(times,yline,label=r'slope = %2.2f $\pm$ %1.2f' % (m,dm))
     plt.ylabel("arc sec")
     plt.xlabel("100 yr")
     plt.grid(True)
     plt.legend()
-    return m,dm
+    plt.show()
 
 
 def main():
-    readfile()
-    m1,dm1 = mercury('pure: ','./data/mercury.txt')
-    m2,dm2 = mercury('GR:   ','./data/mercury_GR.txt')
-    diff = float(m2-m1)
-    u = np.sqrt(dm1**2 + dm2**2)
-    plt.title(r"Difference in slopes: (%3.1f $\pm$ %1.1f) arc sec/century" % (diff,u))
-    plt.show()
+    mercury('./data/mercury.txt')
+
 
 if __name__=='__main__':
     main()
