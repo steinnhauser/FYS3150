@@ -33,8 +33,8 @@ def mercury(filename):
     times = np.asarray(times)/100
     angles = np.asarray(angles)
     m,dm,c,dc,yline = lin(times,angles)
-    plt.plot(times,angles,'bo',label='recorded perihelion events')
-    plt.plot(times,yline,label=r'slope = %2.2f $\pm$ %1.2f' % (m,dm))
+    plt.plot(times,angles,'r.',label='recorded perihelion events')
+    plt.plot(times,yline,'b-',label=r'slope = %2.2f $\pm$ %1.2f' % (m,dm))
     plt.ylabel("arc sec")
     plt.xlabel("100 yr")
     plt.grid(True)
@@ -43,7 +43,7 @@ def mercury(filename):
 
 
 def main():
-    mercury('./data/mercury.txt')
+    mercury('./mercury.txt')
 
 
 if __name__=='__main__':

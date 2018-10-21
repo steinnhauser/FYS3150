@@ -8,8 +8,6 @@
 
 using namespace std;
 
-void velocity_verlet_solve(double dt, double T);
-
 int main() {
   /*
   Units used:
@@ -18,12 +16,7 @@ int main() {
   1 unit of velocity = 1 AU/yr
   */
   double T = 100;
-  double dt = 1e-8;
-  velocity_verlet_solve(dt,T);
-  return 0;
-}
-
-void velocity_verlet_solve(double dt, double T) {
+  double dt = 1e-7;
   double x0 = 0.3075;
   double y0 = 0;
   double vx = 0;
@@ -39,21 +32,23 @@ void velocity_verlet_solve(double dt, double T) {
   double rad_2_arcsec = 180*3600/M_PI;
   double rpp = sqrt(x0*x0 + y0*y0);
   double rp = rpp;
+  double elapsed_time = 0;
   vector<double> times;
   vector<double> angles;
-  double elapsed_time = 0;
+
   while (elapsed_time < T) {
-    l = x_old*vy - y_old*vx;
-    GR = 1 + 3*l*l/(cc*rp*rp);
-    G = - GR*g_mass_sun/(rp*rp*rp);
+    l = x_old*vy - y_old*vx; // angular momentum/mass: r x v
+    GR = 1 + 3*l*l/(cc*rp*rp); // Force contribution from general relativity
+    G = - GR*g_mass_sun/(rp*rp*rp); // total gravity_force/r
     ax = x_old*G;
     ay = y_old*G;
     // update positions
     x_new = x_old + dt*vx + hh_2*ax;
     y_new = y_old + dt*vy + hh_2*ay;
     r = sqrt(x_new*x_new + y_new*y_new);
-    GR = 1 + 3*l*l/(cc*r*r);
-    G = - GR*g_mass_sun/(r*r*r);
+    l = x_new*vy - y_new*vx; // angular momentum/mass: r x v
+    GR = 1 + 3*l*l/(cc*r*r); // Force contribution from general relativity
+    G = - GR*g_mass_sun/(r*r*r); // total gravity_force/r
     ax_new = x_new*G;
     ay_new = y_new*G;
     // update velocities
@@ -64,15 +59,16 @@ void velocity_verlet_solve(double dt, double T) {
       angles.push_back(atan(y_old/x_old)*rad_2_arcsec);
       times.push_back(elapsed_time);
     }
+    // update of temporary variables
     x_old = x_new;
     y_old = y_new;
     rpp = rp;
     rp = r;
     elapsed_time += dt;
   }
-
+  // write file with columns: time angle (at perihelion events)
   ofstream ofile;
-  ofile.open("./data/mercury.txt", ofstream::out | ofstream::trunc);
+  ofile.open("./mercury.txt", ofstream::out | ofstream::trunc);
   double n = angles.size();
   cout << "perihelion events found during " << T << " years: " << n << endl;
   for(int i=0; i<n; i++) {
@@ -80,4 +76,5 @@ void velocity_verlet_solve(double dt, double T) {
     ofile << setw(20) << setprecision(10) << angles[i] << endl;
   }
   ofile.close();
+  return 0;
 }
