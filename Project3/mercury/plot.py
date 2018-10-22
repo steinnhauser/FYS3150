@@ -18,7 +18,7 @@ def lin(x,y,deg=1):
     return m,dm,c,dc,yline
 
 
-def mercury(filename):
+def mercury(string,filename):
     """Study of Mercury's perihelion precession.
     Read's data of perihelion events with corresponding
     time and angle. Returns angular velocity and
@@ -33,17 +33,21 @@ def mercury(filename):
     times = np.asarray(times)/100
     angles = np.asarray(angles)
     m,dm,c,dc,yline = lin(times,angles)
-    plt.plot(times,angles,'r.',label='recorded perihelion events')
-    plt.plot(times,yline,'b-',label=r'slope = %2.2f $\pm$ %1.2f' % (m,dm))
+    plt.plot(times,angles,'.',label=string+'recorded perihelion events')
+    plt.plot(times,yline,'-',label=string+r'slope = %2.2f $\pm$ %1.2f' % (m,dm))
     plt.ylabel("arc sec")
     plt.xlabel("100 yr")
     plt.grid(True)
     plt.legend()
-    plt.show()
+    return m,dm
 
 
 def main():
-    mercury('./mercury.txt')
+    m1,dm1 = mercury('Newtonian: ','./mercury_pure.txt')
+    m2,dm2 = mercury('Gen. rel.: ','./mercury.txt')
+    plt.rcParams.update({'font.size': 12})
+    plt.title("difference in slopes: %2.2f $\pm$ %1.2f" % (m2-m1,np.sqrt(dm1**2 + dm2**2)))
+    plt.show()
 
 
 if __name__=='__main__':

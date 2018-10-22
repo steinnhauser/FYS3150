@@ -6,6 +6,7 @@
 #include "planet.h"
 
 using namespace arma;
+using namespace std;
 
 class solver
 {
@@ -14,10 +15,10 @@ public:
   double dt;
   double totaltime;
   int N;
-  std::vector<planet> planets_list;
   int number_of_planets;
+  int start; // if first element in planet_list is desired fixed at origin start=1, else 0
+  std::vector<planet> planets_list;
   cube positional_tensor;
-  int start;
 
   // constructor
   solver();

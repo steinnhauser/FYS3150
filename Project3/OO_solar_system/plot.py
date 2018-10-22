@@ -4,7 +4,6 @@ import mpl_toolkits.mplot3d.axes3d as p3
 import matplotlib.animation as ani
 import numpy as np
 
-number_of_planets = 10
 
 def readfile(file_number):
     """read data from one data file,
@@ -48,7 +47,7 @@ def plot_3D(data,names):
     specify limit (in AU) in the limit list"""
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    limit = [-40, 40]
+    limit = [-30, 30]
     ax.set_xlim3d(limit)
     ax.set_ylim3d(limit)
     ax.set_zlim3d(limit)
@@ -67,7 +66,7 @@ def animate_3D(data,names):
     N = len(data[0][0])
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    limit = [-36, 36]
+    limit = [-30, 30] # AU
     ax.set_xlim3d(limit)
     ax.set_ylim3d(limit)
     ax.set_zlim3d(limit)
@@ -79,7 +78,7 @@ def animate_3D(data,names):
         for line, data in zip(lines, dataLines):
             line.set_data(data[0:2, :num])
             line.set_3d_properties(data[2, :num])
-            #line.set_marker("o")
+            #line.set_marker("o") # if not used: orbits are represented as lines
         return lines
 
     lines = [ax.plot(dat[0, 0:1], dat[1, 0:1], dat[2, 0:1])[0] for dat in data]
@@ -89,55 +88,30 @@ def animate_3D(data,names):
     plt.show()
 
 
-def lin(x,y,deg=1):
-    """Linear fit to data points with uncertainty"""
-    p = np.polyfit(x,y,deg)
-    yline = np.polyval(p,x)
-    n = len(x)
-    m = p[0]
-    c = p[1]
-    D = np.sum(x*x) - (np.sum(x))**2/n
-    E = np.sum(x*y) - np.sum(x)*np.sum(y)/n
-    F = np.sum(y*y) - (np.sum(y))**2/n
-    dm = np.sqrt((1/(n - 2))*(D*F - E**2)/D**2)
-    dc = np.sqrt((1/(n - 2))*(D/n + (np.mean(x))**2)*((D*F - E**2)/D**2))
-    return m,dm,c,dc,yline
-
-
-def mercury(gr,filename):
-    """Study of Mercury's perihelion precession.
-    Read's data of perihelion events with corresponding
-    time and angle. Returns angular velocity and
-    uncertainty obtained from lin()"""
-    times = []; angles = []
-    with open(filename, 'r') as infile:
-        for line in infile:
-            t,a = line.split()
-            times.append(eval(t))
-            angles.append(eval(a))
-        infile.close()
-    times = np.asarray(times)/100
-    angles = np.asarray(angles)
-    m,dm,c,dc,yline = lin(times,angles)
-    plt.plot(times,angles,label=gr + 'recorded perihelion events')
-    plt.plot(times,yline,label=gr + r'slope = %3.1f $\pm$ %1.1f' % (m,dm))
-    plt.ylabel("arc sec")
-    plt.xlabel("100 yr")
-    plt.grid(True)
-    plt.legend()
-    return m,dm
-
-
 def main():
-    m1,dm1 = mercury('pure: ','./data/mercury.txt')
-    m2,dm2 = mercury('GR:   ','./data/mercury_GR.txt')
-    diff = float(m2-m1)
-    u = np.sqrt(dm1**2 + dm2**2)
-    plt.title(r"Difference in slopes: (%3.1f $\pm$ %1.1f) arc sec/century" % (diff,u))
-    plt.show()
-    #data,names = planetdata(number_of_planets)
-    #animate_3D(data,names)
+    """set number of planet that wish to be plotted.
+    data is obtained from './data/planet*.txt', where
+    * = 0,1,2,..., number_of_planets - 1. Choose to plot
+    the complete orbits of all planets or animate."""
+    data,names = planetdata(number_of_planets)
     #plot_3D(data,names)
+    animate_3D(data,names)
 
 if __name__=='__main__':
+    number_of_planets = 10
+    plt.rcParams.update({'font.size': 12})
     main()
+
+"""Terminal run:
+simen@simen-ubuntu:~/steinngithub/FYS3150/Project3/OO_solar_system$ python3 plot.py
+Sun
+Mercury
+Venus
+Earth
+Mars
+Jupiter
+Saturn
+Uranus
+Neptune
+Pluto
+"""

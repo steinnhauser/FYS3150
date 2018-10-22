@@ -7,18 +7,14 @@ solver::solver(double DT, double TotalTime, std::vector<planet> Planets_List, bo
   totaltime = TotalTime;
   planets_list = Planets_List;
   number_of_planets = planets_list.size();
-  N = totaltime/dt + 1;
-  if (sunfixed) {
-    start = 1;
-  } else {
-    start = 0;
-  }
+  N = totaltime/dt;
+  if (sunfixed) start = 1; else start = 0;
 }
 
 void solver::velocity_verlet_solve(cube& positional_tensor)
 {
-  double factor2 = dt*dt/2.0;
-  double factor3 = dt/2.0;
+  double hh_2 = dt*dt/2.0;
+  double h_2 = dt/2.0;
   // save initial positions in a positional tensor:
   for (int j=start; j<number_of_planets; j++){
     positional_tensor(0, 0, j) = planets_list[j].x;
@@ -39,9 +35,9 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
     for (int j=start; j<number_of_planets; j++) // start j at 1 for Sun fixed
     {
       // update x with a second degree Taylor polynomial
-      positional_tensor(0, t+1, j) = planets_list[j].x + dt*planets_list[j].vx + factor2*acceleration_matrix_old(0, j);
-      positional_tensor(1, t+1, j) = planets_list[j].y + dt*planets_list[j].vy + factor2*acceleration_matrix_old(1, j);
-      positional_tensor(2, t+1, j) = planets_list[j].z + dt*planets_list[j].vz + factor2*acceleration_matrix_old(2, j);
+      positional_tensor(0, t+1, j) = planets_list[j].x + dt*planets_list[j].vx + hh_2*acceleration_matrix_old(0, j);
+      positional_tensor(1, t+1, j) = planets_list[j].y + dt*planets_list[j].vy + hh_2*acceleration_matrix_old(1, j);
+      positional_tensor(2, t+1, j) = planets_list[j].z + dt*planets_list[j].vz + hh_2*acceleration_matrix_old(2, j);
     }
 
     for (int j=start; j<number_of_planets; j++)
@@ -58,9 +54,9 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
     for (int j=start; j<number_of_planets; j++)
     {
       // update v
-      planets_list[j].vx += factor3*(acceleration_matrix_new(0, j) + acceleration_matrix_old(0, j));
-      planets_list[j].vy += factor3*(acceleration_matrix_new(1, j) + acceleration_matrix_old(1, j));
-      planets_list[j].vz += factor3*(acceleration_matrix_new(2, j) + acceleration_matrix_old(2, j));
+      planets_list[j].vx += h_2*(acceleration_matrix_new(0, j) + acceleration_matrix_old(0, j));
+      planets_list[j].vy += h_2*(acceleration_matrix_new(1, j) + acceleration_matrix_old(1, j));
+      planets_list[j].vz += h_2*(acceleration_matrix_new(2, j) + acceleration_matrix_old(2, j));
     }
   }
 }
@@ -71,7 +67,7 @@ void solver::find_acc_for_all_planets(mat& acceleration_matrix) {
   double r;
   vec acc;
   for (int p=0; p<number_of_planets; p++) {
-    for (int op=0; op<number_of_planets; op++){
+    for (int op=0; op<number_of_planets; op++) {
       // avoid finding acceleration contribution from current planet
       if (op != p) {
         r = planets_list[p].distance(planets_list[op]);
