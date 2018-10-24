@@ -21,7 +21,16 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
     positional_tensor(1, 0, j) = planets_list[j].y;
     positional_tensor(2, 0, j) = planets_list[j].z;
   }
-
+  for (int j=0; j<number_of_planets; j++){
+    double Etot = planets_list[j].kinetic_energy();
+    for (int i=0; i<number_of_planets; i++) {
+      if (j != i) {
+        double r2 = planets_list[j].distance(planets_list[i]);
+        Etot += planets_list[j].potential_energy(r2, planets_list[i]);
+      }
+    }
+    cout << planets_list[j].name << "'s initial energy: " << Etot << endl;
+  }
   for (int t=0; t<N-1; t++) {
     /*
     matrices acceleration_matrix_old, acceleration_matrix_new
@@ -58,6 +67,16 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
       planets_list[j].vy += h_2*(acceleration_matrix_new(1, j) + acceleration_matrix_old(1, j));
       planets_list[j].vz += h_2*(acceleration_matrix_new(2, j) + acceleration_matrix_old(2, j));
     }
+  }
+  for (int j=0; j<number_of_planets; j++){
+    double Etot = planets_list[j].kinetic_energy();
+    for (int i=0; i<number_of_planets; i++) {
+      if (j != i) {
+        double r2 = planets_list[j].distance(planets_list[i]);
+        Etot += planets_list[j].potential_energy(r2, planets_list[i]);
+      }
+    }
+    cout << planets_list[j].name << "'s final energy: " << Etot << endl;
   }
 }
 

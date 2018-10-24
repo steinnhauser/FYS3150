@@ -47,7 +47,7 @@ def plot_3D(data,names):
     specify limit (in AU) in the limit list"""
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    limit = [-30, 30]
+    limit = [-6, 6]
     ax.set_xlim3d(limit)
     ax.set_ylim3d(limit)
     ax.set_zlim3d(limit)
@@ -94,11 +94,11 @@ def main():
     * = 0,1,2,..., number_of_planets - 1. Choose to plot
     the complete orbits of all planets or animate."""
     data,names = planetdata(number_of_planets)
-    #plot_3D(data,names)
-    animate_3D(data,names)
+    plot_3D(data,names)
+    #animate_3D(data,names)
 
 if __name__=='__main__':
-    number_of_planets = 10
+    number_of_planets = 7
     plt.rcParams.update({'font.size': 12})
     main()
 

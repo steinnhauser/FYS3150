@@ -43,9 +43,10 @@ def mercury(string,filename):
 
 
 def main():
+    plt.rcParams.update({'font.size': 14})
     m1,dm1 = mercury('Newtonian: ','./mercury_pure.txt')
+    plt.rcParams.update({'font.size': 14})
     m2,dm2 = mercury('Gen. rel.: ','./mercury.txt')
-    plt.rcParams.update({'font.size': 12})
     plt.title("difference in slopes: %2.2f $\pm$ %1.2f" % (m2-m1,np.sqrt(dm1**2 + dm2**2)))
     plt.show()
 

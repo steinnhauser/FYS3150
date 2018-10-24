@@ -1,11 +1,4 @@
-#include <iostream>
-#include <armadillo>
-#include <math.h>
 #include "eulers_method.h"
-#include "test_functions.h"
-
-using namespace arma;
-using namespace std;
 
 void eulers_method_calculate(double x0, double y0, double z0, double xv0, double yv0, double zv0, int N, double dt,
   vec& x_pos, vec& y_pos, vec& z_pos, vec& kin_energy, vec& pot_energy, vec& ang_mom)
@@ -23,7 +16,8 @@ void eulers_method_calculate(double x0, double y0, double z0, double xv0, double
 
   double x_acc, y_acc, z_acc; // accelerations
   double r_squared, factor, c1, c2, c3; // will be updated each iteration for less FLOPS
-
+  clock_t start, finish;
+  start = clock();
   for (int i=0; i<(N-1); i++) {
     r_squared = x_pos(i)*x_pos(i) + y_pos(i)*y_pos(i) + z_pos(i)*z_pos(i);
     factor = - G_MassSun*dt/(pow(r_squared, 1.5));
@@ -44,6 +38,7 @@ void eulers_method_calculate(double x0, double y0, double z0, double xv0, double
     c3 = x_pos(i)*y_vel(i) - y_pos(i)*x_vel(i);
     ang_mom(i) = sqrt(c1*c1 + c2*c2 + c3*c3); // except mass
   }
+  finish = clock();
   // last value for energies and angular momentum:
   kin_energy(N-1) = 0.5*(x_vel(N-1)*x_vel(N-1) + y_vel(N-1)*y_vel(N-1) + z_vel(N-1)*z_vel(N-1)); // except mass
   pot_energy(N-1) = - G_MassSun/(sqrt(r_squared));
@@ -51,5 +46,6 @@ void eulers_method_calculate(double x0, double y0, double z0, double xv0, double
   c2 = z_pos(N-1)*x_vel(N-1) - x_pos(N-1)*z_vel(N-1);
   c3 = x_pos(N-1)*y_vel(N-1) - y_pos(N-1)*x_vel(N-1);
   ang_mom(N-1) = sqrt(c1*c1 + c2*c2 + c3*c3);
-  cout << "Eulers method calculation complete." << endl;
+  double looptime = (finish - start)*1.0/CLOCKS_PER_SEC*1000;
+  cout << "Eulers method calculation complete, time: " << looptime << " ms" << endl;
 }

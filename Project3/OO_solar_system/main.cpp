@@ -18,8 +18,8 @@ int main(int argc, char* argv[])
   1 unit of velocity = 1 AU/yr
   1 unit of mass = 1.99*10^30 kg = 1 mass_sun
   */
-  double T = 248; // one Pluto year
-  double dt = 0.001; // Should not be larger than 0.001
+  double T = 15; // one Pluto year
+  double dt = 0.0001; // Should not be larger than 0.001
   int N = T/dt;
   vec time_vec = linspace<vec>(0,T,N);
 
@@ -30,15 +30,9 @@ int main(int argc, char* argv[])
   cout << "Number of integration points = " << N << endl;
   cout << "Number of planets = " << number_of_planets << endl;
 
-  // Initial energy
-  /*for (int j=1; j<number_of_planets; j++){
-    double Etot = planets_list[j].potential_energy(planets_list[j].distance(planets_list[0]), planets_list[0]) + planets_list[j].kinetic_energy();
-    cout << planets_list[j].name << "'s initial energy: " << Etot << endl;
-  }*/
-
   // initialize solver instance
   solver VelVerlet_Solarsystem;
-  bool sunfixed = false;
+  bool sunfixed = true;
   VelVerlet_Solarsystem = solver(dt, T, planets_list, sunfixed);
   cube positional_tensor = zeros<cube>(3,N,number_of_planets);
   cout << "Simulating Solar System..." << endl;
@@ -46,13 +40,7 @@ int main(int argc, char* argv[])
   VelVerlet_Solarsystem.velocity_verlet_solve(positional_tensor);
 
   // write positions to files
-  write_new_file(positional_tensor, time_vec, planets_list); // set to only write every 1000th data point
-
-  // Final energy
-  /*for (int j=1; j<number_of_planets; j++){
-    double Etot = planets_list[j].potential_energy(planets_list[j].distance(planets_list[0]), planets_list[0]) + planets_list[j].kinetic_energy();
-    cout << planets_list[j].name << "'s final energy: " << Etot << endl;
-  }*/
+  //write_new_file(positional_tensor, time_vec, planets_list); // set to only write every 1000th data point
   return 0;
 }
 
@@ -71,4 +59,14 @@ File "./data/planet6.txt" written.
 File "./data/planet7.txt" written.
 File "./data/planet8.txt" written.
 File "./data/planet9.txt" written.
+*/
+/* Three body run>
+simen@simen-ubuntu:~/steinngithub/FYS3150/Project3/OO_solar_system$ ./test.x
+Number of integration points = 15000
+Number of planets = 3
+Earth's initial energy: -39.4302
+Jupiter's initial energy: -7.33643
+Simulating Solar System...
+Earth's final energy: -39.4302
+Jupiter's final energy: -7.33643
 */
