@@ -1,16 +1,5 @@
 # Solar System Simulation
-Files:
-*
-*
-*
-Run:
-```
-> make -j
-> ./test.x
-```
-Alternatively:
-```
-> python3 plot.py eulerdata
-> python3 plot.py verletdata
-```
-## Object oriented code and results
+Contents:
+* earth_sun_system: a code which solves the earth-sun system for various initial conditions using Euler's method or the velocity Verlet method
+* OO_solar_system: an object oriented code which can simulate an n-body system using the velocity Verlet method
+* mercury: an aimed study of the perihelion precession of Mercury's orbit
