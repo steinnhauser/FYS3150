@@ -21,22 +21,24 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
     positional_tensor(1, 0, j) = planets_list[j].y;
     positional_tensor(2, 0, j) = planets_list[j].z;
   }
+  // System's initial energy
+  /*double etot_i;
   for (int j=0; j<number_of_planets; j++){
-    double Etot = planets_list[j].kinetic_energy();
+    etot_i += planets_list[j].kinetic_energy();
     for (int i=0; i<number_of_planets; i++) {
       if (j != i) {
         double r2 = planets_list[j].distance(planets_list[i]);
-        Etot += planets_list[j].potential_energy(r2, planets_list[i]);
+        etot_i += planets_list[j].potential_energy(r2, planets_list[i]);
       }
     }
-    cout << planets_list[j].name << "'s initial energy: " << Etot << endl;
   }
+  cout << "Systems's initial energy: " << etot_i << endl;*/
+
+  // Integration loop
   for (int t=0; t<N-1; t++) {
-    /*
-    matrices acceleration_matrix_old, acceleration_matrix_new
+    /* Matrices acceleration_matrix_old, acceleration_matrix_new
     fill store acceleration components (ax, ay, az) for all planets which
-    is the sum of all contributions from all other planets
-    */
+    is the sum of all contributions from all other planets */
     mat acceleration_matrix_old = zeros<mat>(3,number_of_planets); // store a_t-1
     mat acceleration_matrix_new = zeros<mat>(3,number_of_planets); // store a_t
     find_acc_for_all_planets(acceleration_matrix_old); // fill a_t-1 matrix
@@ -68,16 +70,18 @@ void solver::velocity_verlet_solve(cube& positional_tensor)
       planets_list[j].vz += h_2*(acceleration_matrix_new(2, j) + acceleration_matrix_old(2, j));
     }
   }
+  // Systems final energy
+  /*double etot_f;
   for (int j=0; j<number_of_planets; j++){
-    double Etot = planets_list[j].kinetic_energy();
+    etot_f += planets_list[j].kinetic_energy();
     for (int i=0; i<number_of_planets; i++) {
       if (j != i) {
         double r2 = planets_list[j].distance(planets_list[i]);
-        Etot += planets_list[j].potential_energy(r2, planets_list[i]);
+        etot_f += planets_list[j].potential_energy(r2, planets_list[i]);
       }
     }
-    cout << planets_list[j].name << "'s final energy: " << Etot << endl;
   }
+  cout << "Systems's final energy: " << etot_f << endl;*/
 }
 
 void solver::find_acc_for_all_planets(mat& acceleration_matrix) {

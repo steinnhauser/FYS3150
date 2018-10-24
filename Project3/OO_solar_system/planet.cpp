@@ -40,7 +40,7 @@ vec planet::acceleration(double r, const planet& otherplanet) {
 }
 
 double planet::potential_energy(double r, const planet& otherplanet) {
-  return - gravity_factor * otherplanet.mass / r;
+  return - 4*M_PI*M_PI*mass*otherplanet.mass/r;
 }
 
 double planet::kinetic_energy() {

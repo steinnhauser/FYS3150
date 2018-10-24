@@ -47,7 +47,7 @@ def plot_3D(data,names):
     specify limit (in AU) in the limit list"""
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    limit = [-6, 6]
+    limit = [-35, 35]
     ax.set_xlim3d(limit)
     ax.set_ylim3d(limit)
     ax.set_zlim3d(limit)
@@ -66,7 +66,7 @@ def animate_3D(data,names):
     N = len(data[0][0])
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    limit = [-30, 30] # AU
+    limit = [-35, 35] # AU
     ax.set_xlim3d(limit)
     ax.set_ylim3d(limit)
     ax.set_zlim3d(limit)
@@ -98,7 +98,7 @@ def main():
     #animate_3D(data,names)
 
 if __name__=='__main__':
-    number_of_planets = 7
+    number_of_planets = 10
     plt.rcParams.update({'font.size': 12})
     main()
 

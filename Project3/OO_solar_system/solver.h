@@ -3,7 +3,6 @@
 #include <armadillo>
 #include <vector>
 #include <cmath>
-#include <iomanip>
 #include "planet.h"
 
 using namespace arma;
