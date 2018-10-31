@@ -1,4 +1,5 @@
 #include <iostream>
+#include "../include/metropolis.h"
 
 using namespace std;
 
