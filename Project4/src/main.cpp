@@ -32,8 +32,8 @@ int main(int argc, char* argv[]) {
     // metropolis call
   }
 
-  for(int i=0; i<L; ++i) delete[] p[i];
-  delete[] p;
+  for(int i=0; i<L; ++i) delete[] spin_matrix[i];
+  delete[] spin_matrix;
 
   return 0;
 }
