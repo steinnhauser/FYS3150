@@ -1,11 +1,42 @@
-CXX= g++
-PROG= test
+# =============================================
+# Title:           MAKEFILE
+# Author:          Erik Johannes B. L. G. Husom
+# Date:            2018-09-27
+# Version:         0.1
+# =============================================
+EXEC 			= runproject4.x
+CPP 			= c++
+# parallelization: mpic++
+# Run executable with mpirun -n 10 ./runproject4.x, where n is the number of processes
+CPPflags 	= -Wall -O3 -g
+LIB 			=
 
-test.x: main.o
-	${CXX} -o test.x main.o ${LDLIBS}
+SRC_DIR		= ./src
+INC_DIR		= -I./include
+BUILD_DIR	= ./build
 
-%.o: %.cpp %.h
-	$(CXX) -c $<
+SRC 			:= $(wildcard $(SRC_DIR)/*.cpp)
+INC  			:= $(wildcard $(SRC_DIR)/*.h)
+OBJ				:= $(SRC:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+#====================================================
+$(EXEC): $(OBJ)
+	@$(CPP) $(OBJ) $(LIB) -o $@
+	@echo "Linking complete!"
+	@echo $(EXEC) "ready to run!"
 
-main.o: src/main.cpp
-	${CXX} -c src/main.cpp
+$(OBJ): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp
+	@mkdir -p $(BUILD_DIR)
+	@$(CPP) $(CPPFLAGS) $(INC_DIR) -c $< -o $@
+	@echo "Compiled "$<" successfully!"
+
+clean:
+	@rm -rf $(OBJ) $(EXEC) $(BUILD_DIR)
+	@echo "Cleanup complete!"
+
+removedat:
+	@rm -f *.dat
+	@echo ".dat-files removed!"
+
+removeim:
+	@rm -f *.pdf *.png *.jpg *.jpeg
+	@echo "Image files removed!"
