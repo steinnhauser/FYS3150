@@ -1,1 +1,1 @@
-#include "../include/metropolis.h"
+#include "metropolis.h"

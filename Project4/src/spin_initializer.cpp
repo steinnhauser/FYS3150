@@ -1,4 +1,4 @@
-#include "../include/spin_initializer.h"
+#include "spin_initializer.h"
 
 void Initialize_spins(int** matrixname, int L, bool order)
 {

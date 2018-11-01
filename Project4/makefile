@@ -4,7 +4,7 @@
 # Date:            2018-09-27
 # Version:         0.1
 # =============================================
-EXEC 			= runproject4.x
+EXEC 			= test.x
 CPP 			= c++
 # parallelization: mpic++
 # Run executable with mpirun -n 10 ./runproject4.x, where n is the number of processes
