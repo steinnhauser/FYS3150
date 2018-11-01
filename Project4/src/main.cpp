@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 
     for (int i=0; i<17; i++)
     {
-      std::cout << w[i] << std::endl;
+      cout << w[i] << endl;
     }
 
     // metropolis call
