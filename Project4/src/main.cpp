@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
   // body and soul of the program
   for (double temp=Tmin; temp<=Tmax; temp+=T_step) {
     // initialize w
-    double beta = 1./temp;
+    double beta = 1./temp;  
     for (int i=0; i<17; i++) {
       if (i%4==0) {
         w[i] = exp(-beta*(i-8));
