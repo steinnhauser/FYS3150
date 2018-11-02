@@ -4,7 +4,7 @@ import numpy as np
 
 "Plots for exercise 4c) study of equilibration time"
 
-def readfile_mc(filename):
+def readfile(filename):
     """
     Read data from one data files, where #MC cycles (proportional to time)
     is varied, energies and magnetization as functions of time.
@@ -30,7 +30,7 @@ def plot_equilibration_time():
     mclist=[];acplist=[]
     # Obtain and save data from files
     for o in [1,0]: # 1: ordered init state, 0: random init state
-        for T,t in zip([1,2.4],['_1','_24']):
+        for T,t in zip([1,2.4],['_T1','_T2']):
             filename = "datafile_" + str(o) + t + ".txt"
             mc,e,m,acp = readfile(filename)
             energies.append(e)
@@ -45,7 +45,7 @@ def plot_equilibration_time():
     # c=2: random,  T = 1.0
     # c=3: random,  T = 2.4
     for o in ['Ordered','Random']:
-        plt.fig()
+        plt.figure()
         plt.title(o + 'initial state')
         for T in [1,2.4]:
             plt.plot(mclist[c],energies[c],label='T=%1.1f'%T)
@@ -59,7 +59,7 @@ def plot_equilibration_time():
     # Magnetization plot
     c = 0
     for o in ['ordered','random']:
-        plt.fig()
+        plt.figure()
         plt.title(o + 'initial state')
         for T in [1,2.4]:
             plt.plot(mclist[c],magnet[c],label='T=%1.1f'%T)
@@ -71,7 +71,7 @@ def plot_equilibration_time():
         plt.show()
         c += 1
     # accepted configs vs. MC cycles
-    plt.fig()
+    plt.figure()
     for i,s in enumerate(["order T=1.0","order T=2.4","random T=1.0","random T=2.4"]):
         plt.plot(mclist[i],acplist[i],label=s)
     plt.xlabel('Number of Monte Carlo cycles')
@@ -82,7 +82,7 @@ def plot_equilibration_time():
 
 
 def main():
-    plot_equilibration_time
+    plot_equilibration_time()
 
 if __name__=='__main__':
     main()
