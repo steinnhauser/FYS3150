@@ -3,6 +3,7 @@
 #include <vector>
 #include "metropolis.h"
 #include "spin_initializer.h"
+#include "writefile.h"
 //#include "mpi.h"
 
 using namespace std;
@@ -44,12 +45,13 @@ int main(int argc, char* argv[]) {
       metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
       temp_vec.push_back(temp);
       energy_vec.push_back(energy);
-      cout << energy << endl;
-      energy_vec.push_back(energy*energy);
+      energy2_vec.push_back(energy*energy);
       magnet_vec.push_back(fabs(magnetization));
-      magnet_vec.push_back(magnetization*magnetization);
+      magnet2_vec.push_back(magnetization*magnetization);
       mc_cycles_vec.push_back(mc);
       accepted_vec.push_back(acceptedConfigs);
+      write_data_file(temp_vec, energy_vec,energy2_vec, magnet_vec, magnet2_vec,
+      mc_cycles_vec, accepted_vec);
     }
   }
 
