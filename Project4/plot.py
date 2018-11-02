@@ -6,13 +6,13 @@ import numpy as np
 def readfile(filename):
     """read data from one data file,
     returns list of data"""
-    t = []; e = []; e_2 = []; mc = []
-    cv = []; m = []; m_2 = []; acp = []
+    e = []; e_2 = []; mc = []
+    m = []; m_2 = []; acp = []
     with open(filename, 'r') as infile:
         infile.readline()
+        infile.readline()
         for line in infile:
-            tv,ev,e2v,mv,m2v,mcv,acpv = line.split()
-            t.append(eval(tv))
+            ev,e2v,mv,m2v,mcv,acpv = line.split()
             e.append(eval(ev))
             e_2.append(eval(e2v))
             m.append(eval(mv))
@@ -20,7 +20,23 @@ def readfile(filename):
             mc.append(eval(mcv))
             acp.append(eval(acpv))
         infile.close()
-    return t,e,e_2,m,m_2,mc,acp
+    return e,e_2,m,m_2,mc,acp
+
+
+def readfile_avgs(filename):
+    """read data from one data file,
+    returns list of data"""
+    t = []; e = []; m = []
+    with open(filename, 'r') as infile:
+        infile.readline()
+        infile.readline()
+        for line in infile:
+            tv,ev,mv = line.split()
+            t.append(eval(tv))
+            e.append(eval(ev))
+            m.append(eval(mv))
+        infile.close()
+    return t,e,m
 
 def analytic_vals(T):
     J = 1
@@ -35,7 +51,7 @@ def analytic_vals(T):
     return E, EE, M, MM, CV, CHI
 
 def main():
-    t,e,e_2,m,m_2,mc,acp = readfile("datafile.txt")
+    e,e_2,m,m_2,mc,acp = readfile("datafile.txt")
     E, EE, M, MM, CV, CHI = analytic_vals(1)
     plt.plot(mc,e)
     plt.plot(mc,[E]*len(mc))
@@ -46,6 +62,15 @@ def main():
     plt.plot(mc, [M]*len(mc))
     plt.title("Magnetization")
     plt.show()
+
+    t,e,m = readfile_avgs("avg_datafile.txt")
+
+    plt.plot(t,e, label="Average energy")
+    plt.plot(t,m, label="Average magnetism")
+    plt.xlabel("T")
+    plt.legend()
+    plt.show()
+
 
 
 if __name__=='__main__':
