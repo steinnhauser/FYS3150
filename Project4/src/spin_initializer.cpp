@@ -1,12 +1,13 @@
 #include "spin_initializer.h"
 
-void Initialize_spins(int** matrixname, int L, bool order, int& magnetization)
+void Initialize_spins(int** spin_matrix, int L, bool order, int& magnetization, int& energy)
 {
   if (order==true) { // ordered matrix elements equal to 1
+    energy = -4*L*L;
+    magnetization = L*L;
     for (int xs=0; xs<L; xs++) {
       for (int ys=0; ys<L; ys++) {
-        matrixname[xs][ys] = 1;
-        magnetization++;
+        spin_matrix[xs][ys] = 1;
       }
     }
   } else { // initialize a random-spin matrix
@@ -15,13 +16,24 @@ void Initialize_spins(int** matrixname, int L, bool order, int& magnetization)
       for (int ys=0; ys<L; ys++) {
         int r=rand() % 2; // either 0 or 1
         if (r==0) {
-          matrixname[xs][ys] = -1;
+          spin_matrix[xs][ys] = -1;
           magnetization--;
         }
         else {
-          matrixname[xs][ys] = 1;
+          spin_matrix[xs][ys] = 1;
           magnetization++;
         }
+      }
+    }
+    // calculate the energy difference
+    for (int ix=0; ix<L; ix++) {
+      for (int iy=0; iy<L; iy++) {
+        int mid   = spin_matrix[ix][iy];
+        int up    = spin_matrix[ix][(iy+L-1)%(L)];
+        int down  = spin_matrix[ix][(iy+L+1)%(L)];
+        int left  = spin_matrix[(ix+L+1)%(L)][iy];
+        int right = spin_matrix[(ix+L-1)%(L)][iy];
+        energy -= mid*(up + down + left + right);
       }
     }
   }

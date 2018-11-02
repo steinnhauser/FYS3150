@@ -22,6 +22,11 @@ def readfile(filename):
         infile.close()
     #
     plt.plot(mc,e)
+    plt.title("Energy")
+    plt.show()
+
+    plt.plot(mc, m)
+    plt.title("Magnetization")
     plt.show()
     return t,e,e_2,m,m_2,mc,acp
 
