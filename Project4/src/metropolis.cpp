@@ -1,25 +1,26 @@
 #include "metropolis.h"
 
-void metropolis(int** spin_matrix, int L, double& energy, int& acceptedConfigs, double w[17]) {
+void metropolis(int** spin_matrix, int L, int& energy, int& magnetization,
+                int& acceptedConfigs, double w[17]) {
   /*
   Performs on Monte Carlo sweep of the lattice.
   - Random indices [ix][iy] are chosen each iteration
   - Energy difference (when spin[ix][iy] is flipped) is found using energy_diff()
   - Accept or decline move according to Metropolis algorithm
   */
-  //int ix, iy;
   srand(time(NULL));
   for (int x=0; x<L; x++) {
     for (int y=0; y<L; y++) {
       // choose random indices
       int ix = rand()%L;
       int iy = rand()%L;
-
       int d_energy = energy_diff(ix,iy,L,spin_matrix);
       double r = rand()/double(RAND_MAX);
       if (w[d_energy+8] >= r) {
         energy += d_energy;
         acceptedConfigs++;
+        spin_matrix[ix][iy] *= -1;
+        magnetization += spin_matrix[ix][iy]*2;
       }
     }
   }

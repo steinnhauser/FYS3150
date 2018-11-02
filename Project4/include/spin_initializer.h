@@ -3,6 +3,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-void Initialize_spins(int** matrixname, int L, bool order);
+void Initialize_spins(int** matrixname, int L, bool order, int& magnetization);
 
 #endif // SPIN_INITIALIZER_H
