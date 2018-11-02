@@ -1,8 +1,9 @@
 #ifndef WRITEFILE_H
 #define WRITEFILE_H
 #include <iomanip>
-#include <iostream>
+#include <fstream>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 

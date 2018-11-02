@@ -7,7 +7,6 @@ void write_data_file(vector<double> temp_vec, vector<int> energy_vec,
   // write E, M, E**2, M**2, temp, mcs?
   ofstream ofile;
   ofile.open("datafile.txt");
-  ofile << "" << endl;
   ofile << setw(20) << "T" << setw(20) << "E" << setw(20) << "E^2";
   ofile << setw(20) << "M" << setw(20) << "M^2" << setw(20) << "Mcs";
   ofile << setw(20) << "Acc" << endl;
@@ -22,7 +21,7 @@ void write_data_file(vector<double> temp_vec, vector<int> energy_vec,
     ofile << setw(20) << setprecision(10) << magnet_vec[i];
     ofile << setw(20) << setprecision(10) << magnet2_vec[i];
     ofile << setw(20) << setprecision(10) << mc_cycles_vec[i];
-    ofile << setw(20) << setprecision(10) << accepted_vec[i];
+    ofile << setw(20) << setprecision(10) << accepted_vec[i] << endl;;
   }
 
   ofile.close();

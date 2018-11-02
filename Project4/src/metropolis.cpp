@@ -34,7 +34,7 @@ int energy_diff(int ix, int iy, int L, int** spin_matrix) {
   int mid   = - spin_matrix[ix][iy];
   int up    = spin_matrix[ix][(iy+L-1)%(L)];
   int down  = spin_matrix[ix][(iy+L+1)%(L)];
-  int left  = spin_matrix[(iy+L+1)%(L)][iy];
-  int right = spin_matrix[(iy+L-1)%(L)][iy];
+  int left  = spin_matrix[(ix+L+1)%(L)][iy];
+  int right = spin_matrix[(ix+L-1)%(L)][iy];
   return 2*mid*(up + down + left + right);
 }

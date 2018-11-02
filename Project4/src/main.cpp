@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
   Initialize_spins(spin_matrix, L, true, magnetization);
   double Tmin = 1.0;
   double Tmax = 2.4;
-  int MC_steps = 100;
+  int MC_steps = 20;
   int T_step = 3;
   double w[17]; // Boltzmann factors of energy levels -8J to 8J
   int energy = 0;
@@ -42,7 +42,6 @@ int main(int argc, char* argv[]) {
 
     for (int mc=0; mc<MC_steps; mc++) {
       int acceptedConfigs = 0;
-      metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
       temp_vec.push_back(temp);
       energy_vec.push_back(energy);
       energy2_vec.push_back(energy*energy);
@@ -50,9 +49,16 @@ int main(int argc, char* argv[]) {
       magnet2_vec.push_back(magnetization*magnetization);
       mc_cycles_vec.push_back(mc);
       accepted_vec.push_back(acceptedConfigs);
-      write_data_file(temp_vec, energy_vec,energy2_vec, magnet_vec, magnet2_vec,
-      mc_cycles_vec, accepted_vec);
+      metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
     }
+    write_data_file(temp_vec, energy_vec,energy2_vec, magnet_vec, magnet2_vec,
+                    mc_cycles_vec, accepted_vec);
+  }
+  for (int x=0; x<L; x++) {
+    for (int y=0; y<L; y++) {
+      cout << spin_matrix[x][y] << " ";
+    }
+    cout << endl;
   }
 
   for(int i=0; i<L; ++i) delete[] spin_matrix[i];
