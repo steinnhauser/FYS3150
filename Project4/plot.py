@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def readfile(filename):
+def readfile_mc(filename):
     """read data from one data file,
     returns list of data"""
     e = []; e_2 = []; mc = []
@@ -38,6 +38,7 @@ def readfile_avgs(filename):
         infile.close()
     return t,e,m
 
+
 def analytic_vals(T):
     J = 1
     k = 1
@@ -50,7 +51,8 @@ def analytic_vals(T):
     CHI = (MM - M*M)/(k*T)
     return E, EE, M, MM, CV, CHI
 
-def main():
+
+def plot_mc():
     e,e_2,m,m_2,mc,acp = readfile("datafile.txt")
     E, EE, M, MM, CV, CHI = analytic_vals(1)
     plt.plot(mc,e)
@@ -63,6 +65,8 @@ def main():
     plt.title("Magnetization")
     plt.show()
 
+
+def plot_avg():
     t,e,m = readfile_avgs("avg_datafile.txt")
 
     plt.plot(t,e, label="Average energy")
@@ -70,6 +74,12 @@ def main():
     plt.xlabel("T")
     plt.legend()
     plt.show()
+
+
+def main():
+
+
+
 
 
 

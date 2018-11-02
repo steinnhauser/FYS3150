@@ -8,6 +8,11 @@
 
 using namespace std;
 
+void lattice_2x2(); // 
+void equil_time(); // ordered and random init, T=1.0 and T=2.4, plot M(mc) and E(mc) + acp vs. temp
+void prob_distribution(); // find P(E) by counting #apperance of a certain E, L=20, T=1 and T=2.4, compare with sigma_E
+void phase_transition(); // 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
+
 int main(int argc, char* argv[]) {
   int L = 20;
   int **spin_matrix = new int* [L];
@@ -30,7 +35,7 @@ int main(int argc, char* argv[]) {
   vector<int> magnet2_vec;
   vector<int> mc_cycles_vec;
   vector<int> accepted_vec;
-  // body and soul of the program
+  // Vary temperature
   for (double temp=Tmin; temp<=Tmax; temp+=T_step) {
     // initialize w, dependent of temperature
     temp_vec.push_back(temp);
@@ -42,19 +47,8 @@ int main(int argc, char* argv[]) {
       } else w[i] = 0;
     }
     // MC cycles
-    int acceptedConfigs = 0;
-    for (int mc=0; mc<MC_steps; mc++) {
-      energy_vec.push_back(energy);
-      energy2_vec.push_back(energy*energy);
-      magnet_vec.push_back(fabs(magnetization));
-      magnet2_vec.push_back(magnetization*magnetization);
-      mc_cycles_vec.push_back(mc);
-      accepted_vec.push_back(acceptedConfigs);
-      acceptedConfigs = 0;
-      metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
-    }
-    write_data_file(temp, energy_vec,energy2_vec, magnet_vec, magnet2_vec,
-                    mc_cycles_vec, accepted_vec);
+    for (int mc=0; mc<MC_steps; mc++) {}
+
     // calculate the average of last 50 % of the data
     double E_avg=0, M_avg=0;
     int length = temp_vec.size();
@@ -69,6 +63,22 @@ int main(int argc, char* argv[]) {
     magnet_avg_vec.push_back(M_avg);
   }
   write_temp_avg_file(MC_steps, temp_vec, energy_avg_vec, magnet_avg_vec);
+
+  // Vary MC cycles
+  int acceptedConfigs = 0;
+  for (int mc=0; mc<MC_steps; mc++) {
+    energy_vec.push_back(energy);
+    energy2_vec.push_back(energy*energy);
+    magnet_vec.push_back(fabs(magnetization));
+    magnet2_vec.push_back(magnetization*magnetization);
+    mc_cycles_vec.push_back(mc);
+    accepted_vec.push_back(acceptedConfigs);
+    acceptedConfigs = 0;
+    metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
+  }
+  write_data_file(temp, energy_vec,energy2_vec, magnet_vec, magnet2_vec,
+                  mc_cycles_vec, accepted_vec);
+
 
   for (int x=0; x<L; x++) {
     for (int y=0; y<L; y++) {
