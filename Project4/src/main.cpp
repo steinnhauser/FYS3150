@@ -8,10 +8,10 @@
 
 using namespace std;
 
-void lattice_2x2(); // 
-void equil_time(); // ordered and random init, T=1.0 and T=2.4, plot M(mc) and E(mc) + acp vs. temp
-void prob_distribution(); // find P(E) by counting #apperance of a certain E, L=20, T=1 and T=2.4, compare with sigma_E
-void phase_transition(); // 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
+void lattice_2x2(); //4b, <E>, <M>, Cv, chi vs. T for L=2, compare with anal, how many #mc for agreeement with uranus?
+void equil_time(); //4c, ordered and random init, T=1.0 and T=2.4, plot M(mc) and E(mc) + acp vs. temp
+void prob_distribution(); //4d, find P(E) by counting #apperance of a certain E, L=20, T=1 and T=2.4, compare with sigma_E
+void phase_transition(); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
 
 int main(int argc, char* argv[]) {
   int L = 20;
