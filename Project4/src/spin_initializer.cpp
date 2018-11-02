@@ -3,7 +3,7 @@
 void Initialize_spins(int** spin_matrix, int L, bool order, int& magnetization, int& energy)
 {
   if (order==true) { // ordered matrix elements equal to 1
-    energy = -4*L*L;
+    energy = -2*L*L;
     magnetization = L*L;
     for (int xs=0; xs<L; xs++) {
       for (int ys=0; ys<L; ys++) {
