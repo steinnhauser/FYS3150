@@ -3,7 +3,6 @@
 void Initialize_spins(int** spin_matrix, int L, bool order, int& magnetization, int& energy)
 {
   if (order==true) { // ordered matrix elements equal to 1
-    energy = -2*L*L;
     magnetization = L*L;
     for (int xs=0; xs<L; xs++) {
       for (int ys=0; ys<L; ys++) {
@@ -25,16 +24,14 @@ void Initialize_spins(int** spin_matrix, int L, bool order, int& magnetization, 
         }
       }
     }
-    // calculate the energy difference
-    for (int ix=0; ix<L; ix++) {
-      for (int iy=0; iy<L; iy++) {
-        int mid   = spin_matrix[ix][iy];
-        int up    = spin_matrix[ix][(iy+L-1)%(L)];
-        int down  = spin_matrix[ix][(iy+L+1)%(L)];
-        int left  = spin_matrix[(ix+L+1)%(L)][iy];
-        int right = spin_matrix[(ix+L-1)%(L)][iy];
-        energy -= mid*(up + down + left + right);
-      }
+  }
+  // calculate the initial energy 
+  for (int ix=0; ix<L; ix++) {
+    for (int iy=0; iy<L; iy++) {
+      int mid   = spin_matrix[ix][iy];
+      int down  = spin_matrix[ix][(iy+L+1)%(L)];
+      int right = spin_matrix[(ix+L-1)%(L)][iy];
+      energy -= mid*(down + right);
     }
   }
 }
