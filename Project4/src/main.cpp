@@ -8,15 +8,15 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-  int L = 2;
+  int L = 5;
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   // initialize spin_matrix: name, length and order: true=ordered, false=random
   int magnetization;
   Initialize_spins(spin_matrix, L, true, magnetization);
-  double Tmin = 1;
+  double Tmin = 1.0;
   double Tmax = 2.4;
-  int MC_steps = 10;
+  int MC_steps = 100;
   int T_step = 3;
   double w[17]; // Boltzmann factors of energy levels -8J to 8J
   int energy = 0;
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
       metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
       temp_vec.push_back(temp);
       energy_vec.push_back(energy);
-      cout << acceptedConfigs << endl;
+      cout << energy << endl;
       energy_vec.push_back(energy*energy);
       magnet_vec.push_back(fabs(magnetization));
       magnet_vec.push_back(magnetization*magnetization);
