@@ -10,10 +10,15 @@ void write_data_file(vec data_vector)
   ofile << setw(20) << "M^2" << setw(20) << "T" << setw(20) << "Mcs" << endl;
 
   int length = data_vector.n_elem;
-  for (int i=0; i<length; i++)
-  {
 
-  }
+  
+  ofile << setw(20) << setprecision(10) << data_vector(0);
+  ofile << setw(20) << setprecision(10) << data_vector(1);
+  ofile << setw(20) << setprecision(10) << data_vector(2);
+  ofile << setw(20) << setprecision(10) << data_vector(3);
+  ofile << setw(20) << setprecision(10) << data_vector(4);
+  ofile << setw(20) << setprecision(10) << data_vector(5);
+
   ofile.close();
   cout << "File written." << endl;
 }
