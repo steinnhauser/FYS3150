@@ -67,7 +67,7 @@ def plot_equilibration_time():
 
 def plot_E_probability():
     for o in ['_1','_0']: # 1: ordered init state, 0: random init state
-        for t in ['_T1','_T2']:
+        for T,t in zip([1.0, 2.4],['_T1','_T2']):
             energylist=[]
             filename = "Eprob" + o + t + ".txt"
             infile = open(filename, "r")
@@ -75,23 +75,23 @@ def plot_E_probability():
             emin = eval(infile.readline())
             emax = eval(infile.readline())
 
+            mean = eval(infile.readline())
+            std = eval(infile.readline())
+
             for line in infile:
                 energylist.append(int(line))
+
             E = np.linspace(emin, emax, len(energylist))
-
-            print(energylist)
-
-            plt.bar(E, energylist)
-            plt.show()
-            """
-            plt.hist(energylist, facecolor='g')
-            plt.xlabel("Energy level [J]")
-            plt.ylabel("Number counted []")
-            plt.grid()
-            """
-            #plt.axis([emin, emax, 0, max(energylist)])
-            #plt.plot(E, energylist, "ro")
-            plt.show()
+            plt.bar(E, energylist, label="T=%1.1f, $\\mu = %1.1f$, $\\sigma_E=%1.1f$" %(T,mean,std), width=4, edgecolor="g")
+        if o=="_1":
+            plt.title("20x20 lattice Ordered initial state.")
+        else:
+            plt.title("20x20 lattice with Disordered initial state.")
+        plt.xlabel("Energy level [J]")
+        plt.ylabel("Number counted []")
+        plt.grid()
+        plt.legend(loc="best")
+        plt.show()
 
 
 def readfile_acc(filename):
