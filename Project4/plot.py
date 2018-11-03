@@ -65,6 +65,35 @@ def plot_equilibration_time():
         plt.show()
 
 
+def plot_E_probability():
+    for o in ['_1','_0']: # 1: ordered init state, 0: random init state
+        for t in ['_T1','_T2']:
+            energylist=[]
+            filename = "Eprob" + o + t + ".txt"
+            infile = open(filename, "r")
+
+            emin = eval(infile.readline())
+            emax = eval(infile.readline())
+
+            for line in infile:
+                energylist.append(int(line))
+            E = np.linspace(emin, emax, len(energylist))
+
+            print(energylist)
+
+            plt.bar(E, energylist)
+            plt.show()
+            """
+            plt.hist(energylist, facecolor='g')
+            plt.xlabel("Energy level [J]")
+            plt.ylabel("Number counted []")
+            plt.grid()
+            """
+            #plt.axis([emin, emax, 0, max(energylist)])
+            #plt.plot(E, energylist, "ro")
+            plt.show()
+
+
 def readfile_acc(filename):
     temp = []; accpt = []
     with open(filename, 'r') as infile:
@@ -88,8 +117,10 @@ def plot_accepted():
 
 
 def main():
-    plot_equilibration_time()
-    plot_accepted()
+    #plot_equilibration_time()
+    #plot_accepted()
+    plot_E_probability()
+
 
 
 if __name__=='__main__':

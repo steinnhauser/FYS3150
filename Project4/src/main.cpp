@@ -16,7 +16,7 @@ void lattice_solve(int L, int MC_steps, double temp); // finds <E>, <M>, Cv, chi
 void equilibrium_time(int L, int MC_steps); // finds E(mc), M(mc)
 void accepted_configs(int L, int MC_steps); // finds avg. accepted configs vs temperature
 
-void prob_distribution(); //4d, find P(E) by counting #apperance of a certain E, L=20, T=1 and T=2.4, compare with sigma_E
+vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
 
 // Steinn: maybe use lattice_solve as general function, and do phase transitions in main?
 void phase_transition(); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
@@ -135,6 +135,17 @@ void equilibrium_time(int L, int MC_steps) {
         ofile << setw(20) << setprecision(10) << magnet_vec[i] << endl;
       }
       ofile.close();
+      // calculate the probability distribution, mean and std of the results
+
+      vector<int> probvec = prob_distribution(energy_vec);
+
+      ofstream ofile2;
+      ofile2.open("Eprob_"+to_string(order)+"_T"+to_string((int)temp)+".txt");
+      int length2 = probvec.size();
+      for (int i=0; i<length2; i++) {
+        ofile2 << setw(8) << setprecision(10) << probvec[i] << endl;
+      }
+      ofile2.close();
     }
   }
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
@@ -181,12 +192,52 @@ void accepted_configs(int L, int MC_steps) {
   ofile.close();
 }
 
-void prob_distribution() {
+vector<int> prob_distribution(vector<int> energy_vec) {
   /* Function which computes the probability function P(E) of a lattice L=20.
   This is done for both temperatures T=1.0 and T=2.4. This probability is found
   by counting the number of times a given energy appears in the computations
   from previous results. This is done after the steady state is reached. These
   results are then compared with the computed variance in energy. */
+
+
+
+  int total=energy_vec.size(), startVal;
+  startVal = total/3;  // decide where to start counting. Should be after equil.
+  double mean, std, sum=0, variance=0, count=0, newSize;
+  newSize = total-startVal;
+  // loop the energy vector and count the number of times the energy E appears
+
+  for (int i=startVal; i<total; i++)
+  {
+    sum+=energy_vec[i];
+  }
+  mean = sum/newSize;
+  for (int i=startVal; i<total; i++)
+  {
+    variance+=pow(energy_vec[i]-mean, 2);
+  }
+  std = sqrt(variance/newSize);
+
+  // generate a probability histogram vector with size plus minus 3*std
+  vector<int> prob_histogram;
+  // need to round the standard deviation and mean to the nearest +-4J
+  double Emin = (mean - fmod(mean,4))-2*(std - fmod(std,4) + 4);
+  // fmod replaces % for non-int values. Added four since the change is zero for std<4.
+  double Emax = (mean - fmod(mean,4))+2*(std - fmod(std,4) + 4);
+  // found no documentation on how to simplify this rounding to nearest 4th.
+  prob_histogram.push_back(Emin);
+  prob_histogram.push_back(Emax); // two first values tell about the domain.
+
+  for (double Eval=Emin; Eval<=Emax; Eval+=4)
+  {
+    int counter=0;
+    for (int i=startVal; i<total; i++)
+    {
+      if (energy_vec[i]==Eval) counter++;
+    }
+    prob_histogram.push_back(counter);
+  }
+  return prob_histogram;
 }
 
 void phase_transition() {
