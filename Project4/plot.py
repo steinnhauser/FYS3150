@@ -74,15 +74,17 @@ def plot_E_probability():
 
             emin = eval(infile.readline())
             emax = eval(infile.readline())
-
             mean = eval(infile.readline())
             std = eval(infile.readline())
 
             for line in infile:
                 energylist.append(int(line))
 
+            print(energylist)
             E = np.linspace(emin, emax, len(energylist))
-            plt.bar(E, energylist, label="T=%1.1f, $\\mu = %1.1f$, $\\sigma_E=%1.1f$" %(T,mean,std), width=4, edgecolor="g")
+            plt.bar(E, energylist,\
+            label="T=%1.1f, $\\mu = %1.1f$, $\\sigma_E=%1.1f$" %(T,mean,std), \
+            width=4, edgecolor="g")
         if o=="_1":
             plt.title("20x20 lattice Ordered initial state.")
         else:

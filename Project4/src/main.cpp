@@ -8,14 +8,14 @@
 #include "spin_initializer.h"
 #include "writefile.h"
 #include "test_functions.h"
-//#include "mpi.h"
+#include <mpi.h>
+#include <time.h>
 
 using namespace std;
 
 void lattice_solve(int L, int MC_steps, double temp); // finds <E>, <M>, Cv, chi vs. T
 void equilibrium_time(int L, int MC_steps); // finds E(mc), M(mc)
 void accepted_configs(int L, int MC_steps); // finds avg. accepted configs vs temperature
-
 vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
 
 // Steinn: maybe use lattice_solve as general function, and do phase transitions in main?
@@ -25,9 +25,11 @@ void phase_transition(); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,
 
 int main(int argc, char* argv[]) {
   int MC_steps = 20000;
-  test_initial_lattice();
-  equilibrium_time(20, MC_steps);
-  accepted_configs(20, MC_steps);
+  //test_initial_lattice();
+  //equilibrium_time(20, MC_steps);
+  //accepted_configs(20, MC_steps);
+
+  // not sure what this code here does...
   /*
   vector<double> energy_avg_vec;
   vector<double> magnet_avg_vec;
@@ -46,10 +48,46 @@ int main(int argc, char* argv[]) {
   }
   */
 
-  // MPI_Init (&argc, &argv);
-  // MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
-  // MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
-  // MPI_Finalize ();
+  /* parallelize the program and simulate for T=[2.0, 2.3] with dT = 0.05 or less.
+  Calculate <E>, <|M|>, Cv and CHI (using <|M|>) as functions of T for lattice
+  sizes L=[40, 60, 80, 100]. For post-analyses:
+  Can you see an indication of a phase transition?
+  Perform a timing analysis of some selected runs in order to see that you get an
+  optimal speedup when parallelizing your code.
+
+  Comment: Should in theory be four times faster (depends on computer).
+
+  Opinion: Plot all lattice sizes in the same graph. Whole exercise is then
+  compressed to a single plot which shows all the critical temperatures for each
+  one of the lattice sizes L. Alternatively we could do this in four graphs.
+
+  Opinion: Not neccesary to use an extremely large number of MC cycles. We need
+  to also be able to simulate it all un-parallelized, which will take a long
+  time. Also, when parallelizing, see MPI_Bcast function for communication
+  between the ranks. This is not needed if say, every rank takes care of one
+  temperature. This is how we should design the parallelization in my opinion.*/
+
+  // no idea how to tell one rank to pick T=40, another T=60 etc.
+  // This might need to wait until the Lab on Thursday.
+  MPI_Init (&argc, &argv);
+  MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+  MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
+
+  double start, finish;
+  start = clock();
+
+  double Tmin = 2.0, Tmax = 2.3, Tstep=0.05;
+  for (int L=40; L<=100; L+=20)
+  {
+    for (double temp=Tmin; temp<=Tmax; temp+=0.05)
+    {
+      lattice_solve(L, MC_steps, temp);
+    }
+  }
+  finish = clock();
+  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
+  cout << "Calculation completed after " << timeElapsed << "s." << endl;
+  MPI_Finalize ();
   // Run: mpirun -n 2 ./hw.x
   return 0;
 }
@@ -235,12 +273,18 @@ vector<int> prob_distribution(vector<int> energy_vec) {
     for (int i=startVal; i<total; i++) if (energy_vec[i]==Eval) counter++;
     prob_histogram.push_back(counter);
   }
+
+  /* checked whether the sum of all the energy counts were equal to the newSize.
+  This was true for one case. But maybe worth to implement this as a test? */
+  /* Simen: not sure whether this value newSize should be exported to normalize
+  the energy counts to produce a probability distribution in post-analyses.*/
+
   return prob_histogram;
 }
 
 void phase_transition() {
   /* A function which produces four plots of the mean energy <E>, mean magnetism
   <M>, heat capacity Cv and magnetic susceptibility CHI as a function of the
-  temperature T. This is done for lattices L=[20, 40, 80, 100]. Parallelizing
+  temperature T. This is done for lattices L=[40, 60, 80, 100]. Parallelizing
   this code is recommended.*/
 }
