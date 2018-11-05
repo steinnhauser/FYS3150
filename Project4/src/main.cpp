@@ -17,38 +17,17 @@ void lattice_solve(int L, int MC_steps, double temp, long idum); // finds <E>, <
 void equilibrium_time(int L, int MC_steps, long idum); // finds E(mc), M(mc)
 void accepted_configs(int L, int MC_steps, long idum); // finds avg. accepted configs vs temperature
 vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
-
-// Steinn: maybe use lattice_solve as general function, and do phase transitions in main?
-// Simen: Not sure what you want lattice_solve to do. But phase transitions should definitely be parallelized (MPI) in main.
-
 void phase_transition(); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
 
 int main(int argc, char* argv[]) {
-  long idum = -10000;
-  int MC_steps = 100000;
+  long idum = -1;
+  int MC_steps = 10000;
   //lattice_solve(2,MC_steps,1.0,idum);
   test_initial_lattice();
-  equilibrium_time(20, MC_steps);
-  accepted_configs(20, MC_steps);
+  test_energy_diff();
+  //equilibrium_time(20, MC_steps, idum);
+  //accepted_configs(20, MC_steps, idum);
 
-  // not sure what this code here does...
-  /*
-  vector<double> energy_avg_vec;
-  vector<double> magnet_avg_vec;
-    // calculate the average of last 50 % of the data
-    double E_avg=0, M_avg=0;
-    int length = temp_vec.size();
-    for (int i=length/2; i<length; i++)
-    {
-      E_avg += energy_vec[i];
-      M_avg += magnet_vec[i];
-    }
-    E_avg/=length; M_avg/=length;
-    // save all the average energies and magnetizations as a function of temp
-    energy_avg_vec.push_back(E_avg);
-    magnet_avg_vec.push_back(M_avg);
-  }
-  */
 
   /* parallelize the program and simulate for T=[2.0, 2.3] with dT = 0.05 or less.
   Calculate <E>, <|M|>, Cv and CHI (using <|M|>) as functions of T for lattice
@@ -144,13 +123,12 @@ void lattice_solve(int L, int MC_steps, double temp, long idum) {
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
 }
 
-void equilibrium_time(int L, int MC_steps) {
-  /*
-  Analyze the evolution of a 20x20 lattice for two temperatures
-  T=1.0 and T=2.4 and two initial states ordered/random.
-  Write files with: MC-cycles, Energy and Magnetization.
-  */
-  long idum = -1;
+void equilibrium_time(int L, int MC_steps, long idum) {
+/*
+ * Analyze the evolution of a 20x20 lattice for two temperatures
+ * T=1.0 and T=2.4 and two initial states ordered/random.
+ * Write files with: MC-cycles, Energy and Magnetization.
+ */
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   // loop over ordered and random initial state
@@ -206,11 +184,10 @@ void equilibrium_time(int L, int MC_steps) {
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
 }
 
-void accepted_configs(int L, int MC_steps) {
+void accepted_configs(int L, int MC_steps, long idum) {
   /*
   Calculate number of accepted configurations as a function of temperature
   */
-  long idum = -1;
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   vector<double> temp_vec;
@@ -249,14 +226,16 @@ void accepted_configs(int L, int MC_steps) {
 }
 
 vector<int> prob_distribution(vector<int> energy_vec) {
-  /* Function which computes the probability function P(E) of a lattice L=20.
-  This is done for both temperatures T=1.0 and T=2.4. This probability is found
-  by counting the number of times a given energy appears in the computations
-  from previous results. This is done after the steady state is reached. These
-  results are then compared with the computed variance in energy. */
+/* Function which computes the probability function P(E) of a lattice L=20,
+ * for both temperatures T=1.0 and T=2.4 and initial state random/ordered.
+ * The probability is found by counting the number of times a given energy
+ * appears in the computations from previous results. This is done after the
+ * steady state is reached. These results are then compared with the computed
+ * variance in energy.
+ */
 
-  int total=energy_vec.size(), startVal;
-  startVal = total/2;  // decide where to start counting. Should be after equilibrium.
+  int total = energy_vec.size(), startVal;
+  startVal = total/2; // decide where to start counting. Should be after equilibrium.
   double mean, std, sum=0, variance=0, count=0, newSize;
   newSize = total-startVal;
 
@@ -268,7 +247,6 @@ vector<int> prob_distribution(vector<int> energy_vec) {
 
   // generate a probability histogram vector with size plus minus 4*std
   vector<int> prob_histogram;
-
   // need to round the standard deviation and mean to the nearest +-4J
   double Emin = (mean - fmod(mean,4))-3*(std - fmod(std,4) + 4);
   // fmod replaces % for non-int values. Added four since the change is zero for std<4.
@@ -293,7 +271,6 @@ vector<int> prob_distribution(vector<int> energy_vec) {
   This was true for one case. But maybe worth to implement this as a test? */
   /* Simen: not sure whether this value newSize should be exported to normalize
   the energy counts to produce a probability distribution in post-analyses.*/
-
   return prob_histogram;
 }
 
