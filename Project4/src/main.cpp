@@ -8,7 +8,7 @@
 #include "spin_initializer.h"
 #include "writefile.h"
 #include "test_functions.h"
-#include <mpi.h>
+///#include <mpi.h>
 #include <time.h>
 
 using namespace std;
@@ -24,10 +24,10 @@ vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counti
 void phase_transition(); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
 
 int main(int argc, char* argv[]) {
-  int MC_steps = 20000;
-  //test_initial_lattice();
-  //equilibrium_time(20, MC_steps);
-  //accepted_configs(20, MC_steps);
+  int MC_steps = 40000;
+  test_initial_lattice();
+  equilibrium_time(20, MC_steps);
+  accepted_configs(20, MC_steps);
 
   // not sure what this code here does...
   /*
@@ -69,6 +69,7 @@ int main(int argc, char* argv[]) {
 
   // no idea how to tell one rank to pick T=40, another T=60 etc.
   // This might need to wait until the Lab on Thursday.
+  /*
   MPI_Init (&argc, &argv);
   MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
   MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
@@ -88,7 +89,7 @@ int main(int argc, char* argv[]) {
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
   cout << "Calculation completed after " << timeElapsed << "s." << endl;
   MPI_Finalize ();
-  // Run: mpirun -n 2 ./hw.x
+  // Run: mpirun -n 2 ./hw.x*/
   return 0;
 }
 
@@ -241,7 +242,7 @@ vector<int> prob_distribution(vector<int> energy_vec) {
   results are then compared with the computed variance in energy. */
 
   int total=energy_vec.size(), startVal;
-  startVal = total/3;  // decide where to start counting. Should be after equilibrium.
+  startVal = total/2;  // decide where to start counting. Should be after equilibrium.
   double mean, std, sum=0, variance=0, count=0, newSize;
   newSize = total-startVal;
 
