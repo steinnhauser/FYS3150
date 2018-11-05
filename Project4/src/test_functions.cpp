@@ -4,8 +4,8 @@ void test_initial_lattice() {
   int L = 2;
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
-  int magnetization=0;
-  int energy=0;
+  double magnetization=0;
+  double energy=0;
   Initialize_spins(spin_matrix, L, true, magnetization, energy);
   if (energy != -8) {
     cout << "Initial energy: " << energy << " is wrong!" << endl;

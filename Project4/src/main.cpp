@@ -13,9 +13,9 @@
 
 using namespace std;
 
-void lattice_solve(int L, int MC_steps, double temp); // finds <E>, <M>, Cv, chi vs. T
-void equilibrium_time(int L, int MC_steps); // finds E(mc), M(mc)
-void accepted_configs(int L, int MC_steps); // finds avg. accepted configs vs temperature
+void lattice_solve(int L, int MC_steps, double temp, long idum); // finds <E>, <M>, Cv, chi vs. T
+void equilibrium_time(int L, int MC_steps, long idum); // finds E(mc), M(mc)
+void accepted_configs(int L, int MC_steps, long idum); // finds avg. accepted configs vs temperature
 vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
 
 // Steinn: maybe use lattice_solve as general function, and do phase transitions in main?
@@ -24,7 +24,9 @@ vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counti
 void phase_transition(); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
 
 int main(int argc, char* argv[]) {
-  int MC_steps = 40000;
+  long idum = -10000;
+  int MC_steps = 100000;
+  //lattice_solve(2,MC_steps,1.0,idum);
   test_initial_lattice();
   equilibrium_time(20, MC_steps);
   accepted_configs(20, MC_steps);
@@ -93,7 +95,7 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-void lattice_solve(int L, int MC_steps, double temp) {
+void lattice_solve(int L, int MC_steps, double temp, long idum) {
   /*
   Calculate expectation values for Energy and Magnetism, Heat capacity
   and magnetic susceptibility for an LxL lattice for a given number of
@@ -102,8 +104,9 @@ void lattice_solve(int L, int MC_steps, double temp) {
   // initialization
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
-  int magnetization=0, energy=0;
+  double magnetization=0, energy=0;
   Initialize_spins(spin_matrix, L, true, magnetization, energy);
+  cout << "E: " << energy << " M: " << magnetization << endl;
   double beta = 1./temp;
   double w[17];
   for (int i=0; i<17; i++) {
@@ -112,23 +115,32 @@ void lattice_solve(int L, int MC_steps, double temp) {
     } else w[i] = 0;
   }
   vector<int> energy_vec;
-  vector<int> energy2_vec;
   vector<int> magnet_vec;
-  vector<int> magnet2_vec;
   int acceptedConfigs=0;
+  double e_avg,e2_avg,m_avg,m2_avg,cv,chi;
   // Monte Carlo cycles
   for (int mc=0; mc<MC_steps; mc++) {
     energy_vec.push_back(energy);
-    energy2_vec.push_back(energy*energy);
-    magnet_vec.push_back(magnetization);
-    magnet2_vec.push_back(magnetization*magnetization);
+    magnet_vec.push_back(fabs(magnetization));
+    e_avg += energy;
+    e2_avg += energy*energy;
+    m_avg += fabs(magnetization);
+    m2_avg += magnetization*magnetization;
     acceptedConfigs = 0;
-    metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
+    metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
   }
-
-  // calculate the mean values of E, M, E^2 and M^2, C_V and chi
-  // write file
-
+  e_avg /= MC_steps;
+  e2_avg /= MC_steps;
+  m_avg /= MC_steps;
+  m2_avg /= MC_steps;
+  cv = e2_avg - e_avg*e_avg;
+  chi = m2_avg - m_avg*m_avg;
+  cout << setw(10) << setprecision(8) << "E:   " << e_avg << endl;
+  cout << setw(10) << setprecision(8) << "E^2: " << e2_avg << endl;
+  cout << setw(10) << setprecision(8) << "M:   " << m_avg << endl;
+  cout << setw(10) << setprecision(8) << "M^2: " << m2_avg << endl;
+  cout << setw(10) << setprecision(8) << "Cv:  " << cv << endl;
+  cout << setw(10) << setprecision(8) << "chi: " << chi << endl;
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
 }
 
@@ -138,6 +150,7 @@ void equilibrium_time(int L, int MC_steps) {
   T=1.0 and T=2.4 and two initial states ordered/random.
   Write files with: MC-cycles, Energy and Magnetization.
   */
+  long idum = -1;
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   // loop over ordered and random initial state
@@ -145,8 +158,8 @@ void equilibrium_time(int L, int MC_steps) {
     // loop over two temperatures T=1.0 and T=2.4
     for (double temp = 1.0; temp<=2.4; temp+=1.4) {
       // initialization
-      int magnetization=0;
-      int energy=0;
+      double magnetization=0;
+      double energy=0;
       int acceptedConfigs=0;
       vector<int> energy_vec;
       vector<int> magnet_vec;
@@ -164,7 +177,7 @@ void equilibrium_time(int L, int MC_steps) {
         mc_cycles_vec.push_back(mc); // proportional to time
         energy_vec.push_back(energy);
         magnet_vec.push_back(magnetization);
-        metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
+        metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
       }
       // write file
       ofstream ofile;
@@ -197,6 +210,7 @@ void accepted_configs(int L, int MC_steps) {
   /*
   Calculate number of accepted configurations as a function of temperature
   */
+  long idum = -1;
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   vector<double> temp_vec;
@@ -205,7 +219,7 @@ void accepted_configs(int L, int MC_steps) {
   for (double temp = 1.0; temp<=2.4; temp+=0.05) {
     temp_vec.push_back(temp);
     // initialization
-    int magnetization, energy;
+    double magnetization, energy;
     double beta = 1./temp;
     double w[17];
     for (int i=0; i<17; i++) {
@@ -217,7 +231,7 @@ void accepted_configs(int L, int MC_steps) {
     // Monte Carlo cycles
     int acceptedConfigs=0;
     for (int mc=0; mc<MC_steps; mc++) {
-      metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w);
+      metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
     }
     accepted_vec.push_back((float)acceptedConfigs/(MC_steps-1)); // average
   }

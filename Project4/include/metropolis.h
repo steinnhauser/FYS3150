@@ -3,10 +3,11 @@
 #include <time.h>
 #include <stdlib.h>
 #include <iostream>
+#include "ran1.h"
 using namespace std;
 
-void metropolis(int** spin_matrix, int L, int& energy, int& magnetization,
-                int& acceptedConfigs, double w[17]);
+void metropolis(int** spin_matrix, int L, double& energy, double& magnetization,
+                int& acceptedConfigs, double w[17], long& idum);
 int energy_diff(int ix, int iy, int L, int** spin_matrix);
 
 #endif // METROPOLIS_H

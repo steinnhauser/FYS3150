@@ -1,6 +1,6 @@
 #include "spin_initializer.h"
 
-void Initialize_spins(int** spin_matrix, int L, bool order, int& magnetization, int& energy)
+void Initialize_spins(int** spin_matrix, int L, bool order, double& magnetization, double& energy)
 {
   if (order==true) { // ordered matrix elements equal to 1
     magnetization = L*L;
@@ -25,7 +25,7 @@ void Initialize_spins(int** spin_matrix, int L, bool order, int& magnetization, 
       }
     }
   }
-  // calculate the initial energy 
+  // calculate the initial energy
   for (int ix=0; ix<L; ix++) {
     for (int iy=0; iy<L; iy++) {
       int mid   = spin_matrix[ix][iy];
