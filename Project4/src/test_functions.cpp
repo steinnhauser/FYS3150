@@ -6,7 +6,8 @@ void test_initial_lattice() {
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   double magnetization=0;
   double energy=0;
-  Initialize_spins(spin_matrix, L, true, magnetization, energy);
+  long idum = -1;
+  Initialize_spins(spin_matrix, L, true, magnetization, energy, idum);
   if (energy != -8) {
     cout << "Initial energy: " << energy << " is wrong!" << endl;
   }

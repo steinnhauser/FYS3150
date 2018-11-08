@@ -1,6 +1,6 @@
 #include "spin_initializer.h"
 
-void Initialize_spins(int** spin_matrix, int L, bool order, double& magnetization, double& energy)
+void Initialize_spins(int** spin_matrix, int L, bool order, double& magnetization, double& energy, long& idum)
 {
   if (order==true) { // ordered matrix elements equal to 1
     magnetization = L*L;
@@ -10,10 +10,10 @@ void Initialize_spins(int** spin_matrix, int L, bool order, double& magnetizatio
       }
     }
   } else { // initialize a random-spin matrix
-    srand(time(NULL));
     for (int xs=0; xs<L; xs++) {
       for (int ys=0; ys<L; ys++) {
-        int r=rand() % 2; // either 0 or 1
+        int r = (int) (ran1(&idum)*L)%2; // either 0 or 1
+        //(int) (ran1(&idum)*L)
         if (r==0) {
           spin_matrix[xs][ys] = -1;
           magnetization--;
@@ -28,10 +28,12 @@ void Initialize_spins(int** spin_matrix, int L, bool order, double& magnetizatio
   // calculate the initial energy
   for (int ix=0; ix<L; ix++) {
     for (int iy=0; iy<L; iy++) {
+      //std::cout << spin_matrix[ix][iy] << " ";
       int mid   = spin_matrix[ix][iy];
       int down  = spin_matrix[ix][(iy+L+1)%(L)];
       int right = spin_matrix[(ix+L-1)%(L)][iy];
       energy -= mid*(down + right);
     }
+    //std::cout << "\n";
   }
 }

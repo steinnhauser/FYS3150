@@ -69,16 +69,25 @@ def plot_E_probability():
     for o in ['_1','_0']: # 1: ordered init state, 0: random init state
         for T,t in zip([1.0, 2.4],['_T1','_T2']):
             energylist=[]
-            filename = "Eprob" + o + t + ".txt"
+            """filename = "Eprob" + o + t + ".txt"
             infile = open(filename, "r")
 
             emin = eval(infile.readline())
             emax = eval(infile.readline())
             mean = eval(infile.readline())
-            std = eval(infile.readline())
+            std = eval(infile.readline())"""
 
-            for line in infile:
-                energylist.append(int(line))
+            filepath = "Eprob" + o + t + ".txt"
+
+            bin_data = np.fromfile(filepath, dtype=np.int32)
+
+            emin = bin_data[0]
+            emax = bin_data[1]
+            mean = bin_data[2]
+            std = bin_data[3]
+
+            for en in range(4, len(bin_data)):
+                energylist.append(int(bin_data[en]))
 
             print(energylist)
             E = np.linspace(emin, emax, len(energylist))
@@ -97,6 +106,8 @@ def plot_E_probability():
 
 
 def readfile_acc(filename):
+    filepath = "Eprob_0_T1.txt"
+    bin_data = np.fromfile(filepath, dtype=np.int32)
     temp = []; accpt = []
     with open(filename, 'r') as infile:
         infile.readline()
