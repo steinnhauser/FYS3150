@@ -24,45 +24,36 @@ def readfile_mc(filename):
 
 
 def plot_equilibration_time():
-    energies=[];magnet=[];mclist=[]
+    energies=[];magnet=[]
     # Obtain and save data from files
-    for o in ['_1','_0']: # 1: ordered init state, 0: random init state
+    mc = np.fromfile(mcfilepath, dtype=np.int32)
+    for title,o in zip(["Ordered","Random"],['_1','_0']): # 1: ordered init state, 0: random init state
         for T,t in zip([1,2.4],['_T1','_T2']):
-            filename = "equiltime" + o + t + ".txt"
-            mc,e,m = readfile_mc(filename)
-            energies.append(e)
-            magnet.append(m)
-            mclist.append(mc)
-    # energy plot
-    c = 0
-    # c=0: ordered, T = 1.0
-    # c=1: ordered, T = 2.4
-    # c=2: random,  T = 1.0
-    # c=3: random,  T = 2.4
-    for o in ['Ordered','Random']:
-        plt.figure()
-        plt.title(o + ' initial state')
-        for T in [1,2.4]:
-            plt.plot(mclist[c],energies[c],label='T=%1.1f'%T)
-            c += 1
+            efilepath = "data/equiltime" + o + t + "_E.bin"
+            mfilepath = "data/equiltime" + o + t + "_M.bin"
+            mcfilepath = "data/equiltime" + o + t + "_MC.bin"
+            energies.append(np.fromfile(efilepath, dtype=np.int32))
+            magnet.append(np.fromfile(mfilepath, dtype=np.int32))
+
+        plt.figure() # energy plot
+        plt.title(title + ' initial state')
+        plt.plot(mc,energies,label='T=%1.1f'%T)
         plt.xlabel('Number of Monte Carlo cycles')
         plt.ylabel(r'$\langle E \rangle$')
         plt.legend()
         plt.grid()
         plt.show()
-    # Magnetization plot
-    c = 0
-    for o in ['Ordered','Random']:
-        plt.figure()
-        plt.title(o + ' initial state')
-        for T in [1,2.4]:
-            plt.plot(mclist[c],magnet[c],label='T=%1.1f'%T)
-            c += 1
+
+        plt.figure() # Magnetization plot
+        plt.title(title + ' initial state')
+        plt.plot(mc,m,label='T=%1.1f'%T)
         plt.xlabel('Number of Monte Carlo cycles')
         plt.ylabel(r'$\langle |M| \rangle$')
         plt.legend()
         plt.grid()
         plt.show()
+
+
 
 
 def plot_E_probability():
@@ -77,7 +68,7 @@ def plot_E_probability():
             mean = eval(infile.readline())
             std = eval(infile.readline())"""
 
-            filepath = "Eprob" + o + t + ".txt"
+            filepath = "data/Eprob" + o + t + ".bin"
 
             bin_data = np.fromfile(filepath, dtype=np.int32)
 
@@ -130,9 +121,9 @@ def plot_accepted():
 
 
 def main():
-    #plot_equilibration_time()
-    #plot_accepted()
-    plot_E_probability()
+    plot_equilibration_time()
+    plot_accepted()
+    #plot_E_probability()
 
 
 

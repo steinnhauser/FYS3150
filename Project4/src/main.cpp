@@ -21,12 +21,13 @@ void phase_transition(); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,
 
 int main(int argc, char* argv[]) {
   long idum = -1; // Seed: must be negative integer
-  lattice_solve(2,10000000,1.0,idum);
+
+  //lattice_solve(2,10000000,1.0,idum);
 
   //test_initial_lattice();
   //test_energy_diff();
-  //equilibrium_time(20, MC_steps, idum);
-  //accepted_configs(20, MC_steps, idum);
+  equilibrium_time(20, 100000, idum);
+  //accepted_configs(20, 100000, idum);
 
 
   /* parallelize the program and simulate for T=[2.0, 2.3] with dT = 0.05 or less.
@@ -82,6 +83,8 @@ void lattice_solve(int L, int max_MC_steps, double temp, long idum) {
    */
   // Outer loop with various number of MC cycles: 1e1, 1e3, 1e5, 1e7
   for (int MC_steps=10; MC_steps<=max_MC_steps; MC_steps*=100) {
+    double start, finish;
+    start = clock();
     double avg10arr[10][6];
     // loop over 10 sample runs to generate average values
     for (int avg10=0; avg10<10; avg10++) {
@@ -139,6 +142,10 @@ void lattice_solve(int L, int max_MC_steps, double temp, long idum) {
     cout << setprecision(8) << "M^2: " << avgs[3] << ". Error= " << fabs(avgs[3]-analytics[3])*1000/analytics[3] << endl;
     cout << setprecision(8) << "Cv:  " << avgs[4] << ". Error= " << fabs(avgs[4]-analytics[4])*1000/analytics[4] << endl;
     cout << setprecision(8) << "chi: " << avgs[5] << ". Error= " << fabs(avgs[5]-analytics[5])*1000/analytics[5] << endl << endl;
+
+    finish = clock();
+    double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
+    cout << "Time taken " << timeElapsed << "\n";
   }
 }
 
@@ -176,24 +183,23 @@ void equilibrium_time(int L, int MC_steps, long idum) {
         magnet_vec.push_back(magnetization);
         metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
       }
-      // write file
-      ofstream ofile;
-      ofile.open("equiltime_"+to_string(order)+"_T"+to_string((int)temp)+".txt");
-      ofile << setw(20) << "MC" << setw(20) << "E" << setw(20) << "M" << endl;
-      int length = energy_vec.size();
-      for (int i=0; i<length; i++) {
-        ofile << setw(20) << setprecision(10) << mc_cycles_vec[i];
-        ofile << setw(20) << setprecision(10) << energy_vec[i];
-        ofile << setw(20) << setprecision(10) << magnet_vec[i] << endl;
+
+      string list[3] = {"E", "M", "MC"};
+      vector<int> vecs[3] = {energy_vec, magnet_vec, mc_cycles_vec};
+      for (int i=0; i<3; i++){
+        ofstream ofile;
+        string filename="equiltime_"+to_string(order)+"_T"+to_string((int)temp)+ "_" + list[i] + ".bin";
+        ofile.open("data/" + filename, ofstream::binary);
+        ofile.write(reinterpret_cast<const char*> (vecs[i].data()),vecs[i].size()*sizeof(int));
+        ofile.close();
       }
-      ofile.close();
 
       // calculate the probability distribution, mean and std of the results
       vector<int> probvec = prob_distribution(energy_vec);
 
       ofstream ofile2;
-      string filename="Eprob_"+to_string(order)+"_T"+to_string((int)temp)+".txt";
-      ofile2.open(filename, ofstream::binary);
+      string filename="Eprob_"+to_string(order)+"_T"+to_string((int)temp)+".bin";
+      ofile2.open("data/" + filename, ofstream::binary);
       ofile2.write(reinterpret_cast<const char*> (probvec.data()),
       probvec.size()*sizeof(int));
       ofile2.close();
@@ -246,13 +252,12 @@ void accepted_configs(int L, int MC_steps, long idum) {
 }
 
 vector<int> prob_distribution(vector<int> energy_vec) {
-/* Function which computes the probability function P(E) of a lattice L=20,
+ /* Function which computes the probability function P(E) of a lattice L=20,
  * for both temperatures T=1.0 and T=2.4 and initial state random/ordered.
  * The probability is found by counting the number of times a given energy
  * appears in the computations from previous results. This is done after the
  * steady state is reached. These results are then compared with the computed
- * variance in energy.
- */
+ * variance in energy. */
 
   int total = energy_vec.size(), startVal;
   startVal = total/2; // decide where to start counting. Should be after equilibrium.
