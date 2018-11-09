@@ -36,4 +36,5 @@ void Initialize_spins(int** spin_matrix, int L, bool order, double& magnetizatio
     }
     //std::cout << "\n";
   }
+  //std::cout << "initial energy: " << energy << "\n";
 }

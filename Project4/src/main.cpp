@@ -26,8 +26,8 @@ int main(int argc, char* argv[]) {
 
   //test_initial_lattice();
   //test_energy_diff();
-  equilibrium_time(20, 100000, idum);
-  //accepted_configs(20, 100000, idum);
+  //equilibrium_time(20, 100000, idum);
+  accepted_configs(20, 100000, idum);
 
 
   /* parallelize the program and simulate for T=[2.0, 2.3] with dT = 0.05 or less.
@@ -150,11 +150,11 @@ void lattice_solve(int L, int max_MC_steps, double temp, long idum) {
 }
 
 void equilibrium_time(int L, int MC_steps, long idum) {
-/*
- * Analyze the evolution of a 20x20 lattice for two temperatures
- * T=1.0 and T=2.4 and two initial states ordered/random.
- * Write files with: MC-cycles, Energy and Magnetization.
- */
+  /*
+   * Analyze the evolution of a 20x20 lattice for two temperatures
+   * T=1.0 and T=2.4 and two initial states ordered/random.
+   * Write files with: MC-cycles, Energy and Magnetization.
+   */
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   // loop over ordered and random initial state
@@ -184,15 +184,41 @@ void equilibrium_time(int L, int MC_steps, long idum) {
         metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
       }
 
-      string list[3] = {"E", "M", "MC"};
-      vector<int> vecs[3] = {energy_vec, magnet_vec, mc_cycles_vec};
+      vector<int> energy_variance;
+      // calculate varance for last ten points
+      for (int i=4; i<MC_steps; i++) {
+        double variance = 0;
+        double mean = 0;
+        for (int j=i; j>i-5; j--) {
+          mean += 0.2*energy_vec[j];
+        }
+        for (int j=i; j>i-5; j--) {
+          variance += 0.2*fabs(energy_vec[j] - mean);
+        }
+        /*if (variance < 6){
+          cout << "Equil after " << i << "MCS" << "\n";
+          break;
+        }*/
+        energy_variance.push_back((int) fabs(variance));
+      }
+
+      string list[3] = {"E", "M", "V"};
+      vector<int> vecs[3] = {energy_vec, magnet_vec, energy_variance};
       for (int i=0; i<3; i++){
         ofstream ofile;
         string filename="equiltime_"+to_string(order)+"_T"+to_string((int)temp)+ "_" + list[i] + ".bin";
         ofile.open("data/" + filename, ofstream::binary);
         ofile.write(reinterpret_cast<const char*> (vecs[i].data()),vecs[i].size()*sizeof(int));
         ofile.close();
+        cout << "File " << filename << " written" << "\n";
       }
+
+      ofstream ofile1;
+      string filename1="equiltime_MC.bin";
+      ofile1.open("data/" + filename1, ofstream::binary);
+      ofile1.write(reinterpret_cast<const char*> (mc_cycles_vec.data()),mc_cycles_vec.size()*sizeof(int));
+      ofile1.close();
+      cout << "File " << filename1 << " written" << "\n";
 
       // calculate the probability distribution, mean and std of the results
       vector<int> probvec = prob_distribution(energy_vec);
@@ -203,8 +229,7 @@ void equilibrium_time(int L, int MC_steps, long idum) {
       ofile2.write(reinterpret_cast<const char*> (probvec.data()),
       probvec.size()*sizeof(int));
       ofile2.close();
-      // cout << "File " << filename << " written" << "\n";
-
+      cout << "File " << filename << " written" << "\n";
     }
   }
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
@@ -212,15 +237,16 @@ void equilibrium_time(int L, int MC_steps, long idum) {
 
 void accepted_configs(int L, int MC_steps, long idum) {
   /*
-  Calculate number of accepted configurations as a function of temperature
-  */
+   * Calculate number of accepted configurations as a function of temperature
+   */
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   vector<double> temp_vec;
-  vector<double> accepted_vec;
+  vector<int> mc_vec;
+  vector<double> accepted_vec_T;
+  vector<double> accepted_vec_MC;
   // loop over temperatures
   for (double temp = 1.0; temp<=2.4; temp+=0.05) {
-    temp_vec.push_back(temp);
     // initialization
     double magnetization, energy;
     double beta = 1./temp;
@@ -235,20 +261,30 @@ void accepted_configs(int L, int MC_steps, long idum) {
     int acceptedConfigs=0;
     for (int mc=0; mc<MC_steps; mc++) {
       metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
+      if (temp==1.0) {
+        accepted_vec_MC.push_back(acceptedConfigs);
+        mc_vec.push_back(mc);
+      }
     }
-    accepted_vec.push_back((float)acceptedConfigs/(MC_steps-1)); // average
+    // average accepted configs as a function of T
+    temp_vec.push_back(temp);
+    accepted_vec_T.push_back((float)acceptedConfigs/(MC_steps-1));
   }
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
   // write file
-  ofstream ofile;
-  ofile.open("acceptedconfigs.txt");
-  ofile << setw(20) << "temp" << setw(20) << "accepted configs" << endl;
-  int length = temp_vec.size();
-  for (int i=0; i<length; i++) {
-    ofile << setw(20) << setprecision(10) << temp_vec[i];
-    ofile << setw(20) << setprecision(10) << accepted_vec[i] << endl;
+  vector<double> vec_list[3] = {temp_vec, accepted_vec_T, accepted_vec_MC};
+  string string_list[3] = {"acc_temps", "acceptedconfigs_T", "acceptedconfigs_MC"};
+  for (int i=0; i<3; i++){
+    ofstream ofile;
+    string filename=string_list[i] + ".bin";
+    ofile.open("data/" + filename, ofstream::binary);
+    ofile.write(reinterpret_cast<const char*> (vec_list[i].data()),vec_list[i].size()*sizeof(double));
+    ofile.close();
   }
-  ofile.close();
+  ofstream ofile2;
+  ofile2.open("data/acc_mc.bin");
+  ofile2.write(reinterpret_cast<const char*> (mc_vec.data()),mc_vec.size()*sizeof(int));
+  ofile2.close();
 }
 
 vector<int> prob_distribution(vector<int> energy_vec) {
