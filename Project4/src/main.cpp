@@ -20,6 +20,7 @@ vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counti
 void phase_transition(int L, double temp, int equiltime, double &e_avg,
   double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=40,60,80,100
 
+/*
 int main(int argc, char* argv[]) {
   //long idum = -1;
   //lattice_solve(2,10000000,1.0,idum);
@@ -48,7 +49,6 @@ int main(int argc, char* argv[]) {
   double temp;
   int L = 40;
 
-  int cntr = 0;
   for (int j=0; j<rankpoints; j+=4){ //Tpoints
     temp = (my_rank+j)*Tstep + Tmin;
     double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
@@ -57,7 +57,6 @@ int main(int argc, char* argv[]) {
     data_vec[1] = (double) e2_avg/MC_steps;
     data_vec[2] = (double) m_avg/MC_steps;
     data_vec[3] = (double) m2_avg/MC_steps;
-    cntr++;
     // Write file for each temperature
     ofstream ofile;
     string filename="L_"+to_string(L)+"_T"+".bin"; //+to_string((int)temp)
@@ -67,6 +66,48 @@ int main(int argc, char* argv[]) {
     ofile.close();
   }
 
+  finish = clock();
+  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
+  cout << "Calculation completed after " << timeElapsed << "s." << endl;
+  MPI_Finalize();
+  return 0;
+}
+*/
+
+
+int main(int argc, char* argv[]) {
+  int numprocs, my_rank;
+  MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+  double start, finish;
+  start = clock();
+
+  for (int L=40; L<=100; L+=20) {
+    int MC_steps = 250;
+    int equil = 18;
+    long idum = - 1 - my_rank;
+    vector<double> data_vec;
+    cout << "L: " << L << endl;
+
+    for (double t=210; t<=230; t+=5){ //Tpoints
+      cout << my_rank << endl;
+      double temp = t*0.01;
+      double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
+      phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
+      data_vec[0] = e_avg;
+      data_vec[1] = e2_avg;
+      data_vec[2] = m_avg;
+      data_vec[3] = m2_avg;
+      // Write file for each temperature, rank and dimension L
+      ofstream ofile;
+      string filename = "R" + to_string(my_rank) + "L" + to_string(L) + "T" + to_string(int(t)) + ".bin";
+      ofile.open("data/" + filename, ofstream::binary);
+      ofile.write(reinterpret_cast<const char*> (data_vec.data()),
+      data_vec.size()*sizeof(double));
+      ofile.close();
+    }
+  }
   finish = clock();
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
   cout << "Calculation completed after " << timeElapsed << "s." << endl;
@@ -376,42 +417,5 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg, double &
 }
 
 /*
-int main(int argc, char* argv[]) {
-  int ierr, numprocs, my_rank;
-  ierr = MPI_Init(&argc, &argv);
-  ierr = MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-  ierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  double start, finish;
-  start = clock();
 
-  for (int L=40; L<=100; L+=20) {
-    int MC_steps = 250;
-    int equil = 18;
-    long idum = - 1 - my_rank;
-    vector<double> data_vec;
-    cout << "L: " << L << endl;
-
-    for (double t=210; t<=230; t+=5){ //Tpoints
-      double temp = t*0.01;
-      double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
-      phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
-      data_vec[0] = e_avg;
-      data_vec[1] = e2_avg;
-      data_vec[2] = m_avg;
-      data_vec[3] = m2_avg;
-      // Write file for each temperature, rank and dimension L
-      /*ofstream ofile;
-      string filename = "R" + to_string(my_rank) + "L" + to_string(L) + "T" + t + ".bin";
-      ofile.open("data/" + filename, ofstream::binary);
-      ofile.write(reinterpret_cast<const char*> (data_vec.data()),
-      data_vec.size()*sizeof(double));
-      ofile.close();
-    }
-  }
-  finish = clock();
-  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
-  cout << "Calculation completed after " << timeElapsed << "s." << endl;
-  ierr = MPI_Finalize();
-  return 0;
-}
 */
