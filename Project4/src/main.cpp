@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
     double data_vec[4]={0};
     double allocate[4]={0};
 
-    for (double t=210; t<=230; t+=5){ //Tpoints
+    for (double t=224; t<=234; t+=1){ //Tpoints
       double temp = t*0.01;
       double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
       phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);

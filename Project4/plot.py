@@ -101,6 +101,8 @@ def plot_lattice_L():
         E2 = []
         M = []
         M2 = []
+        CV = []
+        CHI = []
         filename = "data/lattice_" + lattices[i] + ".bin"
         infile=open(filename, "r")
         infile.readline() #first line is indexing
@@ -111,6 +113,10 @@ def plot_lattice_L():
             E2.append(eval(a[2]))
             M.append(eval(a[3]))
             M2.append(eval(a[4]))
+            """cv = eval(a[2])-eval(a[1])*eval(a[1])
+            CV.append(cv)
+            chi = eval(a[4])-eval(a[3])*eval(a[3])
+            CHI.append(chi)"""
         plt.plot(T, E)
     plt.show()
 
