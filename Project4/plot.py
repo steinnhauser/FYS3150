@@ -93,9 +93,33 @@ def plot_accepted():
     plt.show()
 
 
+def plot_lattice_L():
+    lattices = ["40", "60", "80", "100"]
+    for i in range(4):
+        T = []
+        E = []
+        E2 = []
+        M = []
+        M2 = []
+        filename = "data/lattice_" + lattices[i] + ".bin"
+        infile=open(filename, "r")
+        infile.readline() #first line is indexing
+        for line in infile:
+            a = line.split()
+            T.append(eval(a[0]))
+            E.append(eval(a[1]))
+            E2.append(eval(a[2]))
+            M.append(eval(a[3]))
+            M2.append(eval(a[4]))
+        plt.plot(T, E)
+    plt.show()
+
+
+
 def main():
-    plot_equilibration_time()
+    #plot_equilibration_time()
     #plot_accepted()
+    plot_lattice_L()
 
 
 if __name__=='__main__':

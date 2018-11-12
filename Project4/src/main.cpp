@@ -83,15 +83,20 @@ int main(int argc, char* argv[]) {
   double start, finish;
   start = clock();
 
+  int MCS = 10000;
+  ofstream ofile;
+  bool fileBool=true;
+
   for (int L=40; L<=100; L+=20) {
-    int MC_steps = 250;
-    int equil = 18;
+
+    if (my_rank==0) cout << "-----\nL: " << L << "\n";
+    int MC_steps = MCS/numprocs;
+    int equil = 1000;
     long idum = - 1 - my_rank;
-    vector<double> data_vec;
-    cout << "L: " << L << endl;
+    double data_vec[4]={0};
+    double allocate[4]={0};
 
     for (double t=210; t<=230; t+=5){ //Tpoints
-      cout << my_rank << endl;
       double temp = t*0.01;
       double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
       phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
@@ -99,14 +104,61 @@ int main(int argc, char* argv[]) {
       data_vec[1] = e2_avg;
       data_vec[2] = m_avg;
       data_vec[3] = m2_avg;
-      // Write file for each temperature, rank and dimension L
+
+      for (int i=0; i<4; i++){
+        MPI_Reduce(&data_vec[i], &allocate[i], 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+      }
+
+      if (my_rank==0){
+        cout << "Temperature T=" << temp << "\n";
+        string names_list[4] = {"E= ", "E^2= ", "M= ", "M^2= "};
+        for (int i=0; i<4; i++){
+          allocate[i] /= numprocs; //Normalize properly.
+          allocate[i] /= L*L; //Make it "Per atom spin"
+          cout << names_list[i] << allocate[i] << "\n";
+        }
+      }
+
+
+      // Write file traditionally:
+
+      if (my_rank==0 && fileBool==true){
+        string filename = "./data/lattice_";
+        filename.append(to_string(L) + ".bin");
+        ofile.open(filename, std::ofstream::out | std::ofstream::trunc);
+        ofile << setw(20) << "T:" << setw(20) << "E:" << setw(20) << "E^2: ";
+        ofile << setw(20) << "M:" << setw(20) << "M^2: " << endl;
+
+        ofile << setw(20) << setprecision(10) << temp;
+        ofile << setw(20) << setprecision(10) << allocate[0];
+        ofile << setw(20) << setprecision(10) << allocate[1];
+        ofile << setw(20) << setprecision(10) << allocate[2];
+        ofile << setw(20) << setprecision(10) << allocate[3] << endl;
+
+        fileBool=false;
+      }
+      else if (my_rank==0){
+        ofile << setw(20) << setprecision(10) << temp;
+        ofile << setw(20) << setprecision(10) << allocate[0];
+        ofile << setw(20) << setprecision(10) << allocate[1];
+        ofile << setw(20) << setprecision(10) << allocate[2];
+        ofile << setw(20) << setprecision(10) << allocate[3] << endl;
+      }
+
+
+
+      // Perhaps unnecessary to write to a file.
+      // Write file for each temperature and dimension L
+      /*
       ofstream ofile;
-      string filename = "R" + to_string(my_rank) + "L" + to_string(L) + "T" + to_string(int(t)) + ".bin";
+      string filename = "L_" + to_string(L) + "T_" + to_string(int(t)) + ".bin";
       ofile.open("data/" + filename, ofstream::binary);
       ofile.write(reinterpret_cast<const char*> (data_vec.data()),
       data_vec.size()*sizeof(double));
-      ofile.close();
+      ofile.close();*/
     }
+    ofile.close();
+    fileBool=true;
   }
   finish = clock();
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
@@ -401,6 +453,7 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg, double &
   for (int mc=0; mc<equiltime; mc++) {
     metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
   }
+
   // Monte Carlo cycles after equilibrium
   for (int mc=0; mc<MC_steps; mc++) {
     e_avg += energy;
