@@ -21,74 +21,41 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
   double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
 
 int main(int argc, char* argv[]) {
-  //long idum = -1; // Seed: must be negative integer
-
-  int numprocs;
-  int my_rank;
-
-  MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-
+  int ierr, numprocs, my_rank;
+  ierr = MPI_Init(&argc, &argv);
+  ierr = MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+  ierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   double start, finish;
   start = clock();
 
-  double Tmin = 2.1, Tmax = 2.3;
-  double Tpoints = 40;
-  int rankpoints = tpoints/numprocs; //Number of points this rank will save
-  double Tstep = (Tmax - Tmin)/Tpoints;
+  for (int L=40; L<=100; L+=20) {
+    int MC_steps = 250;
+    int equil = 18;
+    long idum = - 1 - my_rank;
+    vector<double> data_vec;
+    cout << "L: " << L << endl;
 
-
-  /*
-  double Tstep = (Tmax-Tmin)/Tpoints;
-  double Rankinterval = Tpoints/4;
-  double Startpoint = Rankinterval * my_rank + Tmin;
-  double Endpoint = Rankinterval * (my_rank + 1) + Tmin;*/
-
-  int L = 20;
-  int MC_steps = 100000;
-  int equil = 0;
-  long idum = -1 - my_rank;
-
-  double values[rankpoints][4];
-  double temp;
-
-  //MPI_Bcast(&L, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  int cntr = 0;
-  for (int j=0; j<1; j+=4){ //Tpoints
-    temp = (my_rank+j)*Tstep + Tmin;
-    double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
-    phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
-    values[cntr][0] = (double) e_avg/MC_steps;
-    values[cntr][1] = (double) e2_avg/MC_steps;
-    values[cntr][2] = (double) m_avg/MC_steps;
-    values[cntr][3] = (double) m2_avg/MC_steps;
-    cntr++;
-  }
-
-
-
-  for (int xi=0; xi<4; xi++){
-    for (int yi=0; yi<rankpoints; yi++){
-      cout << values[yi][xi] << " ";
+    for (double t=210; t<=230; t+=5){ //Tpoints
+      double temp = t*0.01;
+      double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
+      phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
+      data_vec[0] = e_avg;
+      data_vec[1] = e2_avg;
+      data_vec[2] = m_avg;
+      data_vec[3] = m2_avg;
+      // Write file for each temperature, rank and dimension L
+      /*ofstream ofile;
+      string filename = "R" + to_string(my_rank) + "L" + to_string(L) + "T" + t + ".bin";
+      ofile.open("data/" + filename, ofstream::binary);
+      ofile.write(reinterpret_cast<const char*> (data_vec.data()),
+      data_vec.size()*sizeof(double));
+      ofile.close();*/
     }
-    cout << endl;
   }
-
   finish = clock();
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
   cout << "Calculation completed after " << timeElapsed << "s." << endl;
-
-/*
-  ofstream ofile;
-  string filename="Eprob_"+to_string(order)+"_T"+to_string((int)temp)+".bin";
-  ofile2.open("data/" + filename, ofstream::binary);
-  ofile2.write(reinterpret_cast<const char*> (probvec.data()),
-  probvec.size()*sizeof(int));
-  ofile2.close();*/
-
-  MPI_Finalize();
-  // Run: mpirun -n 2 ./hw.x
+  ierr = MPI_Finalize();
   return 0;
 }
 
@@ -354,13 +321,11 @@ vector<int> prob_distribution(vector<int> energy_vec) {
 
 void phase_transition(int L, double temp, int equiltime, double &e_avg,
   double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum) {
-  /* A function which produces four plots of the mean energy <E>, mean magnetism
-  <M>, heat capacity Cv and magnetic susceptibility CHI as a function of the
-  temperature T. This is done for lattices L=[40, 60, 80, 100]. Parallelizing
-  this code is recommended.*/
-
-  double start, finish;
-  start = clock();
+  /*
+   * Run MC_steps number of Monte Carlo cycles after specified equiltime
+   * Update values for E, E^2, |M| and M^2*
+   */
+  // initialization
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
   double magnetization=0, energy=0;
@@ -373,12 +338,11 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
     } else w[i] = 0;
   }
   int acceptedConfigs=0;
-
-  // reach equilibrium first.
+  // Reach equilibrium
   for (int mc=0; mc<equiltime; mc++) {
     metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
   }
-  // Monte Carlo cycles
+  // Monte Carlo cycles after equilibrium
   for (int mc=0; mc<MC_steps; mc++) {
     e_avg += energy;
     e2_avg += energy*energy;
@@ -386,9 +350,59 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
     m2_avg += magnetization*magnetization;
     metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
   }
+  e_avg /= MC_steps;
+  e2_avg /= MC_steps;
+  m_avg /= MC_steps;
+  m2_avg /= MC_steps;
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
 }
 
+/*int main(int argc, char* argv[]) {
+  int numprocs;
+  int my_rank;
+  MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+  double start, finish;
+  start = clock();
+
+  for (int L=40; L<=100; L+=20) {
+    double Tmin = 2.1, Tmax = 2.3;
+    double Tstep = 0.005;
+    int Tpoints = (Tmax - Tmin) / Tstep;
+    int rankpoints = Tpoints/numprocs; //Number of points this rank will save
+    int MC_steps = 100;
+    int equil = 18;
+    long idum = - 1 - my_rank;
+    vector<double> data_vec;
+    double temp;
+    cout << "L: " << L << endl;
+
+    int cntr = 0;
+    for (int j=0; j<rankpoints; j+=4){ //Tpoints
+      temp = (my_rank+j)*Tstep + Tmin;
+      double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
+      phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
+      data_vec[0] = (double) e_avg/MC_steps;
+      data_vec[1] = (double) e2_avg/MC_steps;
+      data_vec[2] = (double) m_avg/MC_steps;
+      data_vec[3] = (double) m2_avg/MC_steps;
+      cntr++;
+      // Write file for each temperature
+      ofstream ofile;
+      string filename="L_"+to_string(L)+"_T"+".bin"; //+to_string((int)temp)
+      ofile.open("data/" + filename, ofstream::binary);
+      ofile.write(reinterpret_cast<const char*> (data_vec.data()),
+      data_vec.size()*sizeof(double));
+      ofile.close();
+    }
+  }
+  finish = clock();
+  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
+  cout << "Calculation completed after " << timeElapsed << "s." << endl;
+  MPI_Finalize();
+  return 0;
+}*/
 //lattice_solve(2,10000000,1.0,idum);
 
 //test_initial_lattice();
