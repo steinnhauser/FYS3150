@@ -5,7 +5,7 @@
 # Version:         0.1
 # =============================================
 EXEC 			= test.x
-CPP 			= c++
+CPP 			= mpic++
 # parallelization: mpic++
 # Run executable with mpirun -n 10 ./runproject4.x, where n is the number of processes
 CPPflags 	= -Wall -O3 -g

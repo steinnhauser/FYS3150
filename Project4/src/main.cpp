@@ -18,42 +18,13 @@ void equilibrium_time(int L, int MC_steps, long idum); // finds E(mc), M(mc)
 void accepted_configs(int L, int MC_steps, long idum); // finds avg. accepted configs vs temperature
 vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
 void phase_transition(int L, double temp, int equiltime, double &e_avg,
-  double &e2_avg, double &m_avg, double &m2_avg); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
+  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long idum); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
 
 int main(int argc, char* argv[]) {
-  long idum = -1; // Seed: must be negative integer
+  //long idum = -1; // Seed: must be negative integer
 
-  //lattice_solve(2,10000000,1.0,idum);
-
-  //test_initial_lattice();
-  //test_energy_diff();
-  //equilibrium_time(20, 100000, idum);
-  //accepted_configs(20, 100000, idum);
-
-
-  /* parallelize the program and simulate for T=[2.0, 2.3] with dT = 0.05 or less.
-  Calculate <E>, <|M|>, Cv and CHI (using <|M|>) as functions of T for lattice
-  sizes L=[40, 60, 80, 100]. For post-analyses:
-  Can you see an indication of a phase transition?
-  Perform a timing analysis of some selected runs in order to see that you get an
-  optimal speedup when parallelizing your code.
-
-  Comment: Should in theory be four times faster (depends on computer).
-
-  Opinion: Plot all lattice sizes in the same graph. Whole exercise is then
-  compressed to a single plot which shows all the critical temperatures for each
-  one of the lattice sizes L. Alternatively we could do this in four graphs.
-
-  Opinion: Not neccesary to use an extremely large number of MC cycles. We need
-  to also be able to simulate it all un-parallelized, which will take a long
-  time. Also, when parallelizing, see MPI_Bcast function for communication
-  between the ranks. This is not needed if say, every rank takes care of one
-  temperature. This is how we should design the parallelization in my opinion.*/
-
-  // no idea how to tell one rank to pick T=40, another T=60 etc.
-  // This might need to wait until the Lab on Thursday.
-
-
+  int numprocs;
+  int my_rank;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
@@ -62,9 +33,9 @@ int main(int argc, char* argv[]) {
   double start, finish;
   start = clock();
 
-  double Tmin = 2.0, Tmax = 2.3
-  double Tpoints = 16;
-  double Tstep = (Tmax-Tmin)/(Tpoints - 1)
+  double Tmin = 2.0, Tmax = 2.3;
+  int Tpoints = 16;
+  double Tstep = (Tmax-Tmin)/(Tpoints - 1);
   double Rankinterval = Tpoints/4;
   double Startpoint = Rankinterval * my_rank + Tmin;
   double Endpoint = Rankinterval * (my_rank + 1) + Tmin;
@@ -84,12 +55,13 @@ int main(int argc, char* argv[]) {
   int j=0;
   for (double temp=Startpoint; temp<Endpoint; temp+=Tstep)
   {
-    phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg);
+    phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
     values[my_rank+j][0] = e_avg;
     values[my_rank+j][1] = e2_avg;
     values[my_rank+j][2] = m_avg;
     values[my_rank+j][3] = m2_avg;
     j+=4;
+    cout << my_rank << endl;
   }
 
 
@@ -97,13 +69,13 @@ int main(int argc, char* argv[]) {
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
   cout << "Calculation completed after " << timeElapsed << "s." << endl;
 
-
+/*
   ofstream ofile;
   string filename="Eprob_"+to_string(order)+"_T"+to_string((int)temp)+".bin";
   ofile2.open("data/" + filename, ofstream::binary);
   ofile2.write(reinterpret_cast<const char*> (probvec.data()),
   probvec.size()*sizeof(int));
-  ofile2.close();
+  ofile2.close();*/
 
   MPI_Finalize ();
   // Run: mpirun -n 2 ./hw.x
@@ -371,7 +343,7 @@ vector<int> prob_distribution(vector<int> energy_vec) {
 }
 
 void phase_transition(int L, double temp, int equiltime, double &e_avg,
-  double &e2_avg, double &m_avg, double &m2_avg) {
+  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long idum) {
   /* A function which produces four plots of the mean energy <E>, mean magnetism
   <M>, heat capacity Cv and magnetic susceptibility CHI as a function of the
   temperature T. This is done for lattices L=[40, 60, 80, 100]. Parallelizing
@@ -391,7 +363,6 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
     } else w[i] = 0;
   }
   int acceptedConfigs=0;
-  double e_avg=0,e2_avg=0,m_avg=0,m2_avg=0,cv=0,chi=0;
 
   // reach equilibrium first.
   for (int mc=0; mc<equiltime; mc++) {
@@ -407,3 +378,33 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
   }
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
 }
+
+//lattice_solve(2,10000000,1.0,idum);
+
+//test_initial_lattice();
+//test_energy_diff();
+//equilibrium_time(20, 100000, idum);
+//accepted_configs(20, 100000, idum);
+
+
+/* parallelize the program and simulate for T=[2.0, 2.3] with dT = 0.05 or less.
+Calculate <E>, <|M|>, Cv and CHI (using <|M|>) as functions of T for lattice
+sizes L=[40, 60, 80, 100]. For post-analyses:
+Can you see an indication of a phase transition?
+Perform a timing analysis of some selected runs in order to see that you get an
+optimal speedup when parallelizing your code.
+
+Comment: Should in theory be four times faster (depends on computer).
+
+Opinion: Plot all lattice sizes in the same graph. Whole exercise is then
+compressed to a single plot which shows all the critical temperatures for each
+one of the lattice sizes L. Alternatively we could do this in four graphs.
+
+Opinion: Not neccesary to use an extremely large number of MC cycles. We need
+to also be able to simulate it all un-parallelized, which will take a long
+time. Also, when parallelizing, see MPI_Bcast function for communication
+between the ranks. This is not needed if say, every rank takes care of one
+temperature. This is how we should design the parallelization in my opinion.*/
+
+// no idea how to tell one rank to pick T=40, another T=60 etc.
+// This might need to wait until the Lab on Thursday.
