@@ -18,7 +18,7 @@ void equilibrium_time(int L, int MC_steps, long idum); // finds E(mc), M(mc)
 void accepted_configs(int L, int MC_steps, long idum); // finds avg. accepted configs vs temperature
 vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
 void phase_transition(int L, double temp, int equiltime, double &e_avg,
-  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long idum); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
+  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
 
 int main(int argc, char* argv[]) {
   //long idum = -1; // Seed: must be negative integer
@@ -33,37 +33,47 @@ int main(int argc, char* argv[]) {
   double start, finish;
   start = clock();
 
-  double Tmin = 2.0, Tmax = 2.3;
-  int Tpoints = 16;
-  double Tstep = (Tmax-Tmin)/(Tpoints - 1);
+  double Tmin = 2.1, Tmax = 2.3;
+  double Tpoints = 40;
+  int rankpoints = tpoints/numprocs; //Number of points this rank will save
+  double Tstep = (Tmax - Tmin)/Tpoints;
+
+
+  /*
+  double Tstep = (Tmax-Tmin)/Tpoints;
   double Rankinterval = Tpoints/4;
   double Startpoint = Rankinterval * my_rank + Tmin;
-  double Endpoint = Rankinterval * (my_rank + 1) + Tmin;
+  double Endpoint = Rankinterval * (my_rank + 1) + Tmin;*/
 
-  int L = 40;
-  int MC_steps = 1000;
-  int equil = 18;
-
-  double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
-
+  int L = 20;
+  int MC_steps = 100000;
+  int equil = 0;
   long idum = -1 - my_rank;
 
-  double values[Tpoints][4];
+  double values[rankpoints][4];
+  double temp;
 
-  MPI_Bcast(&L, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-  int j=0;
-  for (double temp=Startpoint; temp<Endpoint; temp+=Tstep)
-  {
+  //MPI_Bcast(&L, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  int cntr = 0;
+  for (int j=0; j<1; j+=4){ //Tpoints
+    temp = (my_rank+j)*Tstep + Tmin;
+    double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
     phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
-    values[my_rank+j][0] = e_avg;
-    values[my_rank+j][1] = e2_avg;
-    values[my_rank+j][2] = m_avg;
-    values[my_rank+j][3] = m2_avg;
-    j+=4;
-    cout << my_rank << endl;
+    values[cntr][0] = (double) e_avg/MC_steps;
+    values[cntr][1] = (double) e2_avg/MC_steps;
+    values[cntr][2] = (double) m_avg/MC_steps;
+    values[cntr][3] = (double) m2_avg/MC_steps;
+    cntr++;
   }
 
+
+
+  for (int xi=0; xi<4; xi++){
+    for (int yi=0; yi<rankpoints; yi++){
+      cout << values[yi][xi] << " ";
+    }
+    cout << endl;
+  }
 
   finish = clock();
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
@@ -77,7 +87,7 @@ int main(int argc, char* argv[]) {
   probvec.size()*sizeof(int));
   ofile2.close();*/
 
-  MPI_Finalize ();
+  MPI_Finalize();
   // Run: mpirun -n 2 ./hw.x
   return 0;
 }
@@ -343,7 +353,7 @@ vector<int> prob_distribution(vector<int> energy_vec) {
 }
 
 void phase_transition(int L, double temp, int equiltime, double &e_avg,
-  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long idum) {
+  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum) {
   /* A function which produces four plots of the mean energy <E>, mean magnetism
   <M>, heat capacity Cv and magnetic susceptibility CHI as a function of the
   temperature T. This is done for lattices L=[40, 60, 80, 100]. Parallelizing
