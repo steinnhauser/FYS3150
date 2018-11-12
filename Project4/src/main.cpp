@@ -18,46 +18,62 @@ void equilibrium_time(int L, int MC_steps, long idum); // finds E(mc), M(mc)
 void accepted_configs(int L, int MC_steps, long idum); // finds avg. accepted configs vs temperature
 vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
 void phase_transition(int L, double temp, int equiltime, double &e_avg,
-  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
+  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=40,60,80,100
 
 int main(int argc, char* argv[]) {
-  int ierr, numprocs, my_rank;
-  ierr = MPI_Init(&argc, &argv);
-  ierr = MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-  ierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+  //long idum = -1;
+  //lattice_solve(2,10000000,1.0,idum);
+  //test_initial_lattice();
+  //test_energy_diff();
+  //equilibrium_time(20, 100000, idum);
+  //accepted_configs(20, 100000, idum);
+
+  // parallelization
+  int numprocs;
+  int my_rank;
+  MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   double start, finish;
   start = clock();
 
-  for (int L=40; L<=100; L+=20) {
-    int MC_steps = 250;
-    int equil = 18;
-    long idum = - 1 - my_rank;
-    vector<double> data_vec;
-    cout << "L: " << L << endl;
+  double Tmin = 2.1, Tmax = 2.3;
+  double Tstep = 0.005;
+  int Tpoints = (Tmax - Tmin) / Tstep;
+  int rankpoints = Tpoints/numprocs; //Number of points this rank will save
+  int MC_steps = 100;
+  int equil = 18;
+  long idum = - 1 - my_rank;
+  vector<double> data_vec;
+  double temp;
+  int L = 40;
 
-    for (double t=210; t<=230; t+=5){ //Tpoints
-      double temp = t*0.01;
-      double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
-      phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
-      data_vec[0] = e_avg;
-      data_vec[1] = e2_avg;
-      data_vec[2] = m_avg;
-      data_vec[3] = m2_avg;
-      // Write file for each temperature, rank and dimension L
-      /*ofstream ofile;
-      string filename = "R" + to_string(my_rank) + "L" + to_string(L) + "T" + t + ".bin";
-      ofile.open("data/" + filename, ofstream::binary);
-      ofile.write(reinterpret_cast<const char*> (data_vec.data()),
-      data_vec.size()*sizeof(double));
-      ofile.close();*/
-    }
+  int cntr = 0;
+  for (int j=0; j<rankpoints; j+=4){ //Tpoints
+    temp = (my_rank+j)*Tstep + Tmin;
+    double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
+    phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
+    data_vec[0] = (double) e_avg/MC_steps;
+    data_vec[1] = (double) e2_avg/MC_steps;
+    data_vec[2] = (double) m_avg/MC_steps;
+    data_vec[3] = (double) m2_avg/MC_steps;
+    cntr++;
+    // Write file for each temperature
+    ofstream ofile;
+    string filename="L_"+to_string(L)+"_T"+".bin"; //+to_string((int)temp)
+    ofile.open("data/" + filename, ofstream::binary);
+    ofile.write(reinterpret_cast<const char*> (data_vec.data()),
+    data_vec.size()*sizeof(double));
+    ofile.close();
   }
+
   finish = clock();
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
   cout << "Calculation completed after " << timeElapsed << "s." << endl;
-  ierr = MPI_Finalize();
+  MPI_Finalize();
   return 0;
 }
+
 
 void lattice_solve(int L, int max_MC_steps, double temp, long idum) {
   /*
@@ -222,6 +238,7 @@ void equilibrium_time(int L, int MC_steps, long idum) {
 void accepted_configs(int L, int MC_steps, long idum) {
   /*
    * Calculate number of accepted configurations as a function of temperature
+   * and as a function of MC cycles
    */
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
@@ -272,12 +289,14 @@ void accepted_configs(int L, int MC_steps, long idum) {
 }
 
 vector<int> prob_distribution(vector<int> energy_vec) {
- /* Function which computes the probability function P(E) of a lattice L=20,
- * for both temperatures T=1.0 and T=2.4 and initial state random/ordered.
- * The probability is found by counting the number of times a given energy
- * appears in the computations from previous results. This is done after the
- * steady state is reached. These results are then compared with the computed
- * variance in energy. */
+ /*
+  * Function which computes the probability function P(E) of a lattice L=20,
+  * for both temperatures T=1.0 and T=2.4 and initial state random/ordered.
+  * The probability is found by counting the number of times a given energy
+  * appears in the computations from previous results. This is done after the
+  * steady state is reached. These results are then compared with the computed
+  * variance in energy.
+  */
 
   int total = energy_vec.size(), startVal;
   startVal = total/2; // decide where to start counting. Should be after equilibrium.
@@ -319,8 +338,7 @@ vector<int> prob_distribution(vector<int> energy_vec) {
   return prob_histogram;
 }
 
-void phase_transition(int L, double temp, int equiltime, double &e_avg,
-  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum) {
+void phase_transition(int L, double temp, int equiltime, double &e_avg, double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum) {
   /*
    * Run MC_steps number of Monte Carlo cycles after specified equiltime
    * Update values for E, E^2, |M| and M^2*
@@ -357,40 +375,33 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
 }
 
-/*int main(int argc, char* argv[]) {
-  int numprocs;
-  int my_rank;
-  MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+/*
+int main(int argc, char* argv[]) {
+  int ierr, numprocs, my_rank;
+  ierr = MPI_Init(&argc, &argv);
+  ierr = MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+  ierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   double start, finish;
   start = clock();
 
   for (int L=40; L<=100; L+=20) {
-    double Tmin = 2.1, Tmax = 2.3;
-    double Tstep = 0.005;
-    int Tpoints = (Tmax - Tmin) / Tstep;
-    int rankpoints = Tpoints/numprocs; //Number of points this rank will save
-    int MC_steps = 100;
+    int MC_steps = 250;
     int equil = 18;
     long idum = - 1 - my_rank;
     vector<double> data_vec;
-    double temp;
     cout << "L: " << L << endl;
 
-    int cntr = 0;
-    for (int j=0; j<rankpoints; j+=4){ //Tpoints
-      temp = (my_rank+j)*Tstep + Tmin;
+    for (double t=210; t<=230; t+=5){ //Tpoints
+      double temp = t*0.01;
       double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
       phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
-      data_vec[0] = (double) e_avg/MC_steps;
-      data_vec[1] = (double) e2_avg/MC_steps;
-      data_vec[2] = (double) m_avg/MC_steps;
-      data_vec[3] = (double) m2_avg/MC_steps;
-      cntr++;
-      // Write file for each temperature
-      ofstream ofile;
-      string filename="L_"+to_string(L)+"_T"+".bin"; //+to_string((int)temp)
+      data_vec[0] = e_avg;
+      data_vec[1] = e2_avg;
+      data_vec[2] = m_avg;
+      data_vec[3] = m2_avg;
+      // Write file for each temperature, rank and dimension L
+      /*ofstream ofile;
+      string filename = "R" + to_string(my_rank) + "L" + to_string(L) + "T" + t + ".bin";
       ofile.open("data/" + filename, ofstream::binary);
       ofile.write(reinterpret_cast<const char*> (data_vec.data()),
       data_vec.size()*sizeof(double));
@@ -400,35 +411,7 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
   finish = clock();
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
   cout << "Calculation completed after " << timeElapsed << "s." << endl;
-  MPI_Finalize();
+  ierr = MPI_Finalize();
   return 0;
-}*/
-//lattice_solve(2,10000000,1.0,idum);
-
-//test_initial_lattice();
-//test_energy_diff();
-//equilibrium_time(20, 100000, idum);
-//accepted_configs(20, 100000, idum);
-
-
-/* parallelize the program and simulate for T=[2.0, 2.3] with dT = 0.05 or less.
-Calculate <E>, <|M|>, Cv and CHI (using <|M|>) as functions of T for lattice
-sizes L=[40, 60, 80, 100]. For post-analyses:
-Can you see an indication of a phase transition?
-Perform a timing analysis of some selected runs in order to see that you get an
-optimal speedup when parallelizing your code.
-
-Comment: Should in theory be four times faster (depends on computer).
-
-Opinion: Plot all lattice sizes in the same graph. Whole exercise is then
-compressed to a single plot which shows all the critical temperatures for each
-one of the lattice sizes L. Alternatively we could do this in four graphs.
-
-Opinion: Not neccesary to use an extremely large number of MC cycles. We need
-to also be able to simulate it all un-parallelized, which will take a long
-time. Also, when parallelizing, see MPI_Bcast function for communication
-between the ranks. This is not needed if say, every rank takes care of one
-temperature. This is how we should design the parallelization in my opinion.*/
-
-// no idea how to tell one rank to pick T=40, another T=60 etc.
-// This might need to wait until the Lab on Thursday.
+}
+*/
