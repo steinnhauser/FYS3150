@@ -94,8 +94,8 @@ def plot_accepted():
 
 
 def main():
-    #plot_equilibration_time()
-    plot_accepted()
+    plot_equilibration_time()
+    #plot_accepted()
 
 
 if __name__=='__main__':

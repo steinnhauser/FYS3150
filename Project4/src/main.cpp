@@ -8,7 +8,7 @@
 #include "spin_initializer.h"
 #include "writefile.h"
 #include "test_functions.h"
-///#include <mpi.h>
+#include <mpi.h>
 #include <time.h>
 
 using namespace std;
@@ -17,7 +17,8 @@ void lattice_solve(int L, int max_MC_steps, double temp, long idum); // finds <E
 void equilibrium_time(int L, int MC_steps, long idum); // finds E(mc), M(mc)
 void accepted_configs(int L, int MC_steps, long idum); // finds avg. accepted configs vs temperature
 vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
-void phase_transition(); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
+void phase_transition(int L, double temp, int equiltime, double &e_avg,
+  double &e2_avg, double &m_avg, double &m2_avg); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=20,40,80,100
 
 int main(int argc, char* argv[]) {
   long idum = -1; // Seed: must be negative integer
@@ -27,7 +28,7 @@ int main(int argc, char* argv[]) {
   //test_initial_lattice();
   //test_energy_diff();
   //equilibrium_time(20, 100000, idum);
-  accepted_configs(20, 100000, idum);
+  //accepted_configs(20, 100000, idum);
 
 
   /* parallelize the program and simulate for T=[2.0, 2.3] with dT = 0.05 or less.
@@ -51,27 +52,61 @@ int main(int argc, char* argv[]) {
 
   // no idea how to tell one rank to pick T=40, another T=60 etc.
   // This might need to wait until the Lab on Thursday.
-  /*
-  MPI_Init (&argc, &argv);
-  MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
-  MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
+
+
+
+  MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
   double start, finish;
   start = clock();
 
-  double Tmin = 2.0, Tmax = 2.3, Tstep=0.05;
-  for (int L=40; L<=100; L+=20)
+  double Tmin = 2.0, Tmax = 2.3
+  double Tpoints = 16;
+  double Tstep = (Tmax-Tmin)/(Tpoints - 1)
+  double Rankinterval = Tpoints/4;
+  double Startpoint = Rankinterval * my_rank + Tmin;
+  double Endpoint = Rankinterval * (my_rank + 1) + Tmin;
+
+  int L = 40;
+  int MC_steps = 1000;
+  int equil = 18;
+
+  double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
+
+  long idum = -1 - my_rank;
+
+  double values[Tpoints][4];
+
+  MPI_Bcast(&L, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+  int j=0;
+  for (double temp=Startpoint; temp<Endpoint; temp+=Tstep)
   {
-    for (double temp=Tmin; temp<=Tmax; temp+=0.05)
-    {
-      lattice_solve(L, MC_steps, temp);
-    }
+    phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg);
+    values[my_rank+j][0] = e_avg;
+    values[my_rank+j][1] = e2_avg;
+    values[my_rank+j][2] = m_avg;
+    values[my_rank+j][3] = m2_avg;
+    j+=4;
   }
+
+
   finish = clock();
   double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
   cout << "Calculation completed after " << timeElapsed << "s." << endl;
+
+
+  ofstream ofile;
+  string filename="Eprob_"+to_string(order)+"_T"+to_string((int)temp)+".bin";
+  ofile2.open("data/" + filename, ofstream::binary);
+  ofile2.write(reinterpret_cast<const char*> (probvec.data()),
+  probvec.size()*sizeof(int));
+  ofile2.close();
+
   MPI_Finalize ();
-  // Run: mpirun -n 2 ./hw.x*/
+  // Run: mpirun -n 2 ./hw.x
   return 0;
 }
 
@@ -335,9 +370,40 @@ vector<int> prob_distribution(vector<int> energy_vec) {
   return prob_histogram;
 }
 
-void phase_transition() {
+void phase_transition(int L, double temp, int equiltime, double &e_avg,
+  double &e2_avg, double &m_avg, double &m2_avg) {
   /* A function which produces four plots of the mean energy <E>, mean magnetism
   <M>, heat capacity Cv and magnetic susceptibility CHI as a function of the
   temperature T. This is done for lattices L=[40, 60, 80, 100]. Parallelizing
   this code is recommended.*/
+
+  double start, finish;
+  start = clock();
+  int **spin_matrix = new int* [L];
+  for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
+  double magnetization=0, energy=0;
+  Initialize_spins(spin_matrix, L, false, magnetization, energy, idum);
+  double beta = 1./temp;
+  double w[17];
+  for (int i=0; i<17; i++) {
+    if (i%4==0) {
+      w[i] = exp(-beta*(i-8));
+    } else w[i] = 0;
+  }
+  int acceptedConfigs=0;
+  double e_avg=0,e2_avg=0,m_avg=0,m2_avg=0,cv=0,chi=0;
+
+  // reach equilibrium first.
+  for (int mc=0; mc<equiltime; mc++) {
+    metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
+  }
+  // Monte Carlo cycles
+  for (int mc=0; mc<MC_steps; mc++) {
+    e_avg += energy;
+    e2_avg += energy*energy;
+    m_avg += fabs(magnetization);
+    m2_avg += magnetization*magnetization;
+    metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
+  }
+  for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
 }
