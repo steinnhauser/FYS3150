@@ -6,76 +6,29 @@
 #include <string>
 #include "metropolis.h"
 #include "spin_initializer.h"
-#include "writefile.h"
 #include "test_functions.h"
 #include <mpi.h>
 #include <time.h>
 
 using namespace std;
 
-void lattice_solve(int L, int max_MC_steps, double temp, long idum); // finds <E>, <M>, Cv, chi vs. T
-void equilibrium_time(int L, int MC_steps, long idum); // finds E(mc), M(mc)
-void accepted_configs(int L, int MC_steps, long idum); // finds avg. accepted configs vs temperature
-vector<int> prob_distribution(vector<int> energy_vec); //4d, find P(E) by counting #apperance of E's, L=20, T=1 and T=2.4, compare with sigma_E
+void lattice_solve(int L, int max_MC_steps, double temp, long idum);
+void equilibrium_time(int L, int MC_steps, long idum);
+void accepted_configs(int L, int MC_steps, long idum);
+vector<int> prob_distribution(vector<int> energy_vec);
 void phase_transition(int L, double temp, int equiltime, double &e_avg,
-  double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum); //4e, 4 Plots: <E>, <M>, Cv, chi vs. T and for L=40,60,80,100
+                      double &e2_avg, double &m_avg, double &m2_avg,
+                      int MC_steps, long& idum);
 
-/*
+
 int main(int argc, char* argv[]) {
-  //long idum = -1;
+  long idum = -1;
   //lattice_solve(2,10000000,1.0,idum);
   //test_initial_lattice();
   //test_energy_diff();
   //equilibrium_time(20, 100000, idum);
   //accepted_configs(20, 100000, idum);
 
-  // parallelization
-  int numprocs;
-  int my_rank;
-  MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  double start, finish;
-  start = clock();
-
-  double Tmin = 2.1, Tmax = 2.3;
-  double Tstep = 0.005;
-  int Tpoints = (Tmax - Tmin) / Tstep;
-  int rankpoints = Tpoints/numprocs; //Number of points this rank will save
-  int MC_steps = 100;
-  int equil = 18;
-  long idum = - 1 - my_rank;
-  vector<double> data_vec;
-  double temp;
-  int L = 40;
-
-  for (int j=0; j<rankpoints; j+=4){ //Tpoints
-    temp = (my_rank+j)*Tstep + Tmin;
-    double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
-    phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
-    data_vec[0] = (double) e_avg/MC_steps;
-    data_vec[1] = (double) e2_avg/MC_steps;
-    data_vec[2] = (double) m_avg/MC_steps;
-    data_vec[3] = (double) m2_avg/MC_steps;
-    // Write file for each temperature
-    ofstream ofile;
-    string filename="L_"+to_string(L)+"_T"+".bin"; //+to_string((int)temp)
-    ofile.open("data/" + filename, ofstream::binary);
-    ofile.write(reinterpret_cast<const char*> (data_vec.data()),
-    data_vec.size()*sizeof(double));
-    ofile.close();
-  }
-
-  finish = clock();
-  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
-  cout << "Calculation completed after " << timeElapsed << "s." << endl;
-  MPI_Finalize();
-  return 0;
-}
-*/
-
-
-int main(int argc, char* argv[]) {
   int numprocs, my_rank;
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
@@ -91,12 +44,22 @@ int main(int argc, char* argv[]) {
 
     if (my_rank==0) cout << "-----\nL: " << L << "\n";
     int MC_steps = MCS/numprocs;
-    int equil = 150*L;
+    int equil = 250*L;
     long idum = - 1 - my_rank;
     double data_vec[4]={0};
     double allocate[4]={0};
 
-    for (double temp=2.26; temp<=2.28; temp+=0.001){
+    vector<double> temp_vec;
+    for (double t=2.1; t<=2.2; t+=0.05) temp_vec.push_back(t);
+    for (double t=2.21; t<=2.26; t+=0.01) temp_vec.push_back(t);
+    for (double t=2.261; t<=2.28; t+=0.001) temp_vec.push_back(t);
+    for (double t=2.29; t<=2.32; t+=0.01) temp_vec.push_back(t);
+    for (double t=2.37; t<=2.57; t+=0.05) temp_vec.push_back(t);
+
+    double temp;
+    int N = temp_vec.size();
+    for (int i=0; i<N; i++) {
+      temp = temp_vec[i];
       double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
       phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
       data_vec[0] = e_avg;
@@ -117,8 +80,6 @@ int main(int argc, char* argv[]) {
           //cout << names_list[i] << allocate[i] << "\n";
         }
       }
-
-
       // Write file traditionally:
 
       if (my_rank==0 && fileBool==true){
@@ -143,18 +104,6 @@ int main(int argc, char* argv[]) {
         ofile << setw(20) << setprecision(10) << allocate[2];
         ofile << setw(20) << setprecision(10) << allocate[3] << endl;
       }
-
-
-
-      // Perhaps unnecessary to write to a file.
-      // Write file for each temperature and dimension L
-      /*
-      ofstream ofile;
-      string filename = "L_" + to_string(L) + "T_" + to_string(int(t)) + ".bin";
-      ofile.open("data/" + filename, ofstream::binary);
-      ofile.write(reinterpret_cast<const char*> (data_vec.data()),
-      data_vec.size()*sizeof(double));
-      ofile.close();*/
     }
     ofile.close();
     fileBool=true;
@@ -175,6 +124,7 @@ void lattice_solve(int L, int max_MC_steps, double temp, long idum) {
    * and magnetic susceptibility for an LxL lattice for a given number of
    * Monte Carlo cycles and temperature
    */
+
   // Outer loop with various number of MC cycles: 1e1, 1e3, 1e5, 1e7
   for (int MC_steps=10; MC_steps<=max_MC_steps; MC_steps*=100) {
     double start, finish;
@@ -279,7 +229,7 @@ void equilibrium_time(int L, int MC_steps, long idum) {
       }
 
       vector<int> energy_variance;
-      // calculate varance for last ten points
+      // calculate varance for last 5 points
       for (int i=4; i<MC_steps; i++) {
         double variance = 0;
         double mean = 0;
@@ -289,13 +239,14 @@ void equilibrium_time(int L, int MC_steps, long idum) {
         for (int j=i; j>i-5; j--) {
           variance += 0.2*fabs(energy_vec[j] - mean);
         }
+        // Only use if you want to print equiltime to terminal
         /*if (variance < 6){
-          cout << "Equil after " << i << "MCS" << "\n";
+          int equil = j;
           break;
-        }*/
+        } */
         energy_variance.push_back((int) fabs(variance));
       }
-
+      // Write to file energy, magnetization and variance
       string list[3] = {"E", "M", "V"};
       vector<int> vecs[3] = {energy_vec, magnet_vec, energy_variance};
       for (int i=0; i<3; i++){
@@ -306,7 +257,7 @@ void equilibrium_time(int L, int MC_steps, long idum) {
         ofile.close();
         cout << "File " << filename << " written" << "\n";
       }
-
+      // Write to file MC cycles
       ofstream ofile1;
       string filename1="equiltime_MC.bin";
       ofile1.open("data/" + filename1, ofstream::binary);
@@ -392,8 +343,8 @@ vector<int> prob_distribution(vector<int> energy_vec) {
   * variance in energy.
   */
 
-  int total = energy_vec.size(), startVal;
-  startVal = total/2; // decide where to start counting. Should be after equilibrium.
+  int total = energy_vec.size();
+  int startVal = total*0.01; // decide where to start counting. Should be after equilibrium.
   double mean, std, sum=0, variance=0, count=0, newSize;
   newSize = total-startVal;
 
@@ -432,7 +383,9 @@ vector<int> prob_distribution(vector<int> energy_vec) {
   return prob_histogram;
 }
 
-void phase_transition(int L, double temp, int equiltime, double &e_avg, double &e2_avg, double &m_avg, double &m2_avg, int MC_steps, long& idum) {
+void phase_transition(int L, double temp, int equiltime, double &e_avg,
+                      double &e2_avg, double &m_avg, double &m2_avg,
+                      int MC_steps, long& idum) {
   /*
    * Run MC_steps number of Monte Carlo cycles after specified equiltime
    * Update values for E, E^2, |M| and M^2*

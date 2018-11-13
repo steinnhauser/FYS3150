@@ -28,10 +28,13 @@ def plot_equilibration_time():
             mean = p[2]
             std = p[3]
             energylist = p[4:]
+            e = np.asarray(energylist)
+            top = np.max(e)
             E = np.linspace(emin, emax, len(energylist))
             plt.bar(E, energylist,\
             label="T=%1.1f, $\\mu = %1.1f$, $\\sigma_E=%1.1f$" %(T,mean,std), \
             width=4, edgecolor="g")
+            plt.plot(E,top*np.exp(-(E-mean)**2/(2*std**2)))
             plt.xlabel("Energy level [J]")
             plt.ylabel("Number counted []")
             plt.grid()
@@ -40,8 +43,8 @@ def plot_equilibration_time():
 
         plt.figure() # energy plot
         plt.title(title + ' initial state')
-        plt.plot(mc,energies[0],label='T=1.0')
-        plt.plot(mc,energies[1],label='T=2.4')
+        plt.plot(mc,energies[0]/400,label='T=1.0')
+        plt.plot(mc,energies[1]/400,label='T=2.4')
         plt.xlabel('Number of Monte Carlo cycles')
         plt.ylabel(r'E')
         plt.legend()
@@ -50,8 +53,8 @@ def plot_equilibration_time():
 
         plt.figure() # Magnetization plot
         plt.title(title + ' initial state')
-        plt.plot(mc,magnet[0],label='T=1.0')
-        plt.plot(mc,magnet[1],label='T=2.4')
+        plt.plot(mc,magnet[0]/400,label='T=1.0')
+        plt.plot(mc,magnet[1]/400,label='T=2.4')
         plt.xlabel('Number of Monte Carlo cycles')
         plt.ylabel(r'M')
         plt.legend()
@@ -167,9 +170,9 @@ def plot_lattice_L():
 
 
 def main():
-    #plot_equilibration_time()
-    #plot_accepted()
-    plot_lattice_L()
+    # plot_equilibration_time()
+    plot_accepted()
+    # plot_lattice_L()
 
 
 if __name__=='__main__':

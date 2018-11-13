@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <iostream>
-#include "ran1.h"
+#include "ran2.h"
 using namespace std;
 
 void metropolis(int** spin_matrix, int L, double& energy, double& magnetization,

@@ -13,10 +13,10 @@ void metropolis(int** spin_matrix, int L, double& energy, double& magnetization,
   for (int x=0; x<L; x++) {
     for (int y=0; y<L; y++) {
       // choose random indices
-      int ix = (int) (ran1(&idum)*L);
-      int iy = (int) (ran1(&idum)*L);
+      int ix = (int) (ran2(&idum)*L);
+      int iy = (int) (ran2(&idum)*L);
       int d_energy = energy_diff(ix,iy,L,spin_matrix);
-      if (w[d_energy+8] >= ran1(&idum)) {
+      if (w[d_energy+8] >= ran2(&idum)) {
         energy += (double) d_energy;
         acceptedConfigs++;
         spin_matrix[ix][iy] *= -1;
