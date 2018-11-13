@@ -32,11 +32,13 @@ def plot_equilibration_time():
             top = np.max(e)
             E = np.linspace(emin, emax, len(energylist))
             plt.bar(E, energylist,\
-            label="T=%1.1f, $\\mu = %1.1f$, $\\sigma_E=%1.1f$" %(T,mean,std), \
+            label="T=%1.1f" %T, \
             width=4, edgecolor="g")
-            plt.plot(E,top*np.exp(-(E-mean)**2/(2*std**2)))
-            plt.xlabel("Energy level [J]")
-            plt.ylabel("Number counted []")
+            if T==2.4:
+                plt.plot(E,top*np.exp(-(E-mean)**2/(2*std**2)),'y-',label='Gaussian fit')
+            plt.plot([mean,mean],[0,top],'r-',label=r'$\mu = %1.1f, \sigma_E=%1.1f$' %(mean,std))
+            plt.xlabel("Total energy [J]")
+            plt.ylabel("Number counted")
             plt.grid()
             plt.legend(loc="best")
             plt.show()
@@ -168,11 +170,11 @@ def plot_lattice_L():
     plt.show()
 
 
-
 def main():
-    # plot_equilibration_time()
+    plt.rcParams.update({'font.size': 12})
+    plot_equilibration_time()
     # plot_accepted()
-    plot_lattice_L()
+    # plot_lattice_L()
 
 
 if __name__=='__main__':
