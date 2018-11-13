@@ -95,15 +95,16 @@ def plot_accepted():
 
 def plot_lattice_L():
     lattices = ["40", "60", "80", "100"]
-    for i in range(4):
+    cv_s = []
+    chi_s = []
+    temp_s = []
+    for lattice_nr in lattices:
         T = []
         E = []
         E2 = []
         M = []
         M2 = []
-        CV = []
-        CHI = []
-        filename = "data/lattice_" + lattices[i] + ".bin"
+        filename = "data/lattice_" + lattice_nr + ".bin"
         infile=open(filename, "r")
         infile.readline() #first line is indexing
         for line in infile:
@@ -113,11 +114,29 @@ def plot_lattice_L():
             E2.append(eval(a[2]))
             M.append(eval(a[3]))
             M2.append(eval(a[4]))
-            """cv = eval(a[2])-eval(a[1])*eval(a[1])
-            CV.append(cv)
-            chi = eval(a[4])-eval(a[3])*eval(a[3])
-            CHI.append(chi)"""
-        plt.plot(T, E)
+        M = np.asarray(M)
+        M2 = np.asarray(M2)
+        E = np.asarray(E)
+        E2 = np.asarray(E2)
+        T = np.asarray(T)
+        temp_s.append(T)
+        chi_s.append(M2-M*M)
+        cv_s.append(E2 - E*E)
+
+    for t,chi,name in zip(temp_s,chi_s,lattices):
+        plt.plot(t,chi/t**2,label=name + r"$\times$" + name)
+    plt.xlabel(r"$T$")
+    plt.ylabel(r"$\chi / T^2$")
+    plt.legend()
+    plt.grid()
+    plt.figure()
+
+    for t,cv,name in zip(temp_s,cv_s,lattices):
+        plt.plot(t,cv/t,label=name + r"$\times$" + name)
+    plt.xlabel(r"$T$")
+    plt.ylabel(r"$C_V / T^2$")
+    plt.legend()
+    plt.grid()
     plt.show()
 
 
