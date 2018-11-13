@@ -80,23 +80,23 @@ int main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  double start, finish;
-  start = clock();
 
   int MCS = 100000;
   ofstream ofile;
   bool fileBool=true;
 
   for (int L=40; L<=100; L+=20) {
+    double start, finish;
+    start = clock();
 
     if (my_rank==0) cout << "-----\nL: " << L << "\n";
     int MC_steps = MCS/numprocs;
-    int equil = 1000;
+    int equil = 18;
     long idum = - 1 - my_rank;
     double data_vec[4]={0};
     double allocate[4]={0};
 
-    for (double temp=2.00; temp<=2.60; temp+=0.005){
+    for (double temp=2.00; temp<=2.60; temp+=0.05){
       double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
       phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
       data_vec[0] = e_avg;
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
         for (int i=0; i<4; i++){
           allocate[i] /= numprocs; //Normalize properly.
           allocate[i] /= L*L; //Make it "Per atom spin"
-          cout << names_list[i] << allocate[i] << "\n";
+          //cout << names_list[i] << allocate[i] << "\n";
         }
       }
 
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 
       if (my_rank==0 && fileBool==true){
         string filename = "./data/lattice_";
-        filename.append(to_string(L) + ".bin");
+        filename.append(to_string(L) + ".txt");
         ofile.open(filename, std::ofstream::out | std::ofstream::trunc);
         ofile << setw(20) << "T:" << setw(20) << "E:" << setw(20) << "E^2: ";
         ofile << setw(20) << "M:" << setw(20) << "M^2: " << endl;
@@ -158,10 +158,12 @@ int main(int argc, char* argv[]) {
     }
     ofile.close();
     fileBool=true;
+    if (my_rank==0){
+      finish = clock();
+      double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
+      cout << "L: " << L << " calculation completed after " << timeElapsed << "s." << endl;
+    }
   }
-  finish = clock();
-  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
-  cout << "Calculation completed after " << timeElapsed << "s." << endl;
   MPI_Finalize();
   return 0;
 }
