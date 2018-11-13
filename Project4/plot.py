@@ -129,15 +129,17 @@ def plot_lattice_L():
         ene_s.append(E)
 
     for t,chi,name in zip(temp_s,chi_s,lattices):
-        plt.plot(t,chi/t**2,label=name + r"$\times$" + name)
+        plt.plot(t,chi,'k.')
+        plt.plot(t,chi,'-',label="L = " + name)
     plt.xlabel(r"$T$")
-    plt.ylabel(r"$\chi / T^2$")
+    plt.ylabel(r"$\chi$")
     plt.legend()
     plt.grid()
     plt.figure()
 
     for t,m,name in zip(temp_s,mag_s,lattices):
-        plt.plot(t,m,label=name + r"$\times$" + name)
+        plt.plot(t,m,'k.')
+        plt.plot(t,m,'-',label="L = " + name)
     plt.xlabel(r"$T$")
     plt.ylabel(r"$\langle |M| \rangle$")
     plt.legend()
@@ -145,17 +147,19 @@ def plot_lattice_L():
     plt.figure()
 
     for t,e,name in zip(temp_s,ene_s,lattices):
-        plt.plot(t,e,label=name + r"$\times$" + name)
+        plt.plot(t,e,'k.')
+        plt.plot(t,e,'-',label="L = " + name)
     plt.xlabel(r"$T$")
-    plt.ylabel(r"$E$")
+    plt.ylabel(r"$\langle E \rangle$")
     plt.legend()
     plt.grid()
     plt.figure()
 
     for t,cv,name in zip(temp_s,cv_s,lattices):
-        plt.plot(t,cv,label=name + r"$\times$" + name)
+        plt.plot(t,cv,'k.')
+        plt.plot(t,cv,'-',label="L = " + name)
     plt.xlabel(r"$T$")
-    plt.ylabel(r"$C_V / spin^2$")
+    plt.ylabel(r"$C_V$")
     plt.legend()
     plt.grid()
     plt.show()

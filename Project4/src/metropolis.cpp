@@ -7,6 +7,7 @@ void metropolis(int** spin_matrix, int L, double& energy, double& magnetization,
    * Random indices [ix][iy] are chosen each iteration
    * Energy difference (when spin[ix][iy] is flipped) is found using energy_diff()
    * Accept or decline move according to Metropolis algorithm
+   * 1 Call to metropolis calls ran1 3xLxL times
    */
 
   for (int x=0; x<L; x++) {

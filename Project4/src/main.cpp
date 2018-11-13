@@ -91,12 +91,12 @@ int main(int argc, char* argv[]) {
 
     if (my_rank==0) cout << "-----\nL: " << L << "\n";
     int MC_steps = MCS/numprocs;
-    int equil = 150;
+    int equil = 150*L;
     long idum = - 1 - my_rank;
     double data_vec[4]={0};
     double allocate[4]={0};
 
-    for (double temp=2.00; temp<=2.25; temp+=0.05){
+    for (double temp=2.26; temp<=2.28; temp+=0.001){
       double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
       phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
       data_vec[0] = e_avg;
