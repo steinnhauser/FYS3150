@@ -98,13 +98,16 @@ def plot_lattice_L():
     cv_s = []
     chi_s = []
     temp_s = []
+    mag_s = []
+    ene_s = []
     for lattice_nr in lattices:
+        spins = float(eval(lattice_nr))**2
         T = []
         E = []
         E2 = []
         M = []
         M2 = []
-        filename = "data/lattice_" + lattice_nr + ".bin"
+        filename = "data/lattice_" + lattice_nr + ".txt"
         infile=open(filename, "r")
         infile.readline() #first line is indexing
         for line in infile:
@@ -120,8 +123,10 @@ def plot_lattice_L():
         E2 = np.asarray(E2)
         T = np.asarray(T)
         temp_s.append(T)
-        chi_s.append(M2-M*M)
-        cv_s.append(E2 - E*E)
+        chi_s.append(M2 - (M*M*spins))
+        cv_s.append(E2 - (E*E*spins))
+        mag_s.append(np.abs(M))
+        ene_s.append(E)
 
     for t,chi,name in zip(temp_s,chi_s,lattices):
         plt.plot(t,chi/t**2,label=name + r"$\times$" + name)
@@ -131,10 +136,26 @@ def plot_lattice_L():
     plt.grid()
     plt.figure()
 
-    for t,cv,name in zip(temp_s,cv_s,lattices):
-        plt.plot(t,cv/t,label=name + r"$\times$" + name)
+    for t,m,name in zip(temp_s,mag_s,lattices):
+        plt.plot(t,m,label=name + r"$\times$" + name)
     plt.xlabel(r"$T$")
-    plt.ylabel(r"$C_V / T^2$")
+    plt.ylabel(r"$\langle |M| \rangle$")
+    plt.legend()
+    plt.grid()
+    plt.figure()
+
+    for t,e,name in zip(temp_s,ene_s,lattices):
+        plt.plot(t,e,label=name + r"$\times$" + name)
+    plt.xlabel(r"$T$")
+    plt.ylabel(r"$E$")
+    plt.legend()
+    plt.grid()
+    plt.figure()
+
+    for t,cv,name in zip(temp_s,cv_s,lattices):
+        plt.plot(t,cv,label=name + r"$\times$" + name)
+    plt.xlabel(r"$T$")
+    plt.ylabel(r"$C_V / spin^2$")
     plt.legend()
     plt.grid()
     plt.show()
