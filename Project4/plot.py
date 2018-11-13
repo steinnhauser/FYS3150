@@ -171,8 +171,8 @@ def plot_lattice_L():
 
 def main():
     # plot_equilibration_time()
-    plot_accepted()
-    # plot_lattice_L()
+    # plot_accepted()
+    plot_lattice_L()
 
 
 if __name__=='__main__':

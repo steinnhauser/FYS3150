@@ -117,7 +117,6 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-
 void lattice_solve(int L, int max_MC_steps, double temp, long idum) {
   /*
    * Calculate expectation values for Energy and Magnetism, Heat capacity

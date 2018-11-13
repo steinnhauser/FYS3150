@@ -1,0 +1,219 @@
+RUN,
+  idum = -1;
+  lattice_solve(2,10000000,1.0,idum);
+      simen@VirtualBox:~/FYS3150/Project4$ make
+          Compiled src/spin_initializer.cpp successfully!
+          Compiled src/main.cpp successfully!
+          Linking complete!
+          test.x ready to run!
+      simen@VirtualBox:~/FYS3150/Project4$ ./test.x
+          10 Simulations for 10 MC cycles produced expectation values:
+          E:   -6.16. Error= -228.44725
+          E^2: 49.28. Error= 228.44967
+          M:   3.46. Error= 133.83067
+          M^2: 13.08. Error= 181.12839
+          Cv:  8.512. Error= 65344.505
+          chi: 0.876. Error= 53750
+
+          Time taken 0.000285
+          10 Simulations for 1000 MC cycles produced expectation values:
+          E:   -7.9808. Error= -0.38828142
+          E^2: 63.8592. Error= 0.19100881
+          M:   3.994. Error= 0.15020277
+          M^2: 15.9696. Error= 0.22537751
+          Cv:  0.1659008. Error= 293.06937
+          chi: 0.017548. Error= 96.75
+
+          Time taken 0.005111
+          10 Simulations for 100000 MC cycles produced expectation values:
+          E:   -7.98432. Error= -0.052605869
+          E^2: 63.87456. Error= 0.049474413
+          M:   3.994712. Error= 0.028037851
+          M^2: 15.973744. Error= 0.034057046
+          Cv:  0.12519237. Error= 24.221601
+          chi: 0.016019824. Error= 1.23902
+
+          Time taken 0.500457
+          10 Simulations for 10000000 MC cycles produced expectation values:
+          E:   -7.9840575. Error= -0.019729706
+          E^2: 63.872476. Error= 0.016838836
+          M:   3.9946891. Error= 0.022315125
+          M^2: 15.973437. Error= 0.014822327
+          Cv:  0.12730098. Error= 7.7865825
+          chi: 0.015895429. Error= 6.5357126
+
+          Time taken 51.226678
+
+RUN
+  parallelized code
+  MC = 10^5
+  equil = 250*L
+      simen@VirtualBox:~/FYS3150/Project4$ make
+          Compiled src/main.cpp successfully!
+          Linking complete!
+          test.x ready to run!
+      simen@VirtualBox:~/FYS3150/Project4$ mpirun -n 4 ./test.x
+          -----
+          L: 40
+          Temperature T=2.1
+          Temperature T=2.15
+          Temperature T=2.2
+          Temperature T=2.21
+          Temperature T=2.22
+          Temperature T=2.23
+          Temperature T=2.24
+          Temperature T=2.25
+          Temperature T=2.26
+          Temperature T=2.261
+          Temperature T=2.262
+          Temperature T=2.263
+          Temperature T=2.264
+          Temperature T=2.265
+          Temperature T=2.266
+          Temperature T=2.267
+          Temperature T=2.268
+          Temperature T=2.269
+          Temperature T=2.27
+          Temperature T=2.271
+          Temperature T=2.272
+          Temperature T=2.273
+          Temperature T=2.274
+          Temperature T=2.275
+          Temperature T=2.276
+          Temperature T=2.277
+          Temperature T=2.278
+          Temperature T=2.279
+          Temperature T=2.28
+          Temperature T=2.29
+          Temperature T=2.3
+          Temperature T=2.31
+          Temperature T=2.32
+          Temperature T=2.37
+          Temperature T=2.42
+          Temperature T=2.47
+          Temperature T=2.52
+          Temperature T=2.57
+          L: 40 calculation completed after 236.861s.
+          -----
+          L: 60
+          Temperature T=2.1
+          Temperature T=2.15
+          Temperature T=2.2
+          Temperature T=2.21
+          Temperature T=2.22
+          Temperature T=2.23
+          Temperature T=2.24
+          Temperature T=2.25
+          Temperature T=2.26
+          Temperature T=2.261
+          Temperature T=2.262
+          Temperature T=2.263
+          Temperature T=2.264
+          Temperature T=2.265
+          Temperature T=2.266
+          Temperature T=2.267
+          Temperature T=2.268
+          Temperature T=2.269
+          Temperature T=2.27
+          Temperature T=2.271
+          Temperature T=2.272
+          Temperature T=2.273
+          Temperature T=2.274
+          Temperature T=2.275
+          Temperature T=2.276
+          Temperature T=2.277
+          Temperature T=2.278
+          Temperature T=2.279
+          Temperature T=2.28
+          Temperature T=2.29
+          Temperature T=2.3
+          Temperature T=2.31
+          Temperature T=2.32
+          Temperature T=2.37
+          Temperature T=2.42
+          Temperature T=2.47
+          Temperature T=2.52
+          Temperature T=2.57
+          L: 60 calculation completed after 608.384s.
+          -----
+          L: 80
+          Temperature T=2.1
+          Temperature T=2.15
+          Temperature T=2.2
+          Temperature T=2.21
+          Temperature T=2.22
+          Temperature T=2.23
+          Temperature T=2.24
+          Temperature T=2.25
+          Temperature T=2.26
+          Temperature T=2.261
+          Temperature T=2.262
+          Temperature T=2.263
+          Temperature T=2.264
+          Temperature T=2.265
+          Temperature T=2.266
+          Temperature T=2.267
+          Temperature T=2.268
+          Temperature T=2.269
+          Temperature T=2.27
+          Temperature T=2.271
+          Temperature T=2.272
+          Temperature T=2.273
+          Temperature T=2.274
+          Temperature T=2.275
+          Temperature T=2.276
+          Temperature T=2.277
+          Temperature T=2.278
+          Temperature T=2.279
+          Temperature T=2.28
+          Temperature T=2.29
+          Temperature T=2.3
+          Temperature T=2.31
+          Temperature T=2.32
+          Temperature T=2.37
+          Temperature T=2.42
+          Temperature T=2.47
+          Temperature T=2.52
+          Temperature T=2.57
+          L: 80 calculation completed after 1215.28s.
+          -----
+          L: 100
+          Temperature T=2.1
+          Temperature T=2.15
+          Temperature T=2.2
+          Temperature T=2.21
+          Temperature T=2.22
+          Temperature T=2.23
+          Temperature T=2.24
+          Temperature T=2.25
+          Temperature T=2.26
+          Temperature T=2.261
+          Temperature T=2.262
+          Temperature T=2.263
+          Temperature T=2.264
+          Temperature T=2.265
+          Temperature T=2.266
+          Temperature T=2.267
+          Temperature T=2.268
+          Temperature T=2.269
+          Temperature T=2.27
+          Temperature T=2.271
+          Temperature T=2.272
+          Temperature T=2.273
+          Temperature T=2.274
+          Temperature T=2.275
+          Temperature T=2.276
+          Temperature T=2.277
+          Temperature T=2.278
+          Temperature T=2.279
+          Temperature T=2.28
+          Temperature T=2.29
+          Temperature T=2.3
+          Temperature T=2.31
+          Temperature T=2.32
+          Temperature T=2.37
+          Temperature T=2.42
+          Temperature T=2.47
+          Temperature T=2.52
+          Temperature T=2.57
+L: 100 calculation completed after 2110.12s.
