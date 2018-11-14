@@ -45,8 +45,8 @@ def plot_equilibration_time():
 
         plt.figure() # energy plot
         plt.title(title + ' initial state')
-        plt.plot(mc,energies[0]/400,label='T=1.0')
-        plt.plot(mc,energies[1]/400,label='T=2.4')
+        plt.plot(mc,energies[0]/400.,label='T=1.0')
+        plt.plot(mc,energies[1]/400.,label='T=2.4')
         plt.xlabel('Number of Monte Carlo cycles')
         plt.ylabel(r'E')
         plt.legend()
@@ -55,8 +55,8 @@ def plot_equilibration_time():
 
         plt.figure() # Magnetization plot
         plt.title(title + ' initial state')
-        plt.plot(mc,magnet[0]/400,label='T=1.0')
-        plt.plot(mc,magnet[1]/400,label='T=2.4')
+        plt.plot(mc,magnet[0]/400.,label='T=1.0')
+        plt.plot(mc,magnet[1]/400.,label='T=2.4')
         plt.xlabel('Number of Monte Carlo cycles')
         plt.ylabel(r'M')
         plt.legend()
@@ -65,7 +65,7 @@ def plot_equilibration_time():
 
     plt.figure() # Magnetization plot
     plt.title('Random initial state, T=1.0')
-    plt.plot(mc[4:],variance[2])
+    plt.plot(mc[9:],variance[2])
     plt.xlabel('Number of Monte Carlo cycles')
     plt.ylabel(r'$Variance, \sigma_E^2, [J^2]$')
     # plt.legend()
@@ -77,7 +77,7 @@ def plot_accepted():
     filepath0 = "data/acc_mc.bin"
     mc = np.fromfile(filepath0, dtype=np.int32)
     filepath1 = "data/acceptedconfigs_MC.bin"
-    ac_mc = np.fromfile(filepath1, dtype=np.float64)
+    ac_mc = np.fromfile(filepath1, dtype=np.int32)
     plt.figure()
     plt.title("Temperature T = 1.0")
     plt.plot(mc, ac_mc)
@@ -173,7 +173,7 @@ def plot_lattice_L():
 def main():
     plt.rcParams.update({'font.size': 12})
     plot_equilibration_time()
-    # plot_accepted()
+    plot_accepted()
     # plot_lattice_L()
 
 

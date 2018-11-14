@@ -22,13 +22,13 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
 
 
 int main(int argc, char* argv[]) {
-  long idum = -1;
+  long idum = -6;
   //lattice_solve(2,10000000,1.0,idum);
   //test_initial_lattice();
   //test_energy_diff();
-  //equilibrium_time(20, 100000, idum);
-  //accepted_configs(20, 100000, idum);
-
+  //equilibrium_time(20, 10000, idum);
+  accepted_configs(20, 10000, idum);
+  /*
   int numprocs, my_rank;
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     for (int i=0; i<N; i++) {
       temp = temp_vec[i];
       double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
-      phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum);
+      phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum); // MCsteps: equil + MC_steps
       data_vec[0] = e_avg;
       data_vec[1] = e2_avg;
       data_vec[2] = m_avg;
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
       cout << "L: " << L << " calculation completed after " << timeElapsed << "s." << endl;
     }
   }
-  MPI_Finalize();
+  MPI_Finalize();*/
   return 0;
 }
 
@@ -179,12 +179,12 @@ void lattice_solve(int L, int max_MC_steps, double temp, long idum) {
     // Analytic values to compute relative error
     double analytics[6] = {-7.9839, 63.8714, 3.9946, 15.9732, 0.1283, 0.016};
     cout << "10 Simulations for " << MC_steps << " MC cycles produced expectation values:" << endl;
-    cout << setprecision(8) << "E:   " << avgs[0] << ". Error= " << fabs(avgs[0]-analytics[0])*1000/analytics[0] << endl;
-    cout << setprecision(8) << "E^2: " << avgs[1] << ". Error= " << fabs(avgs[1]-analytics[1])*1000/analytics[1] << endl;
-    cout << setprecision(8) << "M:   " << avgs[2] << ". Error= " << fabs(avgs[2]-analytics[2])*1000/analytics[2] << endl;
-    cout << setprecision(8) << "M^2: " << avgs[3] << ". Error= " << fabs(avgs[3]-analytics[3])*1000/analytics[3] << endl;
-    cout << setprecision(8) << "Cv:  " << avgs[4] << ". Error= " << fabs(avgs[4]-analytics[4])*1000/analytics[4] << endl;
-    cout << setprecision(8) << "chi: " << avgs[5] << ". Error= " << fabs(avgs[5]-analytics[5])*1000/analytics[5] << endl << endl;
+    cout << setprecision(8) << "E:   " << avgs[0] << ". Error= " << fabs(avgs[0]-analytics[0])/analytics[0] << endl;
+    cout << setprecision(8) << "E^2: " << avgs[1] << ". Error= " << fabs(avgs[1]-analytics[1])/analytics[1] << endl;
+    cout << setprecision(8) << "M:   " << avgs[2] << ". Error= " << fabs(avgs[2]-analytics[2])/analytics[2] << endl;
+    cout << setprecision(8) << "M^2: " << avgs[3] << ". Error= " << fabs(avgs[3]-analytics[3])/analytics[3] << endl;
+    cout << setprecision(8) << "Cv:  " << avgs[4] << ". Error= " << fabs(avgs[4]-analytics[4])/analytics[4] << endl;
+    cout << setprecision(8) << "chi: " << avgs[5] << ". Error= " << fabs(avgs[5]-analytics[5])/analytics[5] << endl << endl;
 
     finish = clock();
     double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
@@ -203,7 +203,7 @@ void equilibrium_time(int L, int MC_steps, long idum) {
   // loop over ordered and random initial state
   for (int order=0; order<2; order++) {
     // loop over two temperatures T=1.0 and T=2.4
-    for (double temp = 1.0; temp<=2.4; temp+=1.4) {
+    for (double temp=1.0; temp<=2.4; temp+=1.4) {
       // initialization
       double magnetization=0;
       double energy=0;
@@ -224,27 +224,31 @@ void equilibrium_time(int L, int MC_steps, long idum) {
         mc_cycles_vec.push_back(mc); // proportional to time
         energy_vec.push_back(energy);
         magnet_vec.push_back(magnetization);
+        /*if (energy/400. == -2.0) {
+          cout << "Equilibrium reached at mc step: " << mc << endl; break;
+        }*/
         metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
       }
 
       vector<int> energy_variance;
-      // calculate varance for last 5 points
-      for (int i=4; i<MC_steps; i++) {
+      // calculate varance for last 10 points
+      for (int i=9; i<MC_steps; i++) {
         double variance = 0;
         double mean = 0;
-        for (int j=i; j>i-5; j--) {
-          mean += 0.2*energy_vec[j];
+        for (int j=i; j>i-10; j--) {
+          mean += 0.1*energy_vec[j];
         }
-        for (int j=i; j>i-5; j--) {
-          variance += 0.2*fabs(energy_vec[j] - mean);
+        for (int j=i; j>i-10; j--) {
+          variance += 0.1*fabs(energy_vec[j] - mean);
         }
         // Only use if you want to print equiltime to terminal
         /*if (variance < 6){
           int equil = j;
           break;
-        } */
+        }*/
         energy_variance.push_back((int) fabs(variance));
       }
+
       // Write to file energy, magnetization and variance
       string list[3] = {"E", "M", "V"};
       vector<int> vecs[3] = {energy_vec, magnet_vec, energy_variance};
@@ -289,7 +293,7 @@ void accepted_configs(int L, int MC_steps, long idum) {
   vector<double> temp_vec;
   vector<int> mc_vec;
   vector<double> accepted_vec_T;
-  vector<double> accepted_vec_MC;
+  vector<int> accepted_vec_MC;
   // loop over temperatures
   for (double temp = 1.0; temp<=2.4; temp+=0.05) {
     // initialization
@@ -301,7 +305,7 @@ void accepted_configs(int L, int MC_steps, long idum) {
         w[i] = exp(-beta*(i-8));
       } else w[i] = 0;
     }
-    Initialize_spins(spin_matrix, L, true, magnetization, energy, idum);
+    Initialize_spins(spin_matrix, L, false, magnetization, energy, idum);
     // Monte Carlo cycles
     int acceptedConfigs=0;
     for (int mc=0; mc<MC_steps; mc++) {
@@ -313,23 +317,29 @@ void accepted_configs(int L, int MC_steps, long idum) {
     }
     // average accepted configs as a function of T
     temp_vec.push_back(temp);
-    accepted_vec_T.push_back((float)acceptedConfigs/(MC_steps-1));
+    accepted_vec_T.push_back((double)acceptedConfigs/(MC_steps-1));
   }
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
   // write file
-  vector<double> vec_list[3] = {temp_vec, accepted_vec_T, accepted_vec_MC};
-  string string_list[3] = {"acc_temps", "acceptedconfigs_T", "acceptedconfigs_MC"};
-  for (int i=0; i<3; i++){
+  vector<double> vec_list[2] = {temp_vec, accepted_vec_T};
+  string string_list[2] = {"acc_temps", "acceptedconfigs_T"};
+  for (int i=0; i<2; i++){
     ofstream ofile;
     string filename=string_list[i] + ".bin";
     ofile.open("data/" + filename, ofstream::binary);
     ofile.write(reinterpret_cast<const char*> (vec_list[i].data()),vec_list[i].size()*sizeof(double));
     ofile.close();
   }
-  ofstream ofile2;
-  ofile2.open("data/acc_mc.bin");
-  ofile2.write(reinterpret_cast<const char*> (mc_vec.data()),mc_vec.size()*sizeof(int));
-  ofile2.close();
+
+  vector<int> vec_list1[2] = {mc_vec, accepted_vec_MC};
+  string string_list1[2] = {"acc_mc", "acceptedconfigs_MC"};
+  for (int i=0; i<2; i++){
+    ofstream ofile2;
+    string filename=string_list1[i] + ".bin";
+    ofile2.open("data/" + filename, ofstream::binary);
+    ofile2.write(reinterpret_cast<const char*> (vec_list1[i].data()),vec_list1[i].size()*sizeof(int));
+    ofile2.close();
+  }
 }
 
 vector<int> prob_distribution(vector<int> energy_vec) {
@@ -421,7 +431,3 @@ void phase_transition(int L, double temp, int equiltime, double &e_avg,
   m2_avg /= MC_steps;
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
 }
-
-/*
-
-*/
