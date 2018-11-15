@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
   double start, loopstart;
   start = clock();
   // Lattice loop
-  for (int L=80; L<=80; L+=20)
+  for (int L=100; L<=100; L+=20)
   {
     if (my_rank==0) cout << "-----\nL: " << L << "\n";
     int MC_steps = MCS/numprocs;
