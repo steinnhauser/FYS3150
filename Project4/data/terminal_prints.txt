@@ -219,6 +219,24 @@ RUN
 L: 100 calculation completed after 2110.12s.
 
 RUN
+    Time comparison
+        simen@VirtualBox:~/FYS3150/Project4$ mpirun -n 6 ./test.x
+            -----
+            L: 40
+            Temperature T=2, time: 53.1408 s.
+            Temperature T=2.1, time: 46.6166 s.
+            Temperature T=2.15, time: 75.5348 s.
+            Temperature T=2.2, time: 43.6026 s.
+            Temperature T=2.21, time: 52.3609 s.
+        simen@VirtualBox:~/FYS3150/Project4$ mpirun -n 1 ./test.x
+            -----
+            L: 40
+            Temperature T=2, time: 183.393 s.
+            Temperature T=2.1, time: 180.705 s.
+            Temperature T=2.15, time: 183.797 s.
+            Temperature T=2.2, time: 205.841 s.
+            Temperature T=2.21, time: 206.753 s.
+
     Parallelized code, with 10^6 MC cycles
         simen@VirtualBox:~/FYS3150/Project4$ mpirun -n 4 ./test.x
             -----
@@ -246,3 +264,29 @@ RUN
             Temperature T=2.5
             Temperature T=2.6
             L: 40 calculation completed after 986.013s.
+            simen@VirtualBox:~/FYS3150/Project4$ mpirun -n 6 ./test.x
+    -----
+    L: 80
+    Temperature T=2, time: 232.04 s.
+    Temperature T=2.1, time: 239.537 s.
+    Temperature T=2.15, time: 195.316 s.
+    Temperature T=2.2, time: 203.334 s.
+    Temperature T=2.21, time: 197.204 s.
+    Temperature T=2.22, time: 195.679 s.
+    Temperature T=2.23, time: 216.877 s.
+    Temperature T=2.24, time: 201.771 s.
+    Temperature T=2.25, time: 224.718 s.
+    Temperature T=2.26, time: 203.567 s.
+    Temperature T=2.265, time: 222.498 s.
+    Temperature T=2.27, time: 197.301 s.
+    Temperature T=2.275, time: 204.445 s.
+    Temperature T=2.28, time: 200.549 s.
+    Temperature T=2.29, time: 207.38 s.
+    Temperature T=2.3, time: 213.497 s.
+    Temperature T=2.31, time: 195.618 s.
+    Temperature T=2.32, time: 216.72 s.
+    Temperature T=2.37, time: 215.472 s.
+    Temperature T=2.42, time: 207.47 s.
+    Temperature T=2.5, time: 230.03 s.
+    Temperature T=2.6, time: 143.762 s.
+    L: 80 calculation completed after 4564.78s.

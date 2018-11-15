@@ -40,13 +40,11 @@ int main(int argc, char* argv[]) {
   int MCS = 1000000;
   ofstream ofile;
   bool fileBool=true;
-
+  double start, loopstart;
+  start = clock();
   // Lattice loop
-  for (int L=40; L<=40; L+=20)
+  for (int L=80; L<=80; L+=20)
   {
-    double start, finish;
-    start = clock();
-
     if (my_rank==0) cout << "-----\nL: " << L << "\n";
     int MC_steps = MCS/numprocs;
     int equiltime = 250*L;
@@ -74,6 +72,7 @@ int main(int argc, char* argv[]) {
     // Temperature loop
     for (int i=0; i<N; i++)
     {
+      loopstart = clock();
       // Initialization
       temp = temp_vec[i];
       double *w;
@@ -110,7 +109,7 @@ int main(int argc, char* argv[]) {
 
       if (my_rank==0)
       {
-        cout << "Temperature T=" << temp << "\n";
+        cout << "Temperature T=" << temp;
         for (int i=0; i<4; i++)
         {
           allocate[i] /= numprocs; //Normalize properly.
@@ -146,13 +145,17 @@ int main(int argc, char* argv[]) {
         ofile << setw(20) << setprecision(10) << allocate[2];
         ofile << setw(20) << setprecision(10) << allocate[3] << endl;
       }
+      if (my_rank==0)
+      {
+        double timeElapsed = (clock()-loopstart)/CLOCKS_PER_SEC;
+        cout << ", time: " << timeElapsed << " s." << endl;
+      }
     } // temperature loop end
     ofile.close();
     fileBool=true;
     if (my_rank==0)
     {
-      finish = clock();
-      double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
+      double timeElapsed = (clock()-start)/CLOCKS_PER_SEC;
       cout << "L: " << L << " calculation completed after " << timeElapsed << "s." << endl;
     }
     for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
