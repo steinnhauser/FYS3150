@@ -15,13 +15,23 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-  long idum = -10; // RNG seed: negative integer
+  long idum = -6; // RNG seed requires a negative integer
+
   // finds expectation values for 10^1, 10^3, 10^5 ,... MC cycles
   // lattice_solve_2x2(10000000,1.0,idum);
+
   test_initial_lattice();
   test_energy_diff();
-  // equilibrium_time(20, 10000, idum);
-  accepted_configs(20, 10000, idum);
+
+  // calculates the mean values and probability distribution
+  equilibrium_time(20, 100000, idum);
+
+  // calculates the average of total number of accepted configurations as a
+  // function of Mc cycles.. Also calculates the total number of accepted
+  // configurations per MC cycle per spin as a function of the temperature.
+  // accepted_configs(20, 100000, idum);
+
+  // Parallelization, find <E>, <M>, C_V and chi for different L and T
   /*
   int numprocs, my_rank;
   MPI_Init(&argc, &argv);

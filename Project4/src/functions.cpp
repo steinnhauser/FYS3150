@@ -25,7 +25,7 @@ void write_bin_file_double(string fn, vector<double> write_vec){
   cout << "File " << fn << " written." << "\n";
 }
 
-void write_bin_file_int(string fn, vector<int> write_vec){\
+void write_bin_file_int(string fn, vector<int> write_vec){
   /*
    * Function which writes vectors of type <int> as binary files
    */
@@ -150,12 +150,13 @@ void equilibrium_time(int L, int MC_steps, long idum) {
       vector<int> probvec = prob_distribution(energy_vec);
 
       // Write the data to binary files accordingly
-      string fn_E = "data/equiltime_"+to_string(order)+"_T"+to_string((int)temp)+ "E.bin";
-      string fn_M = "data/equiltime_"+to_string(order)+"_T"+to_string((int)temp)+ "M.bin";
-      string fn_P = "data/Eprob_"+to_string(order)+"_T"+to_string((int)temp)+".bin";
+      string fn_E = "equiltime_"+to_string(order)+"_T"+to_string((int)temp)+ "_E.bin";
+      string fn_M = "equiltime_"+to_string(order)+"_T"+to_string((int)temp)+ "_M.bin";
+      string fn_P = "Eprob_"+to_string(order)+"_T"+to_string((int)temp)+".bin";
+      string fn_MC = "equiltime_MC.bin";
       write_bin_file_int(fn_E,energy_vec);
       write_bin_file_int(fn_M,magnet_vec);
-      write_bin_file_int("data/equiltime_MC.bin",mc_cycles_vec);
+      write_bin_file_int(fn_MC,mc_cycles_vec);
       write_bin_file_int(fn_P,probvec);
     }
   }
@@ -173,7 +174,7 @@ void accepted_configs(int L, int MC_steps, long idum) {
   vector<int> mc_vec, accepted_vec_MC;
 
   // loop over temperatures
-  for (double temp = 1.0; temp<=2.4; temp+=0.05)
+  for (double temp = 1.0; temp<=3.0; temp+=0.05)
   {
     // initialization
     double magnetization, energy;
@@ -193,8 +194,11 @@ void accepted_configs(int L, int MC_steps, long idum) {
       }
     }
 
-    // average accepted configs as a function of T
-    double acc_T_perMC = (double)acceptedConfigs/MC_steps;
+    // average accepted configs as a function of T. This should not be sampled
+    // until equilibrium is reached. Loop first through equiltime before
+    // sampling the MC per T.
+
+    double acc_T_perMC = (double)acceptedConfigs/MC_steps/L/L;
     accepted_vec_T.push_back(acc_T_perMC);
     temp_vec.push_back(temp);
   }
@@ -226,7 +230,10 @@ vector<int> prob_distribution(vector<int> energy_vec) {
   */
 
   int total = energy_vec.size();
-  int startVal = total*0.01; // decide where to start counting. Should be after equilibrium.
+  // decide where to start counting. Should be after equilibrium. The seed
+  // idum=-6 causes an equilibrium time of 2300 MC cycles. Total*0.03 should
+  // account for avoiding the first three thousand MC cycles.
+  int startVal = total*0.03;
   double mean, std, sum=0, variance=0, count=0, newSize;
   newSize = total-startVal;
 

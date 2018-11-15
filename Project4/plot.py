@@ -7,21 +7,17 @@ def plot_equilibration_time():
     """Reads binary files (with int32) from data folder
     plots four plots"""
     mcfilepath = "data/equiltime_MC.bin"
-    variance=[]
     mc = np.fromfile(mcfilepath, dtype=np.int32)
     for title,o in zip(["Ordered","Random"],['_1','_0']): # 1: ordered init state, 0: random init state
         energies=[];magnet=[];probabilities=[]
         for T,t in zip([1.0, 2.4], ['_T1','_T2']):
             efilepath = "data/equiltime" + o + t + "_E.bin"
             mfilepath = "data/equiltime" + o + t + "_M.bin"
-            vfilepath = "data/equiltime" + o + t + "_V.bin"
             pfilepath = "data/Eprob" + o + t + ".bin"
             energies.append(np.fromfile(efilepath, dtype=np.int32))
             magnet.append(np.fromfile(mfilepath, dtype=np.int32))
-            variance.append(np.fromfile(vfilepath, dtype=np.int32))
             p = np.fromfile(pfilepath, dtype=np.int32)
 
-            plt.figure() # probability plot
             plt.title("20x20 lattice " + title + " initial state")
             emin = p[0]
             emax = p[1]
@@ -41,9 +37,8 @@ def plot_equilibration_time():
             plt.ylabel("Number counted")
             plt.grid()
             plt.legend(loc="best")
-            plt.show()
+            plt.figure()
 
-        plt.figure() # energy plot
         plt.title(title + ' initial state')
         plt.plot(mc,energies[0]/400.,label='T=1.0')
         plt.plot(mc,energies[1]/400.,label='T=2.4')
@@ -51,9 +46,8 @@ def plot_equilibration_time():
         plt.ylabel(r'E')
         plt.legend()
         plt.grid()
-        plt.show()
+        plt.figure() # energy plot
 
-        plt.figure() # Magnetization plot
         plt.title(title + ' initial state')
         plt.plot(mc,magnet[0]/400.,label='T=1.0')
         plt.plot(mc,magnet[1]/400.,label='T=2.4')
@@ -61,16 +55,8 @@ def plot_equilibration_time():
         plt.ylabel(r'M')
         plt.legend()
         plt.grid()
-        plt.show()
 
-    plt.figure() # Magnetization plot
-    plt.title('Random initial state, T=1.0')
-    plt.plot(mc[9:],variance[2])
-    plt.xlabel('Number of Monte Carlo cycles')
-    plt.ylabel(r'$Variance, \sigma_E^2, [J^2]$')
-    # plt.legend()
-    plt.grid()
-    plt.show()
+        plt.show()
 
 
 def plot_accepted():
@@ -93,7 +79,7 @@ def plot_accepted():
     plt.figure()
     plt.plot(temps,ac_T)
     plt.xlabel('Temperature [kT/J]')
-    plt.ylabel(r'Avg. acc. configs. per MC cycle')
+    plt.ylabel(r'Avg. acc. configs. per MC cycle per spin')
     plt.grid()
     plt.show()
 
@@ -172,8 +158,8 @@ def plot_lattice_L():
 
 def main():
     plt.rcParams.update({'font.size': 12})
-    # plot_equilibration_time()
-    plot_accepted()
+    plot_equilibration_time()
+    # plot_accepted()
     # plot_lattice_L()
 
 
