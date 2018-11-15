@@ -172,7 +172,7 @@ def plot_lattice_L():
 
 def main():
     plt.rcParams.update({'font.size': 12})
-    plot_equilibration_time()
+    # plot_equilibration_time()
     plot_accepted()
     # plot_lattice_L()
 

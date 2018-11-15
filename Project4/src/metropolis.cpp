@@ -9,19 +9,17 @@ void metropolis(int** spin_matrix, int L, double& energy, double& magnetization,
    * Accept or decline move according to Metropolis algorithm
    * 1 Call to metropolis calls ran1 3xLxL times
    */
-
-  for (int x=0; x<L; x++) {
-    for (int y=0; y<L; y++) {
-      // choose random indices
-      int ix = (int) (ran2(&idum)*L);
-      int iy = (int) (ran2(&idum)*L);
-      int d_energy = energy_diff(ix,iy,L,spin_matrix);
-      if (w[d_energy+8] >= ran2(&idum)) {
-        energy += (double) d_energy;
-        acceptedConfigs++;
-        spin_matrix[ix][iy] *= -1;
-        magnetization += (double) spin_matrix[ix][iy]*2;
-      }
+  int N = L*L;
+  for (int i=0; i<N; i++) {
+    // choose random indices
+    int ix = (int) (ran2(&idum)*L);
+    int iy = (int) (ran2(&idum)*L);
+    int d_energy = energy_diff(ix,iy,L,spin_matrix);
+    if (w[d_energy+8] >= ran2(&idum)) {
+      energy += (double) d_energy;
+      acceptedConfigs++;
+      spin_matrix[ix][iy] *= -1;
+      magnetization += (double) spin_matrix[ix][iy]*2;
     }
   }
 }
