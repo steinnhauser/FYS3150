@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
     vector<double> temp_vec;
     temp_vec.push_back(2.0);
     for (double t=2.1; t<=2.2; t+=0.05) temp_vec.push_back(t);
-    for (double t=2.21; t<=2.26; t+=0.01) temp_vec.push_back(t);
-    for (double t=2.261; t<=2.28; t+=0.005) temp_vec.push_back(t);
+    for (double t=2.21; t<=2.25; t+=0.01) temp_vec.push_back(t);
+    for (double t=2.26; t<=2.28; t+=0.005) temp_vec.push_back(t);
     for (double t=2.29; t<=2.32; t+=0.01) temp_vec.push_back(t);
     for (double t=2.37; t<=2.42; t+=0.05) temp_vec.push_back(t);
     temp_vec.push_back(2.50); temp_vec.push_back(2.60);

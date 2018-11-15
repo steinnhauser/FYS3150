@@ -217,3 +217,32 @@ RUN
           Temperature T=2.52
           Temperature T=2.57
 L: 100 calculation completed after 2110.12s.
+
+RUN
+    Parallelized code, with 10^6 MC cycles
+        simen@VirtualBox:~/FYS3150/Project4$ mpirun -n 4 ./test.x
+            -----
+            L: 40
+            Temperature T=2
+            Temperature T=2.1
+            Temperature T=2.15
+            Temperature T=2.2
+            Temperature T=2.21
+            Temperature T=2.22
+            Temperature T=2.23
+            Temperature T=2.24
+            Temperature T=2.25
+            Temperature T=2.26
+            Temperature T=2.265
+            Temperature T=2.27
+            Temperature T=2.275
+            Temperature T=2.28
+            Temperature T=2.29
+            Temperature T=2.3
+            Temperature T=2.31
+            Temperature T=2.32
+            Temperature T=2.37
+            Temperature T=2.42
+            Temperature T=2.5
+            Temperature T=2.6
+            L: 40 calculation completed after 986.013s.
