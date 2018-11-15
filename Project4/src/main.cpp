@@ -20,11 +20,11 @@ int main(int argc, char* argv[]) {
   // finds expectation values for 10^1, 10^3, 10^5 ,... MC cycles
   // lattice_solve_2x2(10000000,1.0,idum);
 
-  test_initial_lattice();
-  test_energy_diff();
+  // test_initial_lattice();
+  // test_energy_diff();
 
   // calculates the mean values and probability distribution
-  equilibrium_time(20, 100000, idum);
+  // equilibrium_time(20, 100000, idum);
 
   // calculates the average of total number of accepted configurations as a
   // function of Mc cycles.. Also calculates the total number of accepted
@@ -32,52 +32,87 @@ int main(int argc, char* argv[]) {
   // accepted_configs(20, 100000, idum);
 
   // Parallelization, find <E>, <M>, C_V and chi for different L and T
-  /*
   int numprocs, my_rank;
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-  int MCS = 100000;
+  int MCS = 1000000;
   ofstream ofile;
   bool fileBool=true;
 
-  for (int L=40; L<=100; L+=20) {
+  // Lattice loop
+  for (int L=40; L<=40; L+=20)
+  {
     double start, finish;
     start = clock();
 
     if (my_rank==0) cout << "-----\nL: " << L << "\n";
     int MC_steps = MCS/numprocs;
-    int equil = 250*L;
+    int equiltime = 250*L;
     long idum = - 1 - my_rank;
     double data_vec[4]={0};
     double allocate[4]={0};
 
     vector<double> temp_vec;
+    temp_vec.push_back(2.0);
     for (double t=2.1; t<=2.2; t+=0.05) temp_vec.push_back(t);
     for (double t=2.21; t<=2.26; t+=0.01) temp_vec.push_back(t);
-    for (double t=2.261; t<=2.28; t+=0.001) temp_vec.push_back(t);
+    for (double t=2.261; t<=2.28; t+=0.005) temp_vec.push_back(t);
     for (double t=2.29; t<=2.32; t+=0.01) temp_vec.push_back(t);
-    for (double t=2.37; t<=2.57; t+=0.05) temp_vec.push_back(t);
+    for (double t=2.37; t<=2.42; t+=0.05) temp_vec.push_back(t);
+    temp_vec.push_back(2.50); temp_vec.push_back(2.60);
 
+    // initialize spin_matrix for lattice size
+    int **spin_matrix = new int* [L];
+    for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
+    double magnetization=0, energy=0;
+    Initialize_spins(spin_matrix, L, false, magnetization, energy, idum);
     double temp;
     int N = temp_vec.size();
-    for (int i=0; i<N; i++) {
-      temp = temp_vec[i];
-      double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
-      phase_transition(L, temp, equil, e_avg, e2_avg, m_avg, m2_avg, MC_steps, idum); // MCsteps: equil + MC_steps
-      data_vec[0] = e_avg;
-      data_vec[1] = e2_avg;
-      data_vec[2] = m_avg;
-      data_vec[3] = m2_avg;
 
-      for (int i=0; i<4; i++){
+    // Temperature loop
+    for (int i=0; i<N; i++)
+    {
+      // Initialization
+      temp = temp_vec[i];
+      double *w;
+      w = w_array(temp);
+      int acceptedConfigs=0;
+      // Reach equilibrium for first temperature
+      if (i == 0)
+      {
+        for (int mc=0; mc<equiltime; mc++)
+        {
+          metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
+        }
+      }
+      // MC cycles
+      double e_avg=0, e2_avg=0, m_avg=0, m2_avg=0;
+      for (int mc=0; mc<MC_steps; mc++)
+      {
+        e_avg += energy;
+        e2_avg += energy*energy;
+        m_avg += fabs(magnetization);
+        m2_avg += magnetization*magnetization;
+        metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
+      }
+
+      data_vec[0] = e_avg/MC_steps;
+      data_vec[1] = e2_avg/MC_steps;
+      data_vec[2] = m_avg/MC_steps;
+      data_vec[3] = m2_avg/MC_steps;
+
+      for (int i=0; i<4; i++)
+      {
         MPI_Reduce(&data_vec[i], &allocate[i], 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
       }
 
-      if (my_rank==0){
+      if (my_rank==0)
+      {
         cout << "Temperature T=" << temp << "\n";
-        for (int i=0; i<4; i++){
+        for (int i=0; i<4; i++)
+        {
           allocate[i] /= numprocs; //Normalize properly.
           allocate[i] /= L*L; //Make it "Per atom spin"
         }
@@ -87,7 +122,8 @@ int main(int argc, char* argv[]) {
       //and close the file once the temperature loop is completed. This is done
       //for every lattice size desired.
 
-      if (my_rank==0 && fileBool==true){
+      if (my_rank==0 && fileBool==true)
+      {
         string filename = "./data/lattice_";
         filename.append(to_string(L) + ".txt");
         ofile.open(filename, std::ofstream::out | std::ofstream::trunc);
@@ -102,22 +138,26 @@ int main(int argc, char* argv[]) {
 
         fileBool=false;
       }
-      else if (my_rank==0){
+      else if (my_rank==0)
+      {
         ofile << setw(20) << setprecision(10) << temp;
         ofile << setw(20) << setprecision(10) << allocate[0];
         ofile << setw(20) << setprecision(10) << allocate[1];
         ofile << setw(20) << setprecision(10) << allocate[2];
         ofile << setw(20) << setprecision(10) << allocate[3] << endl;
       }
-    }
+    } // temperature loop end
     ofile.close();
     fileBool=true;
-    if (my_rank==0){
+    if (my_rank==0)
+    {
       finish = clock();
       double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
       cout << "L: " << L << " calculation completed after " << timeElapsed << "s." << endl;
     }
-  }
-  MPI_Finalize();*/
+    for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
+  } // L loop end
+
+  MPI_Finalize();
   return 0;
 }

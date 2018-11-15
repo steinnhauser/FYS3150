@@ -266,38 +266,3 @@ vector<int> prob_distribution(vector<int> energy_vec) {
   }
   return prob_histogram;
 }
-
-void phase_transition(int L, double temp, int equiltime, double &e_avg,
-                      double &e2_avg, double &m_avg, double &m2_avg,
-                      int MC_steps, long& idum) {
-  /*
-   * Run MC_steps number of Monte Carlo cycles after specified equiltime
-   * Update values for E, E^2, |M| and M^2*
-   */
-  // initialization
-  int **spin_matrix = new int* [L];
-  for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
-  double magnetization=0, energy=0;
-  Initialize_spins(spin_matrix, L, false, magnetization, energy, idum);
-  double *w;
-  w = w_array(temp);
-  int acceptedConfigs=0;
-  // Reach equilibrium
-  for (int mc=0; mc<equiltime; mc++) {
-    metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
-  }
-
-  // Monte Carlo cycles after equilibrium
-  for (int mc=0; mc<MC_steps; mc++) {
-    e_avg += energy;
-    e2_avg += energy*energy;
-    m_avg += fabs(magnetization);
-    m2_avg += magnetization*magnetization;
-    metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
-  }
-  e_avg /= MC_steps;
-  e2_avg /= MC_steps;
-  m_avg /= MC_steps;
-  m2_avg /= MC_steps;
-  for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
-}

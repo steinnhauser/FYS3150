@@ -85,7 +85,7 @@ def plot_accepted():
 
 
 def plot_lattice_L():
-    lattices = ["40", "60", "80", "100"]
+    lattices = ["40"]#, "60", "80", "100"]
     cv_s = []
     chi_s = []
     temp_s = []
@@ -157,10 +157,10 @@ def plot_lattice_L():
 
 
 def main():
-    plt.rcParams.update({'font.size': 12})
-    plot_equilibration_time()
+    plt.rcParams.update({'font.size': 14})
+    # plot_equilibration_time()
     # plot_accepted()
-    # plot_lattice_L()
+    plot_lattice_L()
 
 
 if __name__=='__main__':
