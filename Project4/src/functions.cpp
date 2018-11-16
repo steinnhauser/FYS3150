@@ -36,6 +36,35 @@ int equilibrium_time(int L, double temp, long &idum){
   return S;
 }
 
+void equilibrium_time_distribution(int L, double temp, long &idum, int samples){
+  vector<int> S_histogram; vector<int> S_vec;
+  double mean=0;
+  int S, maxEquil=3000; // maxequil represents the largest value of S.
+  // fill the S vector with equilibrium times.
+  double start, finish;
+  start = clock();
+  for (int i=0; i<samples; i++){
+    S = equilibrium_time(20, 1.0, idum);
+    S_vec.push_back(S);
+    mean+=S;
+  }
+  mean /= samples;
+
+  // loop over all possible equilibrium times
+  for (int i=0; i<maxEquil; i++){
+    int counter=0;
+    for (int j=0; j<samples; j++) if (S_vec[j]==i) counter++;
+    S_histogram.push_back(counter);
+  }
+  finish = clock();
+  double timeElapsed = (finish-start)/CLOCKS_PER_SEC;
+  cout << "Time taken " << timeElapsed << "s\n\n";
+
+  string fn;
+  fn = "S_distribution.bin";
+  write_bin_file_int(fn, S_histogram);
+}
+
 void write_bin_file_double(string fn, vector<double> write_vec){
   /*
    * Function which writes vectors of type <double> as binary files.

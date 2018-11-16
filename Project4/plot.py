@@ -178,12 +178,23 @@ def plot_lattice_L():
     inf = np.append(t_inf_cv, t_inf_chi)
     print("%1.3f +/- %1.3f" % (np.mean(inf),np.std(inf)))
 
+
+def plot_equil_hist():
+    filename = "data/S_distribution.bin"
+    S = np.fromfile(filename, dtype=np.int32)
+    samples = np.linspace(0, 3000, len(S))
+    plt.bar(samples, S)
+    plt.show()
+
+
+
 def main():
     plt.rcParams.update({'font.size': 14})
     # plot_probability()
     # plot_E_M_vs_MC()
     # plot_accepted()
-    plot_lattice_L()
+    # plot_lattice_L()
+    plot_equil_hist()
 
 
 if __name__=='__main__':

@@ -28,6 +28,8 @@ int main(int argc, char* argv[]) {
 
   // calculates the equilibrium time for a given spin matrix, temperature & seed
 
+  equilibrium_time_distribution(20, 1.0, idum, 100000);
+
   /*int poonts = 100;
   vector<int> S_vec;
   double mean=0, std, var=0;
