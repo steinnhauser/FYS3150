@@ -162,12 +162,33 @@ def plot_lattice_L():
     plt.grid()
     plt.show()
 
+    L = np.array([40,60,80,100,120])
+    Tcv = np.zeros(5)
+    Tchi = np.zeros(5)
+    for i,t,cv,chi in zip(range(5),temp_s,cv_s,chi_s):
+        Tcv[i] = t[np.argmax(cv)]
+        Tchi[i] = t[np.argmax(chi)]
+
+    t_inf_cv = np.zeros(10)
+    t_inf_chi = np.zeros(10)
+    c = 0
+    print("CV              Chi")
+    for i in range(5):
+        for j in range(5):
+            if i < j:
+                t_inf_cv[c] = (Tcv[j]*L[j] - Tcv[i]*L[i]) / (L[j] - L[i])
+                t_inf_chi[c] = (Tchi[j]*L[j] - Tchi[i]*L[i]) / (L[j] - L[i])
+                print("%1.4f" % t_inf_cv[c], "         %1.4f" % t_inf_chi[c],)
+                c += 1
+    print("%1.3f +/- %1.3f" % (np.mean(t_inf_cv),np.std(t_inf_cv)), \
+          "%1.3f +/- %1.3f" % (np.mean(t_inf_chi),np.std(t_inf_chi)))
+
 
 def main():
     plt.rcParams.update({'font.size': 14})
-    plot_equilibration_time()
+    # plot_equilibration_time()
     # plot_accepted()
-    # plot_lattice_L()
+    plot_lattice_L()
 
 
 if __name__=='__main__':
