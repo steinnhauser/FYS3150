@@ -24,12 +24,13 @@ int main(int argc, char* argv[]) {
   // test_energy_diff();
 
   // calculates the mean values and probability distribution
-  // equilibrium_time(20, 100000, idum);
+  // equilibrium_time(20, 10000000, idum);
 
   // calculates the average of total number of accepted configurations as a
   // function of Mc cycles.. Also calculates the total number of accepted
   // configurations per MC cycle per spin as a function of the temperature.
   // accepted_configs(20, 100000, idum);
+
 
   // Parallelization, find <E>, <M>, C_V and chi for different L and T
   int numprocs, my_rank;
@@ -43,23 +44,22 @@ int main(int argc, char* argv[]) {
   double start, loopstart;
   start = clock();
   // Lattice loop
-  for (int L=100; L<=100; L+=20)
+  for (int L=40; L<=40; L+=20)
   {
     if (my_rank==0) cout << "-----\nL: " << L << "\n";
     int MC_steps = MCS/numprocs;
-    int equiltime = 1000*L;
+    int equiltime = 250*L;
     long idum = - 10 - my_rank;
     double data_vec[4]={0};
     double allocate[4]={0};
 
     vector<double> temp_vec;
-    temp_vec.push_back(2.0);
-    /*for (double t=2.1; t<=2.2; t+=0.05) temp_vec.push_back(t);
-    for (double t=2.21; t<=2.25; t+=0.01) temp_vec.push_back(t);
-    for (double t=2.26; t<=2.28; t+=0.005) temp_vec.push_back(t);
-    for (double t=2.29; t<=2.32; t+=0.01) temp_vec.push_back(t);
-    for (double t=2.37; t<=2.42; t+=0.05) temp_vec.push_back(t);
-    temp_vec.push_back(2.50); temp_vec.push_back(2.60);*/
+    //for (double t=2.1; t<=2.2; t+=0.05) temp_vec.push_back(t);
+    //for (double t=2.21; t<=2.25; t+=0.01) temp_vec.push_back(t);
+    //for (double t=2.26; t<=2.28; t+=0.005) temp_vec.push_back(t);
+    //for (double t=2.29; t<=2.32; t+=0.01) temp_vec.push_back(t);
+    //for (double t=2.37; t<=2.42; t+=0.05) temp_vec.push_back(t);
+    temp_vec.push_back(2.50); temp_vec.push_back(2.60);
 
     // initialize spin_matrix for lattice size
     int **spin_matrix = new int* [L];
@@ -121,6 +121,7 @@ int main(int argc, char* argv[]) {
       //and close the file once the temperature loop is completed. This is done
       //for every lattice size desired.
 
+      /*
       if (my_rank==0 && fileBool==true)
       {
         string filename = "./data/lattice_";
@@ -144,14 +145,14 @@ int main(int argc, char* argv[]) {
         ofile << setw(20) << setprecision(10) << allocate[1];
         ofile << setw(20) << setprecision(10) << allocate[2];
         ofile << setw(20) << setprecision(10) << allocate[3] << endl;
-      }
+      }*/
       if (my_rank==0)
       {
         double timeElapsed = (clock()-loopstart)/CLOCKS_PER_SEC;
         cout << ", time: " << timeElapsed << " s." << endl;
       }
     } // temperature loop end
-    ofile.close();
+    //ofile.close();
     fileBool=true;
     if (my_rank==0)
     {

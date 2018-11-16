@@ -18,27 +18,33 @@ def plot_equilibration_time():
             magnet.append(np.fromfile(mfilepath, dtype=np.int32))
             p = np.fromfile(pfilepath, dtype=np.int32)
 
-            plt.title("20x20 lattice " + title + " initial state")
+
+            #total 1000000,
+            Normalization = 9700000.
+
+            plt.title("20x20 lattice " + title + " initial state,\nTotal of 9.7e6 MC cycles.")
+
             emin = p[0]
             emax = p[1]
             mean = p[2]
             std = p[3]
             energylist = p[4:]
-            e = np.asarray(energylist)
+            e = np.asarray(energylist)/Normalization
             top = np.max(e)
             E = np.linspace(emin, emax, len(energylist))
-            plt.bar(E, energylist,\
+            plt.bar(E, e,\
             label="T=%1.1f" %T, \
             width=4, edgecolor="g")
             if T==2.4:
                 plt.plot(E,top*np.exp(-(E-mean)**2/(2*std**2)),'y-',label='Gaussian fit')
             plt.plot([mean,mean],[0,top],'r-',label=r'$\mu = %1.1f, \sigma_E=%1.1f$' %(mean,std))
-            plt.xlabel("Total energy [J]")
-            plt.ylabel("Number counted")
+            plt.xlabel("Energy [J]")
+            plt.ylabel("Probability P(E)")
             plt.grid()
             plt.legend(loc="best")
             plt.figure()
 
+        """
         plt.title(title + ' initial state')
         plt.plot(mc,energies[0]/400.,label='T=1.0')
         plt.plot(mc,energies[1]/400.,label='T=2.4')
@@ -55,8 +61,9 @@ def plot_equilibration_time():
         plt.ylabel(r'M')
         plt.legend()
         plt.grid()
+        """
 
-        plt.show()
+    plt.show()
 
 
 def plot_accepted():
@@ -158,9 +165,9 @@ def plot_lattice_L():
 
 def main():
     plt.rcParams.update({'font.size': 14})
-    # plot_equilibration_time()
+    plot_equilibration_time()
     # plot_accepted()
-    plot_lattice_L()
+    # plot_lattice_L()
 
 
 if __name__=='__main__':
