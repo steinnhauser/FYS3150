@@ -157,7 +157,7 @@ void equilibrium_time(int L, int MC_steps, long idum) {
       write_bin_file_int(fn_E,energy_vec);
       write_bin_file_int(fn_M,magnet_vec);
       write_bin_file_int(fn_MC,mc_cycles_vec);
-      write_bin_file_int(fn_P,probvec);
+      // write_bin_file_int(fn_P,probvec);
     }
   }
   for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;

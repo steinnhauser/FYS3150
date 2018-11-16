@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
   // test_energy_diff();
 
   // calculates the mean values and probability distribution
-  // equilibrium_time(20, 10000000, idum);
+  equilibrium_time(20, 10000, idum);
 
   // calculates the average of total number of accepted configurations as a
   // function of Mc cycles.. Also calculates the total number of accepted
@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
 
 
   // Parallelization, find <E>, <M>, C_V and chi for different L and T
+  /*
   int numprocs, my_rank;
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
@@ -145,7 +146,7 @@ int main(int argc, char* argv[]) {
         ofile << setw(20) << setprecision(10) << allocate[1];
         ofile << setw(20) << setprecision(10) << allocate[2];
         ofile << setw(20) << setprecision(10) << allocate[3] << endl;
-      }*/
+      }
       if (my_rank==0)
       {
         double timeElapsed = (clock()-loopstart)/CLOCKS_PER_SEC;
@@ -162,6 +163,6 @@ int main(int argc, char* argv[]) {
     for(int i=0; i<L; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
   } // L loop end
 
-  MPI_Finalize();
+  MPI_Finalize();*/
   return 0;
 }
