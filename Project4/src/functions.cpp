@@ -33,6 +33,7 @@ int equilibrium_time(int L, double temp, long &idum){
       break;
     }
   }
+  for(int i=0; i<2; ++i) delete[] spin_matrix[i]; delete[] spin_matrix;
   return S;
 }
 
