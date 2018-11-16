@@ -14,11 +14,11 @@ double* w_array(double temp) {
   return w;
 }
 
-int equilibrium_time(int L, double temp, long &idum){
+int equilibrium_time(int L, double temp, long &idum, double *w){
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
-  double *w;
-  w = w_array(temp);
+  //double *w;
+  //w = w_array(temp);
   double magnetization=0, energy=0;
   int acceptedConfigs=0;
   Initialize_spins(spin_matrix, L, false, magnetization, energy, idum);
@@ -42,10 +42,14 @@ void equilibrium_time_distribution(int L, double temp, long &idum, int samples){
   double mean=0;
   int S, maxEquil=3000; // maxequil represents the largest value of S.
   // fill the S vector with equilibrium times.
+
+  double *w;
+  w = w_array(temp);
+
   double start, finish;
   start = clock();
   for (int i=0; i<samples; i++){
-    S = equilibrium_time(20, 1.0, idum);
+    S = equilibrium_time(20, 1.0, idum, w);
     S_vec.push_back(S);
     mean+=S;
   }
