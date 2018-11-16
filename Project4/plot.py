@@ -85,7 +85,7 @@ def plot_accepted():
 
 
 def plot_lattice_L():
-    lattices = ["40", "60", "80" , "100"]
+    lattices = ["40", "60", "80" , "100", "120"]
     cv_s = []
     chi_s = []
     temp_s = []
