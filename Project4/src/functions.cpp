@@ -14,6 +14,28 @@ double* w_array(double temp) {
   return w;
 }
 
+int equilibrium_time(int L, double temp, long &idum){
+  int **spin_matrix = new int* [L];
+  for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
+  double *w;
+  w = w_array(temp);
+  double magnetization=0, energy=0;
+  int acceptedConfigs=0;
+  Initialize_spins(spin_matrix, L, false, magnetization, energy, idum);
+
+  int S=0, maxtime=3000; // upper boundary to the simulation.
+  int spins = L*L;
+
+  while (S<=maxtime){
+    S++;
+    metropolis(spin_matrix,L,energy,magnetization,acceptedConfigs,w,idum);
+    if (energy/spins==-2){
+      break;
+    }
+  }
+  return S;
+}
+
 void write_bin_file_double(string fn, vector<double> write_vec){
   /*
    * Function which writes vectors of type <double> as binary files.
@@ -112,7 +134,7 @@ void lattice_solve_2x2(int max_MC_steps, double temp, long idum) {
   }
 }
 
-void equilibrium_time(int L, int MC_steps, long idum) {
+void lattice_calculator(int L, int MC_steps, long idum) {
   /*
    * Analyze the evolution of a 20x20 lattice for two temperatures
    * T=1.0 and T=2.4 and two initial states ordered/random.
