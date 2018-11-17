@@ -183,7 +183,12 @@ def plot_equil_hist():
     filename = "data/S_distribution.bin"
     S = np.fromfile(filename, dtype=np.int32)
     samples = np.linspace(0, 3000, len(S))
-    plt.bar(samples, S)
+    plt.bar(samples, S, color="g", edgecolor="g", label="Equilibrium time distribution,\n$\\mu=316.95$")
+    plt.legend()
+    plt.title("$10^{6}$ Equilibrium time samples.\nL=20, T=1.0")
+    plt.ylabel("Frequency counted.")
+    plt.xlabel("Equilibrium times S [MC cycles].")
+    plt.grid()
     plt.show()
 
 

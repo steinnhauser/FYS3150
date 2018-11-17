@@ -40,7 +40,7 @@ int equilibrium_time(int L, double temp, long &idum, double *w){
 void equilibrium_time_distribution(int L, double temp, long &idum, int samples){
   vector<int> S_histogram; vector<int> S_vec;
   double mean=0;
-  int S, maxEquil=3000; // maxequil represents the largest value of S.
+  int S, maxEquil=3300; // maxequil represents the largest value of S.
   // fill the S vector with equilibrium times.
 
   double *w;
@@ -54,6 +54,7 @@ void equilibrium_time_distribution(int L, double temp, long &idum, int samples){
     mean+=S;
   }
   mean /= samples;
+  cout << "Mean: " << mean << endl;
 
   // loop over all possible equilibrium times
   for (int i=0; i<maxEquil; i++){
