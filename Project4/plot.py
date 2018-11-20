@@ -13,10 +13,9 @@ def plot_probability():
     mc = np.fromfile(mcfilepath, dtype=np.int32)
     c = 221
     for T,t in zip([1.0, 2.4], ['_T1','_T2']):
-        for title,o in zip(["Ordered","Random"],['_1','_0']): # 1: ordered init state, 0: random init state
+        for title,o in zip(["Ordered","Random"],['_1','_0']):
             pfilepath = "data/Eprob" + o + t + ".bin"
             p = np.fromfile(pfilepath, dtype=np.int32)
-
             plt.subplot(c)
             if c < 223:
                 plt.title("20x20 lattice " + title + " initial state")
@@ -51,7 +50,6 @@ def plot_E_M_vs_MC():
             filepath2 = "data/equiltime" + o + "_T2_" + var +".bin"
             y1 = np.fromfile(filepath1, dtype=np.int32)
             y2 = np.fromfile(filepath2, dtype=np.int32)
-
             plt.subplot(c)
             if c < 223:
                 plt.title(title + " initial state")
@@ -72,6 +70,10 @@ def plot_E_M_vs_MC():
 
 
 def plot_accepted():
+    """
+    Reads the binary files of accepted configurations vs. both temperature
+    and number of MC cycles, and plots the data accordingly.
+    """
     filepath0 = "data/acc_mc.bin"
     mc = np.fromfile(filepath0, dtype=np.int32)
     filepath1 = "data/acceptedconfigs_MC.bin"
@@ -97,14 +99,20 @@ def plot_accepted():
 
 
 def plot_lattice_L():
+    """
+    Reads the txt files of E, M, Cv and chi vs. temperature for different
+    lattice sizes. Makes a plot of four subplots.
+    """
     lattices = ["40", "60", "80" , "100", "120"]
+    # arrays will be stored in these lists
     cv_s = [];chi_s = [];temp_s = [];mag_s = [];ene_s = []
     for lattice_nr in lattices:
         spins = float(eval(lattice_nr))**2
+        # temporary lists to store data points
         T = [];E = [];E2 = [];M = [];M2 = []
         filename = "data/lattice_" + lattice_nr + ".txt"
-        infile=open(filename, "r")
-        infile.readline() #first line is indexing
+        infile = open(filename, "r")
+        infile.readline() # first line is indexing
         for line in infile:
             a = line.split()
             T.append(eval(a[0]))
@@ -123,7 +131,7 @@ def plot_lattice_L():
         mag_s.append(np.abs(M))
         ene_s.append(E)
 
-    plt.subplot(223)
+    plt.subplot(223) # magnetic susceptibility
     for t,chi,name in zip(temp_s,chi_s,lattices):
         plt.plot(t,chi/t,'k.')
         plt.plot(t,chi/t,'-',label="L = " + name)
@@ -132,7 +140,7 @@ def plot_lattice_L():
     plt.legend()
     plt.grid()
 
-    plt.subplot(222)
+    plt.subplot(222) # magnetization
     for t,m,name in zip(temp_s,mag_s,lattices):
         plt.plot(t,m,'k.')
         plt.plot(t,m,'-',label="L = " + name)
@@ -141,7 +149,7 @@ def plot_lattice_L():
     plt.legend()
     plt.grid()
 
-    plt.subplot(221)
+    plt.subplot(221) # energy
     for t,e,name in zip(temp_s,ene_s,lattices):
         plt.plot(t,e,'k.')
         plt.plot(t,e,'-',label="L = " + name)
@@ -150,7 +158,7 @@ def plot_lattice_L():
     plt.legend()
     plt.grid()
 
-    plt.subplot(224)
+    plt.subplot(224) # heat capacity
     for t,cv,name in zip(temp_s,cv_s,lattices):
         plt.plot(t,cv/t**2,'k.')
         plt.plot(t,cv/t**2,'-',label="L = " + name)

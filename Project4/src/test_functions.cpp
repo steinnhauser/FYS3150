@@ -1,6 +1,9 @@
 #include "test_functions.h"
 
 void test_initial_lattice() {
+/*
+ * Test of initial energy and magnetization of the spin_matrix initializer
+ */
   int L = 2;
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
@@ -17,6 +20,9 @@ void test_initial_lattice() {
 }
 
 void test_energy_diff() {
+/*
+ * Test of the energy difference function in metropolis.cpp
+ */
   int L = 3;
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];

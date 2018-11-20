@@ -17,9 +17,10 @@ using namespace std;
 int main(int argc, char* argv[]) {
   long idum = -11; // RNG seed requires a negative integer
 
-  // finds expectation values for 10^1, 10^3, 10^5 ,... MC cycles
+  // finds expectation values for 10^1, 10^3, 10^5 ,... MC cycles:
   // lattice_solve_2x2(10000000,1.0,idum);
 
+  // test functions:
   // test_initial_lattice();
   // test_energy_diff();
 
@@ -27,36 +28,15 @@ int main(int argc, char* argv[]) {
   // lattice_calculator(20, 10000, idum);
 
   // calculates the equilibrium time for a given spin matrix, temperature & seed
-
-  equilibrium_time_distribution(20, 1.0, idum, 1000000);
-
-  /*int poonts = 100;
-  vector<int> S_vec;
-  double mean=0, std, var=0;
-  int S;
-  for (int i=0; i<poonts; i++){
-    S = equilibrium_time(20, 1.0, idum);
-    S_vec.push_back(S);
-    cout << S << " ";
-    mean+=S;
-  }
-  mean /= poonts;
-  for (int i=0; i<S_vec.size(); i++){
-    var += pow(fabs(S_vec[i]-mean), 2);
-  }
-  var /= poonts;
-  std = sqrt(var);
-  cout << "Mean " << mean << ", Std " << std << "\n";*/
-
-
+  // equilibrium_time_distribution(20, 1.0, idum, 1000000);
 
   // calculates the average of total number of accepted configurations as a
   // function of Mc cycles.. Also calculates the total number of accepted
   // configurations per MC cycle per spin as a function of the temperature.
   // accepted_configs(20, 100000, idum);
 
-
-  // Parallelization, find <E>, <M>, C_V and chi for different L and T
+  // phase transition, parallelized using MPI:
+  // finds <E>, <M>, C_V and chi for different L and T
   /*
   int numprocs, my_rank;
   MPI_Init(&argc, &argv);
