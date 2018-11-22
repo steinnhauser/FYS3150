@@ -27,7 +27,8 @@ def plot_probability():
             E = np.linspace(emin, emax, len(energylist))
             plt.bar(E, e,label="T=%1.1f" %T,width=4, edgecolor="g")
             if T==2.4:
-                plt.plot(E,top*np.exp(-(E-mean)**2/(2*std**2)),'y-',label='Gaussian fit')
+                # plt.plot(E,top*np.exp(-(E-mean)**2/(2*std**2)),'y-',label='Gaussian fit')
+                plt.plot(E,(1./(T*E*np.pi))*np.exp(E/T),'y-',label='Gaussian fit')
             plt.plot([mean,mean],[0,top],'r-',label=r'$\mu = %1.1f, \sigma_E=%1.1f$' %(mean,std))
             plt.xlabel("Energy [J]")
             plt.ylabel("Probability P(E)")
@@ -195,11 +196,11 @@ def plot_equil_hist():
 
 def main():
     plt.rcParams.update({'font.size': 14})
-    # plot_probability()
+    plot_probability()
     # plot_E_M_vs_MC()
     # plot_accepted()
     # plot_lattice_L()
-    plot_equil_hist()
+    # plot_equil_hist()
 
 
 if __name__=='__main__':
