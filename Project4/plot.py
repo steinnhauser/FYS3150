@@ -210,18 +210,10 @@ def plot_equil_hist():
 
 
 def main():
-<<<<<<< HEAD
-    plt.rcParams.update({'font.size': 14})
-    plot_probability()
-    # plot_E_M_vs_MC()
-    # plot_accepted()
-    # plot_lattice_L()
-=======
     # plot_probability()
     # plot_E_M_vs_MC()
     # plot_accepted()
     plot_lattice_L()
->>>>>>> 10a8087b90b11e69b9d935eb6d51d8defbb649c7
     # plot_equil_hist()
 
 
