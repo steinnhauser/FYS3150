@@ -2,7 +2,10 @@
 
 double* w_array(double temp) {
  /*
-  * Function to produce the energy probability arrays.
+  * Function to produce an array containing the probability ratios for the
+  * five different energy differences. The array is indexed from 0 to 17,
+  * But the probability ratios is at index 0, 4, 8, 12, 16 and represent
+  * energy difference -8, -4, 0, +4, +8
   */
   double beta = 1./temp;
   static double w[17];
@@ -15,10 +18,15 @@ double* w_array(double temp) {
 }
 
 int equilibrium_time(int L, double temp, long &idum, double *w){
+/*
+ * Does a simulation of an LxL lattice until energy is at the ground state,
+ * returns the number of MC cycles required for equilibration
+ */
+
   int **spin_matrix = new int* [L];
   for (int spin=0; spin<L; spin++) spin_matrix[spin] = new int[L];
-  //double *w;
-  //w = w_array(temp);
+  double *w;
+  w = w_array(temp);
   double magnetization=0, energy=0;
   int acceptedConfigs=0;
   Initialize_spins(spin_matrix, L, false, magnetization, energy, idum);
@@ -37,10 +45,15 @@ int equilibrium_time(int L, double temp, long &idum, double *w){
   return S;
 }
 
-void equilibrium_time_distribution(int L, double temp, long &idum, int samples){
+void equilibrium_time_distribution(int L, double temp, long &idum, int samples) {
+/*
+ * Calls the function equilibrium_time() <samples> number of times.
+ * Counts how many MC cycles required for each run to reach equilibrium
+ * Creates a histogram and writes binary file with data
+ */
   vector<int> S_histogram; vector<int> S_vec;
   double mean=0;
-  int S, maxEquil=3300; // maxequil represents the largest value of S.
+  int S, maxEquil=3300; // maxEquil represents the largest value of S.
   // fill the S vector with equilibrium times.
 
   double *w;

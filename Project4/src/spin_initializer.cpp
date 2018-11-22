@@ -1,7 +1,12 @@
 #include "spin_initializer.h"
 
-void Initialize_spins(int** spin_matrix, int L, bool order, double& magnetization, double& energy, long& idum)
-{
+void Initialize_spins(int** spin_matrix, int L, bool order, double& magnetization,
+  double& energy, long& idum) {
+/*
+ * Initialize a Lattice of size LxL, with either ordered configuration
+ * (all spins pointing up) or a random configuration. It also finds the
+ * initial energy and magnetization
+ */
   if (order==true) { // ordered matrix elements equal to 1
     magnetization = L*L;
     for (int xs=0; xs<L; xs++) {

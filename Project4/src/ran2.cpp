@@ -9,6 +9,7 @@ double ran2(long *idum)
     ** The function returns a uniform deviate between 0.0 and 1.0
     ** (exclusive of end-point values)
 */
+
 #include "ran2.h"
 #define IM1 2147483563
 #define IM2 2147483399
