@@ -10,5 +10,8 @@ int main(int argc, char* argv[])
 {
   // initial conditions
 
+  // explicitForwardEuler();
+  implicitBackwardEuler();
+
   return 0;
 }
