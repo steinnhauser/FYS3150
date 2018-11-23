@@ -11,22 +11,20 @@ void explicitForwardEuler() {
   double dt = 0.00001;
   double alpha = dt/dx/dx;
   double beta = (1 - 2*alpha);
-  int L = nx - 1;
-  mat u = zeros<mat>(nx,nt);
+  mat u = zeros<mat>(nx+1,nt+1);
 
   // boundary conditions, [u(x,0)=0 and u(0,t)=0]
-  for (t=0; t<nt; t++) u(L,t) = 1;
+  for (t=0; t<=nt; t++) u(nx,t) = 1;
 
   // time loop
-  for (t=1; t<nt; t++) {
+  for (t=1; t<=nt; t++) {
     tp = t-1; // previous time step
-    for (i=1; i<L; i++) { // inner time points
+    for (i=1; i<nx; i++) { // inner time points
       u(i,t) = alpha*(u(i-1,tp) + u(i+1,tp)) + beta*u(i,tp);
     }
   }
   // call write to file function
-  string filename;
-  filename = "data/explicitTest.csv";
+  string filename = "data/explicitTest.csv";
   writeMatrixFile(filename, u);
 }
 
@@ -42,7 +40,6 @@ void implicitBackwardEuler() {
   double alpha = dt/dx/dx;
   double beta = (1 + 2*alpha);
   alpha *= -1;
-  // int L = nx;
   mat u = zeros<mat>(nx+1,nt+1);
 
   // boundary conditions, [u(x,0)=0 and u(0,t)=0]
@@ -59,13 +56,45 @@ void implicitBackwardEuler() {
 }
 
 void CrankNicolsonScheme() {
-  // call a combination of explicit and implicit
+  // call a combination of explicit and implicit. "First use explicit, then
+  // Thomas algorithm on the explicit solution." -Alexander Sexton, 2018
+
+  // initialization
+  int i,t,tn;
+  int nt = 100; // number of time steps
+  int nx = 100; // number of position steps
+  double dx = 0.01;
+  double dt = 0.00001;
+  double alpha = dt/dx/dx;
+  double beta = (1 + 2*alpha);
+  alpha *= -1;
+  mat u = zeros<mat>(nx+1,nt+1);
+
+  // EXPLICIT
+  // boundary conditions, [u(x,0)=0 and u(0,t)=0]
+  for (t=0; t<=nt; t++) u(nx,t) = 1;
+  // time loop
+  for (t=1; t<=nt; t++) {
+    tp = t-1; // previous time step
+    for (i=1; i<nx; i++) { // inner time points
+      u(i,t) = 0.5*(alpha*(u(i-1,tp) + u(i+1,tp)) + beta*u(i,tp));
+    }
+  }
+
+  // IMPLICIT
+  for (t=1; t<=nt; t++) {
+    tridiagonalSolver(u, beta, alpha, nx, t);
+    u(nx,t) = 1;
+  }
+
+  string filename = "data/CrankNicolsonTest.csv";
+  writeMatrixFile(filename, u);
 }
 
 void tridiagonalSolver(mat& u, double d, double e, int n, int t_new) {
   /*
    * Thomas algorithm:
-   * Solves matrix vector equation A*u_old = u_new,
+   * Solves matrix vector equation u_old = A*u_new,
    * for A being a tridiagonal matrix with constant
    * elements d on main diagonal and e on the off diagonals.
    */

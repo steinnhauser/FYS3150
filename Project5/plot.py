@@ -19,6 +19,9 @@ def main():
         fn = "data/explicitTest.csv"
     elif str(sys.argv[1])=="im":
         fn = "data/implicitTest.csv"
+    elif str(sys.argv[1])=="CN":
+        fn = "data/CrankNicolsonTest.csv"
+
     plotfunc(fn)
 
 

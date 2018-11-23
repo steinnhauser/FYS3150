@@ -10,8 +10,9 @@ int main(int argc, char* argv[])
 {
   // initial conditions
 
-  // explicitForwardEuler();
-  implicitBackwardEuler();
+  // explicitForwardEuler(); // working.
+  // implicitBackwardEuler(); // working.
+  CrankNicolsonScheme() // in progress.
 
   return 0;
 }
