@@ -54,10 +54,10 @@ void implicitBackwardEuler() {
 }
 
 void CrankNicolsonScheme() {
-
+  // call a combination of explicit and implicit
 }
 
-vec tridiagonalSolver(double d, double e, int n) {
+vec tridiagonalSolver(mat& u, double d, double e, int n, int t_old) {
   /*
    * Thomas algorithm:
    * Solves matrix vector equation A*u_old = u_new,
@@ -65,18 +65,19 @@ vec tridiagonalSolver(double d, double e, int n) {
    * elements d on main diagonal and e on the off diagonals.
    */
   vec beta = zeros<vec>(n); // temporary storage vector for forw/backw substitution
-  vec u_new = zeros<vec>(n); u_new[1] = u_old[1]/d;
-  double btemp = d; int i;
+  int t_new = t_old + 1;
+  u(1,t_new) = u(1,t_old)/d;
+  double btemp = d; // temporary storage double
 
   // forward substitution
-  for(i=2; i<n; i++){
-    beta[i] = e/btemp;
-    btemp = d - e*beta[i];
-    u_new[i] = (u_old[i] - e*u_new[i-1])/btemp;
+  for(int i=2; i<n; i++){
+    beta(i) = e/btemp;
+    btemp = d - e*beta(i);
+    u(i,t_new) = (u(i,t_old) - e*u(i,t_new))/btemp;
   }
   // backward substitution
-  for(i=n-1; i>0; i--){
-    u_new[i] -= beta[i+1]*u_new[i+1];
+  for(int i=n-1; i>0; i--){
+    u(i,t_new) -= beta(i+1)*u(i,t_new);
   }
   return u_new;
 }
