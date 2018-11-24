@@ -33,7 +33,7 @@ void implicitBackwardEuler() {
 
   // initialization
   int i,t,tn;
-  int nt = 10000; // number of time steps
+  int nt = 100; // number of time steps
   int nx = 100; // number of position steps
   double dx = 0.01;
   double dt = 0.00001;
@@ -60,32 +60,33 @@ void CrankNicolsonScheme() {
   // Thomas algorithm on the explicit solution." -Alexander Sexton, 2018
 
   // initialization
-  int i,t,tn;
+  int i,t,tn,tp;
   int nt = 100; // number of time steps
   int nx = 100; // number of position steps
   double dx = 0.01;
   double dt = 0.00001;
-  double alpha = dt/dx/dx;
-  double beta = (1 + 2*alpha);
-  alpha *= -1;
+  double alpha1 = dt/dx/dx;
+  double beta1 = (1 - 2*alpha1); // explicit beta
+  double beta2 = (1 + 2*alpha1); // implicit beta
+  double alpha2 = -alpha1;
   mat u = zeros<mat>(nx+1,nt+1);
 
-  // EXPLICIT
+
+
   // boundary conditions, [u(x,0)=0 and u(0,t)=0]
   for (t=0; t<=nt; t++) u(nx,t) = 1;
   // time loop
   for (t=1; t<=nt; t++) {
+    // Explicit
     tp = t-1; // previous time step
     for (i=1; i<nx; i++) { // inner time points
-      u(i,t) = 0.5*(alpha*(u(i-1,tp) + u(i+1,tp)) + beta*u(i,tp));
+      u(i,t) = 0.5*(alpha1*(u(i-1,tp) + u(i+1,tp)) + beta1*u(i,tp));
     }
-  }
-
-  // IMPLICIT
-  for (t=1; t<=nt; t++) {
-    tridiagonalSolver(u, beta, alpha, nx, t);
+    // Implicit
+    tridiagonalSolver(u, beta2, alpha2, nx, t);
     u(nx,t) = 1;
   }
+
 
   string filename = "data/CrankNicolsonTest.csv";
   writeMatrixFile(filename, u);

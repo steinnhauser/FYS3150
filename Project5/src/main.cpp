@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 
   // explicitForwardEuler(); // working.
   // implicitBackwardEuler(); // working.
-  CrankNicolsonScheme() // in progress.
+  CrankNicolsonScheme(); // working.
 
   return 0;
 }
