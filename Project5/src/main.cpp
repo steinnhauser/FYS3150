@@ -13,6 +13,7 @@ int main(int argc, char* argv[])
   // explicitForwardEuler(); // working.
   // implicitBackwardEuler(); // working.
   // CrankNicolsonScheme(); // working.
+  JacobiMethod();
 
 
 

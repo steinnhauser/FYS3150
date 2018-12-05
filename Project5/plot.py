@@ -42,8 +42,21 @@ def animatefunc(filename):
     plt.show()
 
 
+def animate2d():
+    dataframes = []
+    nt = 2
+    n = 11
+    a = np.fromfile("data/twodimensions.bin", dtype=float).reshape((nt,n*n))
+    print(len(a))
+    dataframes = []
+    for i in range(nt):
+        dataframes.append(a[i,:].reshape((n,n)))
+    print(dataframes)
+    plt.imshow(dataframes[1])
+    plt.show()
+
 def main():
-    if len(sys.argv) < 2:
+    """if len(sys.argv) < 2:
         print("give command line argument of which file to plot: ex, im or CN")
         sys.exit(1)
 
@@ -58,7 +71,9 @@ def main():
     if answer == "Y" or answer == "y":
         animatefunc(fn)
     elif answer == "N" or answer == "n":
-        plotfunc(fn)
+        plotfunc(fn)"""
+
+
 
 
 if __name__=="__main__":

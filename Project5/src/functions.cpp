@@ -129,13 +129,13 @@ void JacobiMethod(){
 
   // Initial conditions
   cube u = zeros<cube>(nx+1,nx+1,nt+1);
-  mat u_guess = zeros<mat>(nx+1,nx+1);
-  for (double t=1; t<=T; t+= dt) {
+  for (int t=0; t<=nt; t++) {
     u(0,0,t) = 1; u(nx,nx,t) = 1; // two opposite corners as heat source
   }
 
-  int maxiter = 100;
-  double delta;
+  // mat u_guess = zeros<mat>(nx+1,nx+1);
+  int maxiter = 10000;
+  double diff=1, delta, tol=0.001;
   double alpha = dt/(dx*dx);
   double factor = 1/(1 + 4*alpha);
   double factor_a = alpha*factor;
@@ -144,23 +144,28 @@ void JacobiMethod(){
   // time loop
   for (double t=1; t<=nt; t++)
   {
-    u_guess = u.slice(t);
     int iter = 0;
+    mat u_guess = ones<mat>(nx+1,nx+1);
     while (iter < maxiter && diff > tol)
     {
+      diff = 0;
       // Loop over all inner elements, will converge towards solution
       for (int j=1; j<nx; j++) {
         for (int i=1; i<nx; i++) {
           delta = (u_guess(i,j+1)+u_guess(i,j-1)+u_guess(i+1,j)+u_guess(i-1,j));
-          u(i,j,t) = factor_a*delta + factor*u(u,j,t-1);
+          u(i,j,t) = factor_a*delta + factor*u(i,j,t-1);
           diff += fabs(u(i,j,t) - u_guess(i,j));
         }
       } // end of double for loop
+      u_guess = u.slice(t);
       diff /= scale;
       iter++;
     } // end iteration loop
   } // end time loop
-  u.print();
+  // u.print();
+  u.resize(size(u));
+  string filename = "data/twodimensions.bin";
+  u.save(filename,raw_binary);
 }
 
 void writeMatrixFile(string filename, mat u){

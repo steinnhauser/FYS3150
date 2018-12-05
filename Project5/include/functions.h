@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <iomanip>
+#include <math.h>
 
 using namespace arma;
 using namespace std;
