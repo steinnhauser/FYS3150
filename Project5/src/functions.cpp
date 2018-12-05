@@ -145,7 +145,8 @@ void JacobiMethod(){
   for (double t=1; t<=nt; t++)
   {
     u_guess = u.slice(t);
-    for (int iter=0; iter<maxiter; iter++)
+    int iter = 0;
+    while (iter < maxiter && diff > tol)
     {
       // Loop over all inner elements, will converge towards solution
       for (int j=1; j<nx; j++) {
@@ -156,8 +157,10 @@ void JacobiMethod(){
         }
       } // end of double for loop
       diff /= scale;
+      iter++;
     } // end iteration loop
   } // end time loop
+  u.print();
 }
 
 void writeMatrixFile(string filename, mat u){
