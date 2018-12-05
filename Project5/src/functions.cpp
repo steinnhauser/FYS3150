@@ -128,29 +128,34 @@ void JacobiMethod(){
   double dx = 0.01;
   double dt = 0.001;
   double T = 1;
-  mat u = zeros<mat>(nx+1,nx+1);
-  mat u_temp = zeros<mat>(nx+1,nx+1);
-  u(0,0) = 1.0; u(nx,nx) = 1.0;
-  int maxIterations = 100; int iteration;
-  double diff;
+  cube u = zeros<mat>(nx+1,nx+1,nt);
+
+  // Initial conditions
+  for (double t=1; t<=T; t+= dt) {
+    u(0,0,t) = 1; u(nx,nx,t) = 1; // two opposite corners as heat source
+  }
+
+  int maxiter = 100;
+  double delta;
+  double alpha = dt/(dx*dx);
+  double factor = 1/(1 + 4*alpha);
+  double factor_a = alpha*factor;
+
 
   // time loop
-  for (double t=0; t<=T; t+= dt)
+  for (double t=1; t<=T; t+= dt)
   {
-    iteration = 0;
-    while (iteration < maxIterations && diff > threshold)
+    for (int iter=0; iter<maxiter; iter++)
     {
-      u_temp = u;
-      diff = 0;
+      // Loop over all inner elements, will converge towards solution
       for (int j=1; j<nx; j++) {
         for (int i=1; i<nx; i++) {
-          u(i,j)
-          // u(i,j) = 0.25*(u_temp(i,j+1) + u_temp(i,j-1) + u_temp(i+1,j) + u_temp(i-1,j));
-          // diff += fabs(u(i,j) - u_temp(i,j))
+          delta = (u(i,j+1,t) + u(i,j-1,t) + u(i+1,j,t) + u(i-1,j,t));
+          u(i,j,t) = factor_a*delta + factor*u(u,j,t-1);
         }
       } // end of double for loop
 
-    } // end while loop
+    } // end iteration loop
   } // end time loop
 }
 
