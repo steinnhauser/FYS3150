@@ -122,20 +122,25 @@ void JacobiMethod(){
    * Iterative solver for a of a diagonally dominant system og linear equations.
    */
   // initialization
-  int nx = 100;
-  int nt = 1000;
+  int nx = 200;
+  int nt = 30;
   double dx = 0.01;
   double dt = 0.001;
 
   // Initial conditions
   cube u = zeros<cube>(nx+1,nx+1,nt+1);
   for (int t=0; t<=nt; t++) {
-    u(0,0,t) = 1; u(nx,nx,t) = 1; // two opposite corners as heat source
+    for (int i=0; i<=nx; i++) {
+      u(i,0,t) = 1;
+      u(0,i,t) = 1;
+      u(i,nx,t) = 1;
+      u(nx,i,t) = 1;
+    }
   }
 
   // mat u_guess = zeros<mat>(nx+1,nx+1);
-  int maxiter = 10000;
-  double diff=1, delta, tol=0.001;
+  int maxiter = 100000;
+  double delta, tol=0.0001;
   double alpha = dt/(dx*dx);
   double factor = 1/(1 + 4*alpha);
   double factor_a = alpha*factor;
@@ -145,6 +150,7 @@ void JacobiMethod(){
   for (double t=1; t<=nt; t++)
   {
     int iter = 0;
+    double diff=1;
     mat u_guess = ones<mat>(nx+1,nx+1);
     while (iter < maxiter && diff > tol)
     {
@@ -160,12 +166,20 @@ void JacobiMethod(){
       u_guess = u.slice(t);
       diff /= scale;
       iter++;
+
     } // end iteration loop
+    // u.slice(t).print();
   } // end time loop
-  // u.print();
+
   u.resize(size(u));
   string filename = "data/twodimensions.bin";
   u.save(filename,raw_binary);
+  ofstream ofile;
+  ofile.open("data/twodimensions.txt");
+  ofile << nx << endl;
+  ofile << nt << endl;
+  ofile.close();
+
 }
 
 void writeMatrixFile(string filename, mat u){
