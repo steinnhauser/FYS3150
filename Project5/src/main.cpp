@@ -11,8 +11,10 @@ int main(int argc, char* argv[])
   // initial conditions
 
   // explicitForwardEuler(); // working.
-  implicitBackwardEuler(); // working.
+  // implicitBackwardEuler(); // working.
   // CrankNicolsonScheme(); // working.
+
+
 
   return 0;
 }

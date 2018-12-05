@@ -8,7 +8,7 @@
 using namespace arma;
 using namespace std;
 
-
+void JacobiMethod();
 void explicitForwardEuler();
 void implicitBackwardEuler();
 void CrankNicolsonScheme();

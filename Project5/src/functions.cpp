@@ -117,6 +117,43 @@ void tridiagonalSolver(mat& u, double d, double e, int n, int t_new) {
   }
 }
 
+void JacobiMethod(){
+  /*
+   * Iterative solver for a of a diagonally dominant system og linear equations.
+   */
+  // initialization
+  int i,t,tn,tp;
+  int nx = 100;
+  int nt = 100;
+  double dx = 0.01;
+  double dt = 0.001;
+  double T = 1;
+  mat u = zeros<mat>(nx+1,nx+1);
+  mat u_temp = zeros<mat>(nx+1,nx+1);
+  u(0,0) = 1.0; u(nx,nx) = 1.0;
+  int maxIterations = 100; int iteration;
+  double diff;
+
+  // time loop
+  for (double t=0; t<=T; t+= dt)
+  {
+    iteration = 0;
+    while (iteration < maxIterations && diff > threshold)
+    {
+      u_temp = u;
+      diff = 0;
+      for (int j=1; j<nx; j++) {
+        for (int i=1; i<nx; i++) {
+          u(i,j)
+          // u(i,j) = 0.25*(u_temp(i,j+1) + u_temp(i,j-1) + u_temp(i+1,j) + u_temp(i-1,j));
+          // diff += fabs(u(i,j) - u_temp(i,j))
+        }
+      } // end of double for loop
+
+    } // end while loop
+  } // end time loop
+}
+
 void writeMatrixFile(string filename, mat u){
   bool saved = u.save(filename, csv_ascii);
   if (saved) {cout << "File " << filename << " written." << "\n";}
