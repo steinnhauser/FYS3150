@@ -122,15 +122,14 @@ void JacobiMethod(){
    * Iterative solver for a of a diagonally dominant system og linear equations.
    */
   // initialization
-  int i,t,tn,tp;
   int nx = 100;
-  int nt = 100;
+  int nt = 1000;
   double dx = 0.01;
   double dt = 0.001;
-  double T = 1;
-  cube u = zeros<mat>(nx+1,nx+1,nt);
 
   // Initial conditions
+  cube u = zeros<cube>(nx+1,nx+1,nt+1);
+  mat u_guess = zeros<mat>(nx+1,nx+1);
   for (double t=1; t<=T; t+= dt) {
     u(0,0,t) = 1; u(nx,nx,t) = 1; // two opposite corners as heat source
   }
@@ -140,21 +139,23 @@ void JacobiMethod(){
   double alpha = dt/(dx*dx);
   double factor = 1/(1 + 4*alpha);
   double factor_a = alpha*factor;
-
+  double scale = nx*nx;
 
   // time loop
-  for (double t=1; t<=T; t+= dt)
+  for (double t=1; t<=nt; t++)
   {
+    u_guess = u.slice(t);
     for (int iter=0; iter<maxiter; iter++)
     {
       // Loop over all inner elements, will converge towards solution
       for (int j=1; j<nx; j++) {
         for (int i=1; i<nx; i++) {
-          delta = (u(i,j+1,t) + u(i,j-1,t) + u(i+1,j,t) + u(i-1,j,t));
+          delta = (u_guess(i,j+1)+u_guess(i,j-1)+u_guess(i+1,j)+u_guess(i-1,j));
           u(i,j,t) = factor_a*delta + factor*u(u,j,t-1);
+          diff += fabs(u(i,j,t) - u_guess(i,j));
         }
       } // end of double for loop
-
+      diff /= scale;
     } // end iteration loop
   } // end time loop
 }
