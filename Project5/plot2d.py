@@ -5,6 +5,20 @@ import numpy as np
 import sys
 
 
+def plot(time):
+    fig = plt.figure()
+    dataframes = []
+
+    infile = open("data/twodimensions.txt", "r")
+    n = eval(infile.readline()) + 1
+    nt = eval(infile.readline()) + 1
+    a = np.fromfile("data/twodimensions.bin", dtype=float).reshape((nt,n*n))
+    dataframes = []
+    plt.imshow(dataframes[nt-1])
+    plt.colorbar()
+    plt.show()
+
+
 def animate2d():
     fig = plt.figure()
     dataframes = []
