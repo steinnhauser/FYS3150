@@ -34,9 +34,9 @@ void implicitBackwardEuler() {
   // initialization
   int i,t,tn;
   int nt = 10000; // number of time steps
-  int nx = 1000; // number of position steps
-  double dx = 0.001;
-  double dt = 0.001;
+  int nx = 100; // number of position steps
+  double dx = 0.01;
+  double dt = 0.0001;
   double alpha = dt/dx/dx;
   double beta = (1 + 2*alpha);
   alpha *= -1;
