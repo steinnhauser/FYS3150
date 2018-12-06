@@ -21,7 +21,7 @@ def plot(nx,nt,dx,dt,filename):
 def main():
     # plot(101,100001,0.01,0.00001,"data/explicit.bin")
     plot(101,10001,0.01,0.0001,"data/implicit.bin")
-
+    plot(101,10001,0.01,0.0001,"data/CrankNicolson.bin")
 
 if __name__=="__main__":
     main()

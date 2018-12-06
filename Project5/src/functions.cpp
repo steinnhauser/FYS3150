@@ -61,10 +61,10 @@ void CrankNicolsonScheme() {
 
   // initialization
   int i,t,tn,tp;
-  int nt = 100; // number of time steps
+  int nt = 10000; // number of time steps
   int nx = 100; // number of position steps
   double dx = 0.01;
-  double dt = 0.00001;
+  double dt = 0.0001;
   double alpha1 = dt/dx/dx;
   double beta1 = (1 - 2*alpha1); // explicit beta
   double beta2 = (1 + 2*alpha1); // implicit beta
@@ -126,12 +126,12 @@ void JacobiMethod(){
 
   // Initial conditions
   cube u = zeros<cube>(nx+1,nx+1,nt+1);
-  for (int t=0; t<=nt; t++) {
-    for (int i=0; i<=nx; i++) {
-      u(i,0,t) = 1;
-      u(0,i,t) = 1;
-      u(i,nx,t) = 1;
-      u(nx,i,t) = 1;
+  for (int i=0; i<=nx; i++) {
+    for (int t=0; t<=nt; t++) {
+      u(i,0,t) = i/(float)nx;
+      u(0,i,t) = 1 - i/(float)nx;
+      u(i,nx,t) = 1 - i/(float)nx;
+      u(nx,i,t) = i/(float)nx;
     }
   }
 
