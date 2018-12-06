@@ -5,7 +5,7 @@ void explicitForwardEuler() {
 
   // initialization
   int i,t,tp;
-  int nt = 100; // number of time steps
+  int nt = 100000; // number of time steps
   int nx = 100; // number of position steps
   double dx = 0.01;
   double dt = 0.00001;
@@ -24,7 +24,7 @@ void explicitForwardEuler() {
     }
   }
   // call write to file function
-  string filename = "data/explicitTest.csv";
+  string filename = "data/explicit.bin";
   writeMatrixFile(filename, u);
 }
 
@@ -33,10 +33,10 @@ void implicitBackwardEuler() {
 
   // initialization
   int i,t,tn;
-  int nt = 100; // number of time steps
-  int nx = 100; // number of position steps
-  double dx = 0.01;
-  double dt = 0.00001;
+  int nt = 10000; // number of time steps
+  int nx = 1000; // number of position steps
+  double dx = 0.001;
+  double dt = 0.001;
   double alpha = dt/dx/dx;
   double beta = (1 + 2*alpha);
   alpha *= -1;
@@ -51,7 +51,7 @@ void implicitBackwardEuler() {
     u(nx,t) = 1;
   }
 
-  string filename = "data/implicitTest.csv";
+  string filename = "data/implicit.bin";
   writeMatrixFile(filename, u);
 }
 
@@ -71,8 +71,6 @@ void CrankNicolsonScheme() {
   double alpha2 = -alpha1;
   mat u = zeros<mat>(nx+1,nt+1);
 
-
-
   // boundary conditions, [u(x,0)=0 and u(0,t)=0]
   for (t=0; t<=nt; t++) u(nx,t) = 1;
   // time loop
@@ -87,8 +85,7 @@ void CrankNicolsonScheme() {
     u(nx,t) = 1;
   }
 
-
-  string filename = "data/CrankNicolsonTest.csv";
+  string filename = "data/CrankNicolson.bin";
   writeMatrixFile(filename, u);
 }
 
@@ -166,9 +163,7 @@ void JacobiMethod(){
       u_guess = u.slice(t);
       diff /= scale;
       iter++;
-
     } // end iteration loop
-    // u.slice(t).print();
   } // end time loop
 
   u.resize(size(u));
@@ -183,7 +178,7 @@ void JacobiMethod(){
 }
 
 void writeMatrixFile(string filename, mat u){
-  bool saved = u.save(filename, csv_ascii);
+  bool saved = u.save(filename, raw_binary);
   if (saved) {cout << "File " << filename << " written." << "\n";}
   else {cout << "Error in saving file." << "\n";}
 }
