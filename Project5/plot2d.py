@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import matplotlib.pyplot as plt
-from matplotlib import animation
+import matplotlib.animation as animation
 import numpy as np
 import sys
 
@@ -21,25 +21,26 @@ def plot(time):
 
 def animate2d():
     fig = plt.figure()
-    dataframes = []
-
     infile = open("data/twodimensions.txt", "r")
     n = eval(infile.readline()) + 1
     nt = eval(infile.readline()) + 1
-
     a = np.fromfile("data/twodimensions.bin", dtype=float).reshape((nt,n*n))
-    dataframes = []
-
+    imagelist = []
+    dt = 0.001
     for i in range(nt):
-        dataframes.append(a[i,:].reshape((n,n)))
+        imagelist.append(a[i].reshape((n,n)))
 
-    # for i in range(nt):
-        # im = plt.imshow(a[i,:].reshape((n,n)), animated=True)
-        # dataframes.append(im)
+    im = plt.imshow(imagelist[0], animated=True)
 
-    # ani = animation.ArtistAnimation(fig, dataframes, interval=20, blit=True)
-    plt.imshow(dataframes[nt-1])
+    def updatefig(j):
+        im.set_array(imagelist[j])
+        return [im]
+
+    ani = animation.FuncAnimation(fig, updatefig, frames=range(nt),
+                interval=50, blit=True)
+
     plt.colorbar()
+    # ani.save("ani.mp4")
     plt.show()
 
 
