@@ -24,11 +24,11 @@ def animate2d():
     infile = open("data/twodimensions.txt", "r")
     n = eval(infile.readline()) + 1
     nt = eval(infile.readline()) + 1
-    a = np.fromfile("data/twodimensions.bin", dtype=float).reshape((nt,n*n))
     imagelist = []
     dt = 0.001
-    for i in range(nt):
-        imagelist.append(a[i].reshape((n,n)))
+    for i in range(1,nt):
+        image = np.fromfile("data/images/u" + str(i) + ".bin").reshape((n,n))
+        imagelist.append(image)
 
     im = plt.imshow(imagelist[0], animated=True)
 

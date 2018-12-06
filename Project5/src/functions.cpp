@@ -125,14 +125,12 @@ void JacobiMethod(){
   double dt = 0.001;
 
   // Initial conditions
-  cube u = zeros<cube>(nx+1,nx+1,nt+1);
+  mat u = zeros<mat>(nx+1,nx+1);
   for (int i=0; i<=nx; i++) {
-    for (int t=0; t<=nt; t++) {
-      u(i,0,t) = i/(float)nx;
-      u(0,i,t) = 1 - i/(float)nx;
-      u(i,nx,t) = 1 - i/(float)nx;
-      u(nx,i,t) = i/(float)nx;
-    }
+    u(i,0) = i/(float)nx;
+    u(0,i) = 1 - i/(float)nx;
+    u(i,nx) = 1 - i/(float)nx;
+    u(nx,i) = i/(float)nx;
   }
 
   // mat u_guess = zeros<mat>(nx+1,nx+1);
@@ -142,39 +140,41 @@ void JacobiMethod(){
   double factor = 1/(1 + 4*alpha);
   double factor_a = alpha*factor;
   double scale = nx*nx;
-
+  string fn_base = "data/images/u";
+  string filename;
+  string fn_end = ".bin";
   // time loop
-  for (double t=1; t<=nt; t++)
+  for (int t=1; t<=nt; t++)
   {
     int iter = 0;
     double diff=1;
-    mat u_guess = ones<mat>(nx+1,nx+1);
+    mat u_guess = zeros<mat>(nx+1,nx+1);
+    u_guess = u;
     while (iter < maxiter && diff > tol)
     {
       diff = 0;
       // Loop over all inner elements, will converge towards solution
       for (int j=1; j<nx; j++) {
         for (int i=1; i<nx; i++) {
+          // u_guess is the previous u, which also work for a random guess
           delta = (u_guess(i,j+1)+u_guess(i,j-1)+u_guess(i+1,j)+u_guess(i-1,j));
-          u(i,j,t) = factor_a*delta + factor*u(i,j,t-1);
-          diff += fabs(u(i,j,t) - u_guess(i,j));
+          u(i,j) = factor_a*delta + factor*u_guess(i,j);
+          diff += fabs(u(i,j) - u_guess(i,j));
         }
       } // end of double for loop
-      u_guess = u.slice(t);
+      u_guess = u;
       diff /= scale;
       iter++;
     } // end iteration loop
+    filename = fn_base + to_string(t) + fn_end;
+    u.save(filename, raw_binary);
   } // end time loop
 
-  u.resize(size(u));
-  string filename = "data/twodimensions.bin";
-  u.save(filename,raw_binary);
   ofstream ofile;
   ofile.open("data/twodimensions.txt");
   ofile << nx << endl;
   ofile << nt << endl;
   ofile.close();
-
 }
 
 void writeMatrixFile(string filename, mat u){
