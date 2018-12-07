@@ -40,7 +40,9 @@ def animate2d():
         interval=50, blit=True)
 
     plt.colorbar()
-    plt.show()
+    plt.xlabel('x')
+    plt.ylabel('y')
+    ani.save('twodim.gif', writer='imagemagick', fps=30)
 
 if __name__=='__main__':
     animate2d()
