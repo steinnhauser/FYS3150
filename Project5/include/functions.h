@@ -10,10 +10,11 @@ using namespace arma;
 using namespace std;
 
 void analytic1D(int nx, int nt, double dx, double dt, string filename);
+void analytic2D(int nx, double dx, double t, double dt, string filename);
 void explicitForwardEuler(int nx, int nt, double dx, double dt, string filename);
 void implicitBackwardEuler(int nx, int nt, double dx, double dt, string filename);
 void CrankNicolsonScheme(int nx, int nt, double dx, double dt, string filename);
 void JacobiMethod();
-void tridiagonalSolver(mat& u, double d, double e, int n, int t_new);
+void tridiagonalSolver(vec& u, vec b, double diag, double offdiag, int n);
 
 #endif // FUNCTIONS_H

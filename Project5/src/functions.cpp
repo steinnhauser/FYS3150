@@ -1,6 +1,9 @@
 #include "functions.h"
 
-void analytic1D(int nx, int nt, double dx, double dt, string filename){
+void analytic1D(int nx, int nt, double dx, double dt, string filename) {
+  /*
+   * Analytic solution for the one dimensional diffusion equation
+   */
   int infty = 1e3; // what is defined as numerical "infinity".
   float L=1; // scale the rod such that x goes from 0 to L=1.
   mat u = zeros<mat>(nx+1, nt+1);
@@ -21,6 +24,22 @@ void analytic1D(int nx, int nt, double dx, double dt, string filename){
     }
   }
   u.save(filename, raw_binary);
+}
+
+void analytic2D(int nx, double dx, double t, double dt, string filename){
+  /*
+   * Analytic solution for the two dimensional diffusion equation at a
+   * given time. Boundary conditions are all equal to zero. A paraboloid
+   * which is centered in the middle of the medium is the initial condition.
+   */
+  mat u = zeros<mat>(nx+1, nx+1); // Assume a square grid
+  for (int x = 0; x<=nx; x++){
+    for (int y = 0; y<=nx; y++){
+      u(x,y) = exp(-2*M_PI*M_PI * t*dt) * sin(M_PI*x*dx) * sin(M_PI*y*dx);
+    }
+  }
+  u.save(filename, raw_binary);
+  cout << "File " << filename << " written." << endl;
 }
 
 void explicitForwardEuler(int nx, int nt, double dx, double dt, string filename) {
@@ -57,13 +76,16 @@ void implicitBackwardEuler(int nx, int nt, double dx, double dt, string filename
   double beta = (1 + 2*alpha);
   alpha *= -1;
   mat u = zeros<mat>(nx+1,nt+1);
+  vec u_new = zeros<vec>(nx+1);
 
   // boundary conditions, [u(x,0)=0 and u(0,t)=0]
   for (t=0; t<=nt; t++) u(nx,t) = 1;
 
   // time loop
   for (t=1; t<=nt; t++) {
-    tridiagonalSolver(u, beta, alpha, nx, t);
+    u_new = u.col(t);
+    tridiagonalSolver(u_new, u.col(t-1), beta, alpha, nx);
+    u.col(t) = u_new;
   }
   u.save(filename, raw_binary);
 }
@@ -74,11 +96,13 @@ void CrankNicolsonScheme(int nx, int nt, double dx, double dt, string filename) 
 
   // initialization
   int i,t,tn,tp;
-  double alpha1 = dt/dx/dx;
-  double beta1 = (1 - 2*alpha1); // explicit beta
-  double beta2 = (1 + 2*alpha1); // implicit beta
-  double alpha2 = -alpha1;
+  double alpha = dt/dx/dx;
+  double beta = (2 - 2*alpha);
+  double diag = (2 + 2*alpha);
+  double offdiag = -alpha;
   mat u = zeros<mat>(nx+1,nt+1);
+  vec b = zeros<vec>(nx+1);
+  vec u_new = zeros<vec>(nx+1);
 
   // boundary conditions, [u(x,0)=0 and u(0,t)=0]
   for (t=0; t<=nt; t++) u(nx,t) = 1;
@@ -87,40 +111,40 @@ void CrankNicolsonScheme(int nx, int nt, double dx, double dt, string filename) 
     // Explicit
     tp = t-1; // previous time step
     for (i=1; i<nx; i++) { // inner time points
-      u(i,t) = 0.5*(alpha1*(u(i-1,tp) + u(i+1,tp)) + beta1*u(i,tp));
+      b(i) = alpha*(u(i-1,tp) + u(i+1,tp)) + beta*u(i,tp);
     }
     // Implicit
-    tridiagonalSolver(u, beta2, alpha2, nx, t);
-    u(nx,t) = 1;
+    u_new = u.col(t);
+    tridiagonalSolver(u_new, b, diag, offdiag, nx);
+    u.col(t) = u_new;
   }
   u.save(filename, raw_binary);
 }
 
-void tridiagonalSolver(mat& u, double diag, double offdiag, int n, int t) {
+void tridiagonalSolver(vec& u, vec b, double diag, double offdiag, int n) {
   /*
    * Thomas algorithm:
-   * Solves matrix vector equation u_old = A*u_new,
+   * Solves matrix vector equation Au = b,
    * for A being a tridiagonal matrix with constant
-   * elements d on main diagonal and e on the off diagonals.
+   * elements diag on main diagonal and offdiag on the off diagonals.
    */
   vec beta = zeros<vec>(n+1); beta[1] = diag;
-  vec u_old = u.col(t-1); u_old(1) = u(1,t-1);
+  vec u_old = zeros<vec>(n+1); u_old(1) = b(1);
   double btemp;
 
   // forward substitution
   for(int i=2; i<=n; i++){
     btemp = offdiag/beta[i-1];
     beta(i) = diag - offdiag*btemp;
-    u_old(i) = u(i,t-1) - u_old(i-1)*btemp;
+    u_old(i) = b(i) - u_old(i-1)*btemp;
   }
 
-  u(0,t) = 0;
-  u(n,t) = 1;
-  u(n-1,t) = u_old(n-1)/beta(n-1);
+  u(0) = 0;
+  u(n) = 1;
 
   // backward substitution
   for(int i=n-1; i>0; i--){
-    u(i,t) = (u_old(i) - offdiag*u(i+1,t))/beta(i);
+    u(i) = (u_old(i) - offdiag*u(i+1))/beta(i);
   }
 }
 

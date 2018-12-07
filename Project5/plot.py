@@ -6,59 +6,63 @@ import numpy as np
 import sys
 
 
-def plot(params,exp_params,folder,time,title):
+def plot(params,exp_params,folder):
+    times = [0.1,0.2]
+    dx = params[2]
     plt.figure()
-    plt.title(title)
-    files = ["im","cn","an"]
-    labels = ["Implicit scheme","Crank-Nicolson scheme","Analytic solution"]
+    plt.title(r"$\Delta x = %1.2f$" % dx)
+    for time in times:
+        files = ["im","cn","an"]
+        labels = ["Implicit scheme","Crank-Nicolson scheme","Analytic solution"]
+        arrays = []
+        errors = []
 
-    # explicit plot
-    nxe,nte,dxe,dte = exp_params
-    xe = np.linspace(0,nxe*dxe,nxe+1)
-    data = np.fromfile("data/"+folder+"ex.bin", dtype=float).reshape((nte+1,nxe+1))
-    plt.plot(xe,data[int(time*nte)],".",label="Explicit scheme")
+        # explicit plot
+        nx,nt,dx,dt = params
+        nxe,nte,dxe,dte = exp_params
+        x = np.linspace(0,nx*dx,nx+1)
+        xe = np.linspace(0,nxe*dxe,nxe+1)
+        data = np.fromfile("data/"+folder+"ex.bin", dtype=float).reshape((nte+1,nxe+1))
+        ex_array = data[int(time*nte)]
+        if nxe != nx:
+            arrays.append(ex_array[::nxe/nx])
+        else:
+            arrays.append(ex_array)
+        plt.plot(xe,ex_array,label="Explicit scheme"+", time=%1.2f" % time)
 
-    # implicit, Crank-Nicolson and analytic solution plot
-    nx,nt,dx,dt = params
-    x = np.linspace(0,nx*dx,nx+1)
-    for file,l in zip(files,labels):
-        data = np.fromfile("data/"+folder+file+".bin", dtype=float).reshape((nt+1,nx+1))
-        plt.plot(x,data[int(time*nt)],".",label=l)
+        # implicit, Crank-Nicolson and analytic solution plot
+        for file,l in zip(files,labels):
+            data = np.fromfile("data/"+folder+file+".bin", dtype=float).reshape((nt+1,nx+1))
+            arr = data[int(time*nt)]
+            arrays.append(arr)
+            plt.plot(x,arr,label=l+", time=%1.2f" % time)
 
     plt.legend()
-    plt.xlabel('Position [ ]')
     plt.ylabel('Temperature [ ]')
     plt.grid()
-    plt.show()
 
+    # Error analysis
+    for time in times:
+        plt.figure()
+        plt.title(r"$\Delta x = %1.2f$, time=%1.2f" % (dx,time))
+        labels = ["Explicit scheme","Implicit scheme","Crank-Nicolson scheme"]
+        for i,l in enumerate(labels):
+            err = np.abs(arrays[i] - arrays[3])
+            plt.plot(x,err,label=l)
 
-def errorplot():
-    nx = 100
-    dx = 0.01
-    x = np.linspace(0,1,nx+1)
-    # analytic
-    nta = 100
-    dta = 0.01
-    # numericial
-    ntn = 100000
-    dtn = 0.00001
-    analytic = np.fromfile("data/analyticsol1D.bin", dtype=float).reshape((nta+1,nx+1))
-    numerical = np.fromfile("data/explicit.bin", dtype=float).reshape((ntn+1,nx+1))
-    # time 0.1 s:
-    ta1 = int(0.1*nta)
-    tn1 = int(0.1*ntn)
-    analytic_time01 = analytic[ta1]
-    numerical_time01 = numerical[tn1]
-    error_time1 = np.abs(analytic_time01-numerical_time01)
-    plt.plot(x,error_time1)
-    plt.show()
+        plt.legend()
+        plt.xlabel('Position [ ]')
+        plt.ylabel('Absolute error [ ]')
+        plt.yscale('log')
+        plt.grid()
 
 
 if __name__=="__main__":
-    for time in [0.1,0.5]:
-        params = [10,1000,0.1,0.001]
-        exp_params = params
-        plot(params,exp_params,"dx01/",time,r"$\Delta x = 0.1$, time = %1.1f s" % time)
-        params = [100,1000,0.01,0.001]
-        exp_params = [100,100000,0.01,0.00001]
-        plot(params,exp_params,"dx001/",time,r"$\Delta x = 0.01$, time = %1.1f s" % time)
+    # dx = 0.1
+    # params = exp_params = [10,1000,0.1,0.001]
+    # plot(params,exp_params,"dx01/")
+    # dx = 0.01
+    params = [100,1000,0.01,0.001]
+    exp_params = [100,100000,0.01,0.00001]
+    plot(params,exp_params,"dx001/")
+    plt.show()
