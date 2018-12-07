@@ -120,7 +120,7 @@ void JacobiMethod(){
    */
   // initialization
   int nx = 200;
-  int nt = 30;
+  int nt = 300;
   double dx = 0.01;
   double dt = 0.001;
 
@@ -132,9 +132,10 @@ void JacobiMethod(){
     u(i,nx) = 1 - i/(float)nx;
     u(nx,i) = i/(float)nx;
   }
+  mat u_old = u;
 
   // mat u_guess = zeros<mat>(nx+1,nx+1);
-  int maxiter = 100000;
+  int maxiter = 1000;
   double delta, tol=0.0001;
   double alpha = dt/(dx*dx);
   double factor = 1/(1 + 4*alpha);
@@ -148,8 +149,7 @@ void JacobiMethod(){
   {
     int iter = 0;
     double diff=1;
-    mat u_guess = zeros<mat>(nx+1,nx+1);
-    u_guess = u;
+    mat u_guess = ones<mat>(nx+1,nx+1);
     while (iter < maxiter && diff > tol)
     {
       diff = 0;
@@ -158,15 +158,16 @@ void JacobiMethod(){
         for (int i=1; i<nx; i++) {
           // u_guess is the previous u, which also work for a random guess
           delta = (u_guess(i,j+1)+u_guess(i,j-1)+u_guess(i+1,j)+u_guess(i-1,j));
-          u(i,j) = factor_a*delta + factor*u_guess(i,j);
+          u(i,j) = factor_a*delta + factor*u_old(i,j);
           diff += fabs(u(i,j) - u_guess(i,j));
         }
       } // end of double for loop
       u_guess = u;
-      diff /= scale;
+      diff /= (float) scale;
       iter++;
     } // end iteration loop
     filename = fn_base + to_string(t) + fn_end;
+    u_old = u;
     u.save(filename, raw_binary);
   } // end time loop
 

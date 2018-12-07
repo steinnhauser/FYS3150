@@ -27,8 +27,8 @@ def animate2d():
     imagelist = []
     dt = 0.001
     for i in range(1,nt):
-        image = np.fromfile("data/images/u" + str(i) + ".bin").reshape((n,n))
-        imagelist.append(image)
+        image = np.fromfile("data/images/u" + str(i) + ".bin", dtype=float)
+        imagelist.append(image.reshape((n,n)))
 
     im = plt.imshow(imagelist[0], animated=True)
 
@@ -36,13 +36,11 @@ def animate2d():
         im.set_array(imagelist[j])
         return [im]
 
-    ani = animation.FuncAnimation(fig, updatefig, frames=range(nt),
-                interval=50, blit=True)
+    ani = animation.FuncAnimation(fig, updatefig, frames=range(nt-1),
+        interval=50, blit=True)
 
     plt.colorbar()
-    # ani.save("ani.mp4")
     plt.show()
-
 
 if __name__=='__main__':
     animate2d()
