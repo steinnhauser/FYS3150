@@ -1,27 +1,29 @@
 #include "functions.h"
 
-void analytic1D(int nx, int nt, double dx, double dt, string filename) {
+void analytic1D(int nx, double dx, string filename) {
   /*
    * Analytic solution for the one dimensional diffusion equation
    */
-  int infty = 1e3; // what is defined as numerical "infinity".
+  int infty = 1000; // what is defined as numerical "infinity".
   float L=1; // scale the rod such that x goes from 0 to L=1.
-  mat u = zeros<mat>(nx+1, nt+1);
+  mat u = zeros<mat>(nx+1, 2);
+  double an, lambdan, lambdanL, factor;
+  int c = 0;
   // time loop
-
-  for (int t = 0; t<=nt; t++){
+  for (double t=0.1; t<=0.2; t+=0.1){
     // position x loop
     for (int x = 0; x<=nx; x++){
       // calculate the transient solution.
-      double factor = 0;
+      factor = 0;
       for (int n = 1; n<=infty; n++){
-        double an;
-        double lambdan = M_PI*n/L;
-        an = -2*(sin(lambdan*L)-lambdan*L*cos(lambdan*L))/(lambdan*lambdan*L);
-        factor += an * exp(-lambdan*lambdan*t*dt) * sin(lambdan * x*dx);
+        lambdanL = M_PI*n;
+        lambdan = lambdanL/L;
+        an = 2*(lambdanL*cos(lambdan*L) - sin(lambdanL))/(lambdan*lambdanL);
+        factor += an * exp(-lambdan*lambdan*t) * sin(lambdan*x*dx);
       }
-      u(x,t) = x*dx/L + factor;
+      u(x,c) = x*dx/L + factor;
     }
+    c++; // Easter egg
   }
   u.save(filename, raw_binary);
 }

@@ -9,7 +9,7 @@
 using namespace arma;
 using namespace std;
 
-void analytic1D(int nx, int nt, double dx, double dt, string filename);
+void analytic1D(int nx, double dx, string filename);
 void analytic2D(int nx, double dx, double t, double dt, string filename);
 void explicitForwardEuler(int nx, int nt, double dx, double dt, string filename);
 void implicitBackwardEuler(int nx, int nt, double dx, double dt, string filename);
