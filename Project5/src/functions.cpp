@@ -1,12 +1,8 @@
 #include "functions.h"
 
-void analytic1D(){
+void analytic1D(int nx, int nt, double dx, double dt, string filename){
   int infty = 1e3; // what is defined as numerical "infinity".
   float L=1; // scale the rod such that x goes from 0 to L=1.
-  int nt = 100;
-  int nx = 100;
-  double dx = 0.01;
-  double dt = 0.01;
   mat u = zeros<mat>(nx+1, nt+1);
   // time loop
 
@@ -24,22 +20,18 @@ void analytic1D(){
       u(x,t) = x*dx/L + factor;
     }
   }
-  string filename;
-  filename = "data/analyticsol1D.bin";
   u.save(filename, raw_binary);
-  cout << "File " << filename << " written." << endl;
 }
 
-void explicitForwardEuler() {
+void explicitForwardEuler(int nx, int nt, double dx, double dt, string filename) {
   // Solves position in 1D for all times using the explicit forward Euler scheme
 
   // initialization
   int i,t,tp;
-  int nt = 100000;
-  int nx = 100;
-  double dx = 0.01;
-  double dt = 0.00001;
   double alpha = dt/dx/dx;
+  if (alpha > 0.5) {
+    cout << "Warning: alpha too large for explicit scheme \n";
+  }
   double beta = (1 - 2*alpha);
   mat u = zeros<mat>(nx+1,nt+1);
 
@@ -53,20 +45,14 @@ void explicitForwardEuler() {
       u(i,t) = alpha*(u(i-1,tp) + u(i+1,tp)) + beta*u(i,tp);
     }
   }
-  // call write to file function
-  string filename = "data/explicit.bin";
-  writeMatrixFile(filename, u);
+  u.save(filename, raw_binary);
 }
 
-void implicitBackwardEuler() {
+void implicitBackwardEuler(int nx, int nt, double dx, double dt, string filename) {
   // Solves position in 1D for all times using the explicit forward Euler scheme
 
   // initialization
   int i,t,tn;
-  int nt = 10000; // number of time steps
-  int nx = 100; // number of position steps
-  double dx = 0.01;
-  double dt = 0.0001;
   double alpha = dt/dx/dx;
   double beta = (1 + 2*alpha);
   alpha *= -1;
@@ -80,21 +66,15 @@ void implicitBackwardEuler() {
     tridiagonalSolver(u, beta, alpha, nx, t);
     u(nx,t) = 1;
   }
-
-  string filename = "data/implicit.bin";
-  writeMatrixFile(filename, u);
+  u.save(filename, raw_binary);
 }
 
-void CrankNicolsonScheme() {
+void CrankNicolsonScheme(int nx, int nt, double dx, double dt, string filename) {
   // call a combination of explicit and implicit. "First use explicit, then
   // Thomas algorithm on the explicit solution." -Alexander Sexton, 2018
 
   // initialization
   int i,t,tn,tp;
-  int nt = 10000; // number of time steps
-  int nx = 100; // number of position steps
-  double dx = 0.01;
-  double dt = 0.0001;
   double alpha1 = dt/dx/dx;
   double beta1 = (1 - 2*alpha1); // explicit beta
   double beta2 = (1 + 2*alpha1); // implicit beta
@@ -114,9 +94,7 @@ void CrankNicolsonScheme() {
     tridiagonalSolver(u, beta2, alpha2, nx, t);
     u(nx,t) = 1;
   }
-
-  string filename = "data/CrankNicolson.bin";
-  writeMatrixFile(filename, u);
+  u.save(filename, raw_binary);
 }
 
 void tridiagonalSolver(mat& u, double d, double e, int n, int t_new) {
@@ -206,10 +184,4 @@ void JacobiMethod(){
   ofile << nx << endl;
   ofile << nt << endl;
   ofile.close();
-}
-
-void writeMatrixFile(string filename, mat u){
-  bool saved = u.save(filename, raw_binary);
-  if (saved) {cout << "File " << filename << " written." << "\n";}
-  else {cout << "Error in saving file." << "\n";}
 }

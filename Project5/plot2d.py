@@ -44,5 +44,6 @@ def animate2d():
     plt.ylabel('y')
     ani.save('twodim.gif', writer='imagemagick', fps=30)
 
+
 if __name__=='__main__':
     animate2d()

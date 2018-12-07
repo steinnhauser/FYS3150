@@ -6,17 +6,30 @@ import numpy as np
 import sys
 
 
-def plot(nx,nt,dx,dt,filename):
-    data = np.fromfile(filename, dtype=float).reshape((nt,nx))
-    x = np.linspace(0,(nx-1)*dx,nx)
-    t = np.linspace(0,(nt-1)*dt,nt)
-    levels = np.linspace(0,1,101)
+def plot(params,exp_params,folder,time,title):
     plt.figure()
-    plt.contourf(x,t,data,levels,cmap='jet')
-    plt.colorbar()
-    plt.xlabel('position [m]')
-    plt.ylabel('time [s]')
+    plt.title(title)
+    files = ["im","cn","an"]
+    labels = ["Implicit scheme","Crank-Nicolson scheme","Analytic solution"]
 
+    # explicit plot
+    nxe,nte,dxe,dte = exp_params
+    xe = np.linspace(0,nxe*dxe,nxe+1)
+    data = np.fromfile("data/"+folder+"ex.bin", dtype=float).reshape((nte+1,nxe+1))
+    plt.plot(xe,data[int(time*nte)],label="Explicit scheme")
+
+    # implicit, Crank-Nicolson and analytic solution plot
+    nx,nt,dx,dt = params
+    x = np.linspace(0,nx*dx,nx+1)
+    for file,l in zip(files,labels):
+        data = np.fromfile("data/"+folder+file+".bin", dtype=float).reshape((nt+1,nx+1))
+        plt.plot(x,data[int(time*nt)],label=l)
+
+    plt.legend()
+    plt.xlabel('Position [ ]')
+    plt.ylabel('Temperature [ ]')
+    plt.grid()
+    plt.show()
 
 
 def errorplot():
@@ -41,15 +54,11 @@ def errorplot():
     plt.show()
 
 
-def main():
-    # "data/analyticsol1D.bin"
-    # plot(101,100001,0.01,0.00001,"data/explicit.bin")
-    # plot(1001,101,0.001,0.01,"data/analyticsol1D.bin")
-    # plot(101,10001,0.01,0.0001,"data/implicit.bin")
-    # plot(101,10001,0.01,0.0001,"data/CrankNicolson.bin")
-    errorplot()
-    # plt.show()
-
-
 if __name__=="__main__":
-    main()
+    for time in [0.1,0.5]:
+        params = [10,1000,0.1,0.001]
+        exp_params = params
+        plot(params,exp_params,"dx01/",time,r"$\Delta x = 0.1$, time = %1.1f s" % time)
+        params = [100,1000,0.01,0.001]
+        exp_params = [100,100000,0.01,0.00001]
+        plot(params,exp_params,"dx001/",time,r"$\Delta x = 0.01$, time = %1.1f s" % time)
