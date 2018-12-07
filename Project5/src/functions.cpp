@@ -64,7 +64,6 @@ void implicitBackwardEuler(int nx, int nt, double dx, double dt, string filename
   // time loop
   for (t=1; t<=nt; t++) {
     tridiagonalSolver(u, beta, alpha, nx, t);
-    u(nx,t) = 1;
   }
   u.save(filename, raw_binary);
 }
@@ -97,28 +96,31 @@ void CrankNicolsonScheme(int nx, int nt, double dx, double dt, string filename) 
   u.save(filename, raw_binary);
 }
 
-void tridiagonalSolver(mat& u, double d, double e, int n, int t_new) {
+void tridiagonalSolver(mat& u, double diag, double offdiag, int n, int t) {
   /*
    * Thomas algorithm:
    * Solves matrix vector equation u_old = A*u_new,
    * for A being a tridiagonal matrix with constant
    * elements d on main diagonal and e on the off diagonals.
    */
-  vec beta = zeros<vec>(n+1); // temporary storage vector for forw/backw substitution
-  int t_old = t_new - 1;
-  u(1,t_new) = u(1,t_old)/d;
-  double btemp = d; // temporary storage double
+  vec beta = zeros<vec>(n+1); beta[1] = diag;
+  vec u_old = u.col(t-1); u_old(1) = u(1,t-1);
+  double btemp;
 
   // forward substitution
   for(int i=2; i<=n; i++){
-    beta(i) = e/btemp;
-    btemp = d - e*beta(i);
-    u(i,t_new) = (u(i,t_old) - e*u(i-1,t_new))/btemp;
+    btemp = offdiag/beta[i-1];
+    beta(i) = diag - offdiag*btemp;
+    u_old(i) = u(i,t-1) - u_old(i-1)*btemp;
   }
+
+  u(0,t) = 0;
+  u(n,t) = 1;
+  u(n-1,t) = u_old(n-1)/beta(n-1);
 
   // backward substitution
   for(int i=n-1; i>0; i--){
-    u(i,t_new) -= beta(i+1)*u(i+1,t_new);
+    u(i,t) = (u_old(i) - offdiag*u(i+1,t))/beta(i);
   }
 }
 

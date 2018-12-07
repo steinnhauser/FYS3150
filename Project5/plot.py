@@ -16,14 +16,14 @@ def plot(params,exp_params,folder,time,title):
     nxe,nte,dxe,dte = exp_params
     xe = np.linspace(0,nxe*dxe,nxe+1)
     data = np.fromfile("data/"+folder+"ex.bin", dtype=float).reshape((nte+1,nxe+1))
-    plt.plot(xe,data[int(time*nte)],label="Explicit scheme")
+    plt.plot(xe,data[int(time*nte)],".",label="Explicit scheme")
 
     # implicit, Crank-Nicolson and analytic solution plot
     nx,nt,dx,dt = params
     x = np.linspace(0,nx*dx,nx+1)
     for file,l in zip(files,labels):
         data = np.fromfile("data/"+folder+file+".bin", dtype=float).reshape((nt+1,nx+1))
-        plt.plot(x,data[int(time*nt)],label=l)
+        plt.plot(x,data[int(time*nt)],".",label=l)
 
     plt.legend()
     plt.xlabel('Position [ ]')
