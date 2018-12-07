@@ -6,29 +6,22 @@ import numpy as np
 import sys
 
 
-def plot(params,exp_params,folder):
+def plot(params,folder):
     times = [0.1,0.2]
     dx = params[2]
     plt.figure()
     plt.title(r"$\Delta x = %1.2f$" % dx)
     for time in times:
-        files = ["im","cn","an"]
-        labels = ["Implicit scheme","Crank-Nicolson scheme","Analytic solution"]
+        files = ["ex","im","cn","an"]
+        labels = ["Explicit scheme",
+                  "Implicit scheme",
+                  "Crank-Nicolson scheme",
+                  "Analytic solution"
+                  ]
         arrays = []
         errors = []
-
-        # explicit plot
         nx,nt,dx,dt = params
-        nxe,nte,dxe,dte = exp_params
         x = np.linspace(0,nx*dx,nx+1)
-        xe = np.linspace(0,nxe*dxe,nxe+1)
-        data = np.fromfile("data/"+folder+"ex.bin", dtype=float).reshape((nte+1,nxe+1))
-        ex_array = data[int(time*nte)]
-        if nxe != nx:
-            arrays.append(ex_array[::nxe/nx])
-        else:
-            arrays.append(ex_array)
-        plt.plot(xe,ex_array,label="Explicit scheme"+", time=%1.2f" % time)
 
         # implicit, Crank-Nicolson and analytic solution plot
         for file,l in zip(files,labels):
@@ -59,10 +52,9 @@ def plot(params,exp_params,folder):
 
 if __name__=="__main__":
     # dx = 0.1
-    # params = exp_params = [10,1000,0.1,0.001]
-    # plot(params,exp_params,"dx01/")
+    # params = [10,1000,0.1,0.001]
+    # plot(params,"dx01/")
     # dx = 0.01
-    params = [100,1000,0.01,0.001]
-    exp_params = [100,100000,0.01,0.00001]
-    plot(params,exp_params,"dx001/")
+    params = [100,100000,0.01,0.00001]
+    plot(params,"dx001/")
     plt.show()
