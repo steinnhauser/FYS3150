@@ -9,6 +9,7 @@
 using namespace arma;
 using namespace std;
 
+void analytic1D();
 void JacobiMethod();
 void explicitForwardEuler();
 void implicitBackwardEuler();

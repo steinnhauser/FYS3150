@@ -4,10 +4,11 @@
 
 int main(int argc, char* argv[])
 {
-  // explicitForwardEuler(); // working.
+  explicitForwardEuler(); // working.
   // implicitBackwardEuler(); // working.
   // CrankNicolsonScheme(); // working.
-  JacobiMethod(); // working.
-  
+  // JacobiMethod(); // working.
+  analytic1D();
+
   return 0;
 }

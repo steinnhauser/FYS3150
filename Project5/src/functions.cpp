@@ -1,12 +1,42 @@
 #include "functions.h"
 
+void analytic1D(){
+  int infty = 1e3; // what is defined as numerical "infinity".
+  float L=1; // scale the rod such that x goes from 0 to L=1.
+  int nt = 100;
+  int nx = 100;
+  double dx = 0.01;
+  double dt = 0.01;
+  mat u = zeros<mat>(nx+1, nt+1);
+  // time loop
+
+  for (int t = 0; t<=nt; t++){
+    // position x loop
+    for (int x = 0; x<=nx; x++){
+      // calculate the transient solution.
+      double factor = 0;
+      for (int n = 1; n<=infty; n++){
+        double an;
+        double lambdan = M_PI*n/L;
+        an = -2*(sin(lambdan*L)-lambdan*L*cos(lambdan*L))/(lambdan*lambdan*L);
+        factor += an * exp(-lambdan*lambdan*t*dt) * sin(lambdan * x*dx);
+      }
+      u(x,t) = x*dx/L + factor;
+    }
+  }
+  string filename;
+  filename = "data/analyticsol1D.bin";
+  u.save(filename, raw_binary);
+  cout << "File " << filename << " written." << endl;
+}
+
 void explicitForwardEuler() {
   // Solves position in 1D for all times using the explicit forward Euler scheme
 
   // initialization
   int i,t,tp;
-  int nt = 100000; // number of time steps
-  int nx = 100; // number of position steps
+  int nt = 100000;
+  int nx = 100;
   double dx = 0.01;
   double dt = 0.00001;
   double alpha = dt/dx/dx;
