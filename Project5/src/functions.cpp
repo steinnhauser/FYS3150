@@ -155,26 +155,25 @@ void JacobiMethod(){
    * Iterative solver for a of a diagonally dominant system og linear equations.
    */
   // initialization
-  int nx = 200;
-  int nt = 300;
+  int nx = 100;
+  int nt = 2000;
   double dx = 0.01;
-  double dt = 0.001;
+  double dt = 0.0001;
 
   // Initial conditions
   mat u = zeros<mat>(nx+1,nx+1);
-  for (int i=0; i<=nx; i++) {
-    u(i,0) = i/(float)nx;
-    u(0,i) = 1 - i/(float)nx;
-    u(i,nx) = 1 - i/(float)nx;
-    u(nx,i) = i/(float)nx;
+  for (double i=1; i<nx; i++) {
+    for (double j=1; j<nx; j++) {
+      u(i,j) = sin(i*M_PI/(double)nx)*sin(j*M_PI/(double)nx);
+    }
   }
   mat u_old = u;
 
   // mat u_guess = zeros<mat>(nx+1,nx+1);
   int maxiter = 1000;
-  double delta, tol=0.0001;
+  double delta, tol=1e-8;
   double alpha = dt/(dx*dx);
-  double factor = 1/(1 + 4*alpha);
+  double factor = 1.0/(1.0 + 4*alpha);
   double factor_a = alpha*factor;
   double scale = nx*nx;
   string fn_base = "data/images/u";
@@ -199,9 +198,51 @@ void JacobiMethod(){
         }
       } // end of double for loop
       u_guess = u;
-      diff /= (float) scale;
+      diff /= scale;
       iter++;
     } // end iteration loop
+    filename = fn_base + to_string(t) + fn_end;
+    u_old = u;
+    u.save(filename, raw_binary);
+    cout << t << endl;
+  } // end time loop
+
+  ofstream ofile;
+  ofile.open("data/twodimensions.txt");
+  ofile << nx << endl;
+  ofile << nt << endl;
+  ofile.close();
+}
+
+void Explicit2D(){
+  // initialization
+  int nx = 100;
+  int nt = 400;
+  double dx = 0.01;
+  double dt = 0.0001;
+  double alpha = dt/(dx*dx);
+  double delta;
+  string fn_base = "./data/images/u";
+  string filename;
+  string fn_end = ".bin";
+
+  // Initial conditions
+  mat u = zeros<mat>(nx+1,nx+1);
+  for (double i=1; i<nx; i++) {
+    for (double j=1; j<nx; j++) {
+      u(i,j) = sin(i*M_PI/(double)nx)*sin(j*M_PI/(double)nx);
+    }
+  }
+  mat u_old = u;
+
+  // time loop
+  for (int t=1; t<=nt; t++) {
+    for (int j=1; j<nx; j++) {
+      for (int i=1; i<nx; i++) {
+        delta = (u_old(i,j+1)+u_old(i,j-1)+u_old(i+1,j)+u_old(i-1,j));
+        u(i,j) = u_old(i,j) + alpha*(delta - 4*u_old(i,j));
+      }
+    } // end of double for loop
     filename = fn_base + to_string(t) + fn_end;
     u_old = u;
     u.save(filename, raw_binary);
