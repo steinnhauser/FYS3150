@@ -155,10 +155,10 @@ void JacobiMethod(){
    * Iterative solver for a of a diagonally dominant system og linear equations.
    */
   // initialization
-  int nx = 100;
-  int nt = 2000;
-  double dx = 0.01;
-  double dt = 0.0001;
+  int nx = 1000;
+  int nt = 20;
+  double dx = 0.001;
+  double dt = 0.01;
 
   // Initial conditions
   mat u = zeros<mat>(nx+1,nx+1);
@@ -176,7 +176,7 @@ void JacobiMethod(){
   double factor = 1.0/(1.0 + 4*alpha);
   double factor_a = alpha*factor;
   double scale = nx*nx;
-  string fn_base = "data/images/u";
+  string fn_base = "data/twodim_dx0001_dt001/u";
   string filename;
   string fn_end = ".bin";
   // time loop

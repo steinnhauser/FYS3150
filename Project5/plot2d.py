@@ -26,7 +26,7 @@ def plot(time):
     ax.plot_surface(X,Y,imagelist[ti],cmap='RdBu_r')
     ax.set_xlabel('x')
     ax.set_ylabel('y')
-    ax.set_zlabel('Temperature')
+    ax.set_zlabel('Temperature, [ ]')
     # ax.set_title('Numerical solution at t=%1.1f' % time)
 
     fig = plt.figure()
@@ -35,24 +35,80 @@ def plot(time):
     ax.plot_surface(X,Y,Z,cmap='PRGn')
     ax.set_xlabel('x')
     ax.set_ylabel('y')
-    ax.set_zlabel('Temperature')
+    ax.set_zlabel('Temperature, [ ]')
     # ax.set_title('Analytic solution at t=%1.1f' % time)
     # plt.show()
 
+
+def plot_error_dt():
+    files = [
+            "twodim_dx001_dt00001/u",
+            "twodim_dx001_dt0001/u",
+            "twodim_dx001_dt001/u"
+            ]
+    ntlist = [2000,200,20]
+    dtlist = [0.0001,0.001,0.01]
+    n = 101
+    dx = 0.01
+    lablelist = ["0.0001","0.001","0.01"]
+
     plt.figure()
-    t = np.linspace(0,dt*(nt-1),nt-1)
-    error = np.zeros(nt-1)
-    mid = int((n-1)/2)
-    for i in range(nt-1):
-        image =  imagelist[i]
-        numerical = image[mid,mid]
-        analytic = np.exp(-2*np.pi**2*dt*i)
-        error[i] = np.abs((numerical-analytic)/analytic)
-    plt.plot(t,error)
-    # plt.title("Error between analytic and numerical solution, at midpoint")
-    plt.xlabel("Time")
+    for file,nt,dt,lab in zip(files,ntlist,dtlist,lablelist):
+        imagelist = []
+        for i in range(1,nt):
+            image = np.fromfile("data/" + file + str(i) + ".bin", dtype=float)
+            imagelist.append(image.reshape((n,n)))
+        t = np.linspace(0,dt*(nt-1),nt-1)
+        error = np.zeros(nt-1)
+        mid = int((n-1)/2)
+        for i in range(nt-1):
+            image =  imagelist[i]
+            numerical = image[mid,mid]
+            analytic = np.exp(-2*np.pi**2*dt*i)
+            error[i] = np.abs((numerical-analytic)) #/analytic
+        plt.plot(t,error,label=r"$\Delta t=$" + lab)
+    plt.title(r"$\Delta x=0.01$")
+    plt.xlabel("Time, [s]")
+    plt.yscale('log')
     plt.grid()
-    plt.ylabel("Relative Error")
+    plt.legend()
+    plt.ylabel("Error, [ ]")
+    plt.show()
+
+
+def plot_error_dx():
+    files = [
+            "twodim_dx01_dt001/u",
+            "twodim_dx001_dt001/u",
+            "twodim_dx0001_dt001/u",
+            ]
+    nxlist = [11,101,1001]
+    dxlist = [0.1,0.01,0.001]
+    nt = 21
+    dt = 0.01
+    lablelist = ["0.1","0.01","0.001"]
+
+    plt.figure()
+    for file,n,dx,lab in zip(files,nxlist,dxlist,lablelist):
+        imagelist = []
+        for i in range(1,nt):
+            image = np.fromfile("data/" + file + str(i) + ".bin", dtype=float)
+            imagelist.append(image.reshape((n,n)))
+        t = np.linspace(0,dt*(nt-1),nt-1)
+        error = np.zeros(nt-1)
+        mid = int((n-1)/2)
+        for i in range(nt-1):
+            image =  imagelist[i]
+            numerical = image[mid,mid]
+            analytic = np.exp(-2*np.pi**2*dt*i)
+            error[i] = np.abs((numerical-analytic)) #/analytic
+        plt.plot(t,error,label=r"$\Delta x=$"+lab)
+    plt.title(r"$\Delta t=0.01$")
+    plt.xlabel("Time, [s]")
+    plt.yscale('log')
+    plt.grid()
+    plt.legend()
+    plt.ylabel("Error, [ ]")
     plt.show()
 
 
@@ -84,4 +140,6 @@ def animate2d():
 
 if __name__=='__main__':
     # animate2d()
-    plot(0.1)
+    # plot(0.1)
+    plot_error_dt()
+    plot_error_dx()
