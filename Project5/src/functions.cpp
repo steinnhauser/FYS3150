@@ -158,7 +158,7 @@ void JacobiMethod(){
   int nx = 1000;
   int nt = 20;
   double dx = 0.001;
-  double dt = 0.01;
+  double dt = 0.0001;
 
   // Initial conditions
   mat u = zeros<mat>(nx+1,nx+1);
@@ -175,8 +175,8 @@ void JacobiMethod(){
   double alpha = dt/(dx*dx);
   double factor = 1.0/(1.0 + 4*alpha);
   double factor_a = alpha*factor;
-  double scale = nx*nx;
-  string fn_base = "data/twodim_dx0001_dt001/u";
+  double scale = (nx+1)*(nx+1);
+  string fn_base = "data/twodim_dx0001_dt00001/u";
   string filename;
   string fn_end = ".bin";
   // time loop
@@ -219,7 +219,7 @@ void Explicit2D(){
   int nx = 100;
   int nt = 400;
   double dx = 0.01;
-  double dt = 0.0001;
+  double dt = 0.00001;
   double alpha = dt/(dx*dx);
   double delta;
   string fn_base = "./data/images/u";

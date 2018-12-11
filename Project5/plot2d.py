@@ -9,12 +9,12 @@ import sys
 
 def plot(time):
     infile = open("data/twodimensions.txt", "r")
-    n = eval(infile.readline()) + 1
-    nt = eval(infile.readline()) + 1
+    n = 1001#eval(infile.readline()) + 1
+    nt = 21#eval(infile.readline()) + 1
     imagelist = []
-    dt = 0.0001
+    dt = 0.001
     for i in range(1,nt):
-        image = np.fromfile("data/images/u" + str(i) + ".bin", dtype=float)
+        image = np.fromfile("data/twodim_dx0001_dt0001/u" + str(i) + ".bin", dtype=float)
         imagelist.append(image.reshape((n,n)))
 
     ti = int(time/dt) - 1
@@ -37,7 +37,7 @@ def plot(time):
     ax.set_ylabel('y')
     ax.set_zlabel('Temperature, [ ]')
     # ax.set_title('Analytic solution at t=%1.1f' % time)
-    # plt.show()
+    plt.show()
 
 
 def plot_error_dt():
@@ -54,26 +54,18 @@ def plot_error_dt():
 
     plt.figure()
     for file,nt,dt,lab in zip(files,ntlist,dtlist,lablelist):
-        imagelist = []
-        for i in range(1,nt):
-            image = np.fromfile("data/" + file + str(i) + ".bin", dtype=float)
-            imagelist.append(image.reshape((n,n)))
-        t = np.linspace(0,dt*(nt-1),nt-1)
+        t = np.linspace(dt,dt*nt,nt-1)
         error = np.zeros(nt-1)
-        mid = int((n-1)/2)
-
+        x = np.linspace(0,1,n)
+        y = np.linspace(0,1,n)
+        X,Y = np.meshgrid(x,y)
         for i in range(nt-1):
-            # two spacial loops
-            for j in range(n):
-                for k in range(n):
-                    image =  imagelist[i]
-                    numerical = image[j,k]
-                    analytic = np.exp(-2*np.pi**2*dt*i)*np.sin(j*dx*np.pi)*np.sin(k*dx*np.pi)
-                    error[i] += np.abs((numerical-analytic)) #/analytic
-            error[i] /= n**2 # normalize to error per point
+            numerical = np.fromfile("data/"+file+str(i+1)+".bin",dtype=float).reshape((n,n))
+            analytic = np.exp(-2*np.pi**2*(i+1)*dt)*np.sin(np.pi*X)*np.sin(np.pi*Y)
+            error[i] = np.sum(np.abs(analytic - numerical))/n**2
+        plt.plot(t,error,label=r"$h_t=$" + lab)
 
-        plt.plot(t,error,label=r"$\Delta t=$" + lab)
-    plt.title(r"$\Delta x=0.01$")
+    plt.title(r"$h_x=0.01$")
     plt.xlabel("Time, [s]")
     plt.yscale('log')
     plt.grid()
@@ -87,33 +79,33 @@ def plot_error_dx():
             "twodim_dx01_dt001/u",
             "twodim_dx001_dt001/u",
             "twodim_dx0001_dt001/u",
+            "twodim_dx01_dt0001/u",
+            "twodim_dx001_dt0001/u",
+            "twodim_dx0001_dt0001/u",
+            "twodim_dx01_dt00001/u",
+            "twodim_dx001_dt00001/u",
+            "twodim_dx0001_dt00001/u"
             ]
-    nxlist = [11,101,1001]
-    dxlist = [0.1,0.01,0.001]
+    nxlist = [11,101,1001,11,101,1001,11,101,1001]
+    dxlist = [0.1,0.01,0.001,0.1,0.01,0.001,0.1,0.01,0.001]
     nt = 21
     dt = 0.01
-    lablelist = ["0.1","0.01","0.001"]
+    lablelist = ["0.1","0.01","0.001","0.1","0.01","0.001","0.1","0.01","0.001"]
 
     plt.figure()
     for file,n,dx,lab in zip(files,nxlist,dxlist,lablelist):
-        imagelist = []
-        for i in range(1,nt):
-            image = np.fromfile("data/" + file + str(i) + ".bin", dtype=float)
-            imagelist.append(image.reshape((n,n)))
-        t = np.linspace(0,dt*(nt-1),nt-1)
+        t = np.linspace(1,nt,nt-1)
         error = np.zeros(nt-1)
-        mid = int((n-1)/2)
+        x = np.linspace(0,1,n)
+        y = np.linspace(0,1,n)
+        X,Y = np.meshgrid(x,y)
         for i in range(nt-1):
-            # spatial loops
-            for j in range(n):
-                for k in range(n):
-                    image =  imagelist[i]
-                    numerical = image[j,k]
-                    analytic = np.exp(-2*np.pi**2*dt*i)*np.sin(j*dx*np.pi)*np.sin(k*dx*np.pi)
-                    error[i] += np.abs((numerical-analytic)) #/analytic
-            error[i] /= n**2
-        plt.plot(t,error,label=r"$\Delta x=$"+lab)
-    plt.title(r"$\Delta t=0.01$")
+            numerical = np.fromfile("data/"+file+str(i+1)+".bin",dtype=float).reshape((n,n))
+            analytic = np.exp(-2*np.pi**2*(i+1)*dt)*np.sin(np.pi*X)*np.sin(np.pi*Y)
+            error[i] = np.sum(np.abs(analytic - numerical))/n**2
+        plt.plot(t,error,label=r"$h_x=$"+lab)
+
+    plt.title(r"$h_t=0.01$")
     plt.xlabel("Time, [s]")
     plt.yscale('log')
     plt.grid()
@@ -124,13 +116,12 @@ def plot_error_dx():
 
 def animate2d():
     fig = plt.figure()
-    infile = open("data/twodimensions.txt", "r")
-    n = eval(infile.readline()) + 1
-    nt = eval(infile.readline()) + 1
+    n = 101
+    nt = 2001
     imagelist = []
-    dt = 0.001
+    dt = 0.0001
     for i in range(1,nt,10):
-        image = np.fromfile("data/images/u" + str(i) + ".bin", dtype=float)
+        image = np.fromfile("data/twodim_dx001_dt00001/u" + str(i) + ".bin", dtype=float)
         imagelist.append(image.reshape((n,n)))
 
     im = plt.imshow(imagelist[0], animated=True)
@@ -143,13 +134,13 @@ def animate2d():
         interval=50, blit=True)
 
     plt.colorbar()
-    plt.xlabel('x')
-    plt.ylabel('y')
+    plt.xlabel(r'$n_x$')
+    plt.ylabel(r'$n_y$')
     ani.save('twodim.gif', writer='imagemagick', fps=30)
 
 
 if __name__=='__main__':
     # animate2d()
     # plot(0.1)
-    plot_error_dt()
+    # plot_error_dt()
     plot_error_dx()
