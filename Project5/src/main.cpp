@@ -1,6 +1,7 @@
 #include <vector>
 #include <armadillo>
 #include "functions.h"
+#include "lithosphere.h"
 
 int main(int argc, char* argv[])
 {
@@ -25,8 +26,9 @@ int main(int argc, char* argv[])
   // analytic1D(nx2, dx2, "data/dx001/an.bin");
 
 
-  JacobiMethod();
+  // JacobiMethod();
   // Explicit2D();
+  JacobiMethodLithosphere();
 
   return 0;
 }
