@@ -61,11 +61,17 @@ def plot_error_dt():
         t = np.linspace(0,dt*(nt-1),nt-1)
         error = np.zeros(nt-1)
         mid = int((n-1)/2)
+
         for i in range(nt-1):
-            image =  imagelist[i]
-            numerical = image[mid,mid]
-            analytic = np.exp(-2*np.pi**2*dt*i)
-            error[i] = np.abs((numerical-analytic)) #/analytic
+            # two spacial loops
+            for j in range(n):
+                for k in range(n):
+                    image =  imagelist[i]
+                    numerical = image[j,k]
+                    analytic = np.exp(-2*np.pi**2*dt*i)*np.sin(j*dx*np.pi)*np.sin(k*dx*np.pi)
+                    error[i] += np.abs((numerical-analytic)) #/analytic
+            error[i] /= n**2 # normalize to error per point
+
         plt.plot(t,error,label=r"$\Delta t=$" + lab)
     plt.title(r"$\Delta x=0.01$")
     plt.xlabel("Time, [s]")
@@ -98,10 +104,14 @@ def plot_error_dx():
         error = np.zeros(nt-1)
         mid = int((n-1)/2)
         for i in range(nt-1):
-            image =  imagelist[i]
-            numerical = image[mid,mid]
-            analytic = np.exp(-2*np.pi**2*dt*i)
-            error[i] = np.abs((numerical-analytic)) #/analytic
+            # spatial loops
+            for j in range(n):
+                for k in range(n):
+                    image =  imagelist[i]
+                    numerical = image[j,k]
+                    analytic = np.exp(-2*np.pi**2*dt*i)*np.sin(j*dx*np.pi)*np.sin(k*dx*np.pi)
+                    error[i] += np.abs((numerical-analytic)) #/analytic
+            error[i] /= n**2
         plt.plot(t,error,label=r"$\Delta x=$"+lab)
     plt.title(r"$\Delta t=0.01$")
     plt.xlabel("Time, [s]")
