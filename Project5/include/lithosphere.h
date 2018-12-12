@@ -9,6 +9,6 @@
 using namespace arma;
 using namespace std;
 
-void JacobiMethodLithosphere();
+void JacobiMethodLithosphere(int situation, string filename);
 
 #endif // LITHOSPHERE_H

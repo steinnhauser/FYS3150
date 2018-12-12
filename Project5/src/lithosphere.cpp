@@ -10,6 +10,17 @@ void JacobiMethodLithosphere(int situation, string filename){
    * Situation=2: natural heat production
    * Situation=3: subduction: natural + extra heat production
    */
+   
+  if (situation==1) {
+    cout << "Solving lithosphere with no heat production\n";
+  } else if (situation==2) {
+    cout << "Solving lithosphere with natural heat production\n";
+  } else if (situation==3) {
+    cout << "Solving lithosphere with natural + subduction heat production\n";
+  } else {
+    cout << "Error, situation must be 1,2,3!\n";
+    exit(1);
+  }
 
   // initialization
   int nx = 125; // 0-150 km wide
@@ -101,5 +112,5 @@ void JacobiMethodLithosphere(int situation, string filename){
     u_old = u;
     cout << "timestep: " <<  t << " iterations: " << iter << endl;
   } // end time loop
-  u.save("data/lithosphere_QR.bin", raw_binary);
+  u.save(filename, raw_binary);
 }

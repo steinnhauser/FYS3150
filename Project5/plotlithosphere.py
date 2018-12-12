@@ -25,31 +25,6 @@ def plot():
     plt.show()
 
 
-def animate2d():
-    fig = plt.figure()
-    nx = 126
-    ny = 101
-    nt = 100
-    imagelist = []
-    for i in range(1,nt,1):
-        image = np.fromfile("data/lithosphere/u" + str(i) + ".bin", dtype=float)
-        imagelist.append(image.reshape((ny,nx)))
-
-    im = plt.imshow(imagelist[0], animated=True)
-
-    def updatefig(j):
-        im.set_array(imagelist[j])
-        return [im]
-
-    ani = animation.FuncAnimation(fig, updatefig, frames=range(len(imagelist)),
-        interval=50, blit=True)
-
-    plt.colorbar()
-    plt.xlabel(r'$n_x$')
-    plt.ylabel(r'$n_y$')
-    ani.save('litho.gif', writer='imagemagick', fps=30)
-
-
 if __name__=='__main__':
     plot()
     # animate2d()
