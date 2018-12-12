@@ -28,9 +28,9 @@ int main(int argc, char* argv[])
 
   // JacobiMethod();
   // Explicit2D();
-  JacobiMethodLithosphere(1,"data/lithosphere.bin");
-  JacobiMethodLithosphere(2,"data/lithosphere_Q.bin"); // natural heat production
-  JacobiMethodLithosphere(3,"data/lithosphere_QR.bin"); // extra subduction
+  // JacobiMethodLithosphere(1,"data/lithosphere.bin");
+  // JacobiMethodLithosphere(2,"data/lithosphere_Q.bin"); // natural heat production
+  JacobiMethodLithosphere(3,"data/lithosphere_QR3.bin"); // extra subduction
 
   return 0;
 }
