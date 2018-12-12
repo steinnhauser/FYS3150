@@ -7,47 +7,31 @@ import numpy as np
 import sys
 
 
-def plot(time):
-    infile = open("data/twodimensions.txt", "r")
-    n = 1001#eval(infile.readline()) + 1
-    nt = 21#eval(infile.readline()) + 1
-    imagelist = []
-    dt = 0.001
-    for i in range(1,nt):
-        image = np.fromfile("data/twodim_dx0001_dt0001/u" + str(i) + ".bin", dtype=float)
-        imagelist.append(image.reshape((n,n)))
-
-    ti = int(time/dt) - 1
-    x = np.linspace(0,1,n)
-    y = np.linspace(0,1,n)
-    X,Y = np.meshgrid(x,y)
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(X,Y,imagelist[ti],cmap='RdBu_r')
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('Temperature, [ ]')
-    # ax.set_title('Numerical solution at t=%1.1f' % time)
-
-    fig = plt.figure()
-    Z = np.exp(-2*np.pi**2*time)*np.sin(np.pi*X)*np.sin(np.pi*Y)
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(X,Y,Z,cmap='PRGn')
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('Temperature, [ ]')
-    # ax.set_title('Analytic solution at t=%1.1f' % time)
+def plot():
+    files = [
+        "data/lithosphere_Q.bin",
+        "data/lithosphere.bin",
+        "data/lithosphere_QR.bin"
+    ]
+    labels = ["Q = 0", "Natural Q", "Radioactive\nenrichment"]
+    nx = 126
+    ny = 101
+    nt = 100
+    for file,label in zip(files,labels):
+        image = np.fromfile(file, dtype=float).reshape((ny,nx))
+        temp = image[:,int(nx/2)]*1292 + 8
+        depth = np.linspace(0,120,ny)
+        plt.plot(depth,temp,label=label)
     plt.show()
 
 
 def animate2d():
     fig = plt.figure()
-    nx = 151
-    ny = 121
-    nt = 10000
+    nx = 126
+    ny = 101
+    nt = 100
     imagelist = []
-    dt = 0.0001
-    for i in range(1,nt,100):
+    for i in range(1,nt,1):
         image = np.fromfile("data/lithosphere/u" + str(i) + ".bin", dtype=float)
         imagelist.append(image.reshape((ny,nx)))
 
@@ -67,4 +51,5 @@ def animate2d():
 
 
 if __name__=='__main__':
-    animate2d()
+    plot()
+    # animate2d()
