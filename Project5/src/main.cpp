@@ -25,12 +25,12 @@ int main(int argc, char* argv[])
   // CrankNicolsonScheme(nx2, nt2, dx2, dt2,"data/dx001/cn.bin");
   // analytic1D(nx2, dx2, "data/dx001/an.bin");
 
-
   // JacobiMethod();
-  // Explicit2D();
-  // JacobiMethodLithosphere(1,"data/lithosphere.bin");
-  // JacobiMethodLithosphere(2,"data/lithosphere_Q.bin"); // natural heat production
-  JacobiMethodLithosphere(3,"data/lithosphere_QR3.bin"); // extra subduction
+
+  // JacobiMethodLithosphere(1); // no heat
+  JacobiMethodLithosphere(2); // natural heat production
+  // JacobiMethodLithosphere(3); // enrichment without decay
+  // JacobiMethodLithosphere(4); // enrichment with decay
 
   return 0;
 }

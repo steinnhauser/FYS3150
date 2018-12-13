@@ -9,7 +9,7 @@
 using namespace arma;
 using namespace std;
 
-void JacobiMethodLithosphere(int situation, string filename);
+void JacobiMethodLithosphere(int situation);
 void boundaryNoHeat(mat& u, int nx, int ny);
 void boundaryNaturalHeat(mat& u, int nx, int ny);
 void reachNaturalHeatEquilibrium(mat& u, int maxiter, double tol, double factor1,
