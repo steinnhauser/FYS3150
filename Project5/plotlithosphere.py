@@ -8,6 +8,12 @@ import sys
 
 
 def plot():
+    """
+    Output:
+    Plots the four numerical results and three analytic results.
+    Plots the error between the three cases with both analytic and numerical
+    results.
+    """
     files = [
         "data/noheat/u100.bin",
         "data/naturalheat/u100.bin",
@@ -88,13 +94,76 @@ def plot():
     plt.xlabel('Depth [km]')
     plt.ylabel('Relative error')
     plt.grid()
-    # box = ax.get_position()
-    # ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
     ax.legend(loc=3,fancybox=True, shadow=True)
     plt.show()
 
 
+def animate():
+    """
+    Animates and saves two gifs: temperature evolution for the simulations
+    with enriched mantle with and without decay
+    """
+    infiles = ["data/nodecay/u","data/decay/u"]
+    outfiles = ["lithosphere_nodecay.gif","lithosphere_decay.gif"]
+    nx = 126
+    ny = 101
+    nt = 100
+    for infile,outfile in zip(infiles,outfiles):
+        images = []
+        for i in range(1,nt):
+            image = np.fromfile(infile + str(i) + ".bin", dtype=float)
+            images.append(image.reshape((ny,nx))*1292 + 8)
+
+        fig = plt.figure()
+        im = plt.imshow(images[0], animated=True)
+
+        def updatefig(j):
+            im.set_array(images[j])
+            return [im]
+
+        ani = animation.FuncAnimation(fig, updatefig, frames=range(nt-1),
+            interval=70, blit=True)
+
+        plt.colorbar()
+        plt.xlabel(r'$n_x$')
+        plt.ylabel(r'$n_y$')
+        ani.save(outfile, writer='imagemagick', fps=30)
+
+
+def plot_difference_nodecay_decay():
+    """
+    Plots the difference at the end of the simulation with and without decay
+    """
+    fileDecay = "data/decay/u100.bin"
+    fileNoDecay = "data/nodecay/u100.bin"
+    nx = 126
+    ny = 101
+    nt = 100
+    differenceImages = []
+    plt.rcParams.update({'font.size':15})
+    decay = np.fromfile(fileDecay, dtype=float).reshape((ny,nx))*1292 + 8
+    noDecay = np.fromfile(fileNoDecay, dtype=float).reshape((ny,nx))*1292 + 8
+    diff = (noDecay - decay)
+    x = np.linspace(0,150,nx)
+    y = np.linspace(0,120,ny)
+    levels = np.linspace(0,35,100)
+    plt.contourf(x,y,diff,levels=levels)
+    cbar = plt.colorbar(ticks=[0,7,14,21,28,35])
+    cbar.set_label(r"$T_{no decay}(t) - T_{decay}(t), [^\circ C]$")
+    plt.xlabel("Width [km]")
+    plt.ylabel("Depth [km]")
+    plt.show()
+
+    maxtemp = np.max(diff)
+    depth = np.argmax(diff[:,int(nx/2)],axis=0)
+    print("max temperature difference: %f, depth: %f" % (maxtemp, depth*1.2))
+
+
 def animate_difference_nodecay_decay():
+    """
+    Animate the time evolution of the temperature difference for the two
+    simulations with and without decay.
+    """
     fileDecay = "data/decay/u"
     fileNoDecay = "data/nodecay/u"
     nx = 126
@@ -123,65 +192,11 @@ def animate_difference_nodecay_decay():
     plt.title("Decay impact\non temperature")
     plt.xlabel(r'$n_x$')
     plt.ylabel(r'$n_y$')
-    ani.save('difference.gif', writer='imagemagick', fps=30)
-
-
-def plot_difference():
-    fileDecay = "data/decay/u"
-    fileNoDecay = "data/nodecay/u"
-    nx = 126
-    ny = 101
-    nt = 100
-    differenceImages = []
-    plt.rcParams.update({'font.size':15})
-    for i in range(1,nt):
-        decay = np.fromfile(fileDecay + str(i) + ".bin", dtype=float).reshape((ny,nx))*1292 + 8
-        noDecay = np.fromfile(fileNoDecay + str(i) + ".bin", dtype=float).reshape((ny,nx))*1292 + 8
-        differenceImages.append(noDecay - decay)
-    x = np.linspace(0,150,nx)
-    y = np.linspace(0,120,ny)
-    levels = np.linspace(0,35,100)
-
-    plt.contourf(x,y,differenceImages[-1],levels=levels)
-    cbar = plt.colorbar(ticks=[0,7,14,21,28,35])
-    cbar.set_label(r"$T_{no decay}(t) - T_{decay}(t), [^\circ C]$")
-    plt.xlabel("Width [km]")
-    plt.ylabel("Depth [km]")
-    plt.show()
-
-
-def animate():
-    infiles = ["data/noheat/u","data/naturalheat/u",
-        "data/nodecay/u","data/decay/u"]
-    outfiles = ["noheat.gif","naturalheat.gif",
-        "nodecay.gif","decay.gif"]
-    nx = 126
-    ny = 101
-    nt = 100
-    for infile,outfile in zip(infiles,outfiles):
-        images = []
-        for i in range(1,nt):
-            image = np.fromfile(infile + str(i) + ".bin", dtype=float)
-            images.append(image.reshape((ny,nx))*1292 + 8)
-
-        fig = plt.figure()
-        im = plt.imshow(images[0], animated=True)
-
-        def updatefig(j):
-            im.set_array(images[j])
-            return [im]
-
-        ani = animation.FuncAnimation(fig, updatefig, frames=range(nt-1),
-            interval=70, blit=True)
-
-        plt.colorbar()
-        plt.xlabel(r'$n_x$')
-        plt.ylabel(r'$n_y$')
-        ani.save(outfile, writer='imagemagick', fps=30)
+    ani.save('lithosphere_decay_impact.gif', writer='imagemagick', fps=30)
 
 
 if __name__=='__main__':
-    # plot()
+    plot()
     animate()
-    # animate_difference_nodecay_decay()
-    # plot_difference()
+    plot_difference_nodecay_decay()
+    animate_difference_nodecay_decay()

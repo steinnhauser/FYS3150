@@ -7,6 +7,15 @@ import sys
 
 
 def plot_times_and_errors(params,folder):
+    """
+    Input:
+    params, list: [nx,nt,dx,dt]
+    folder, string: folder path to files
+    
+    Output:
+    Plots the numerical and analytic solutions in 1D
+    Plots the error between the numerical and analytic solutions in 1D
+    """
     times = [0.1,0.2]
     dx = params[2]
     j = 0

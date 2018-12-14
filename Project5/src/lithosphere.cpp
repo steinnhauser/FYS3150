@@ -2,18 +2,19 @@
 
 void JacobiMethodLithosphere(int situation){
   /*
-   * Solver throughout 1 Gyr of the lithosphere in three zones:
+   * Solver throughout 1 Ga of the lithosphere in three zones:
    * Zone 1: 0-20km,
    * Zone 2: 20-40km,
    * Zone 3: 40-120km.
    * Situation=1: no heat production
    * Situation=2: natural heat production
-   * Situation=3: subduction: natural + extra heat production
+   * Situation=3: enriched mantle (zone 3) without decay
+   * Situation=4: enriched mantle (zone 3) witho decay
    */
 
   string fn_base;
   string fn_end = ".bin";
-  double mantleQ = 0;
+  double mantleQ = 0; // represents the constant Q term in the mantle (zone 3)
   if (situation==1) {
     cout << "Solving lithosphere with no heat production\n";
     fn_base = "data/noheat/u";
@@ -39,9 +40,7 @@ void JacobiMethodLithosphere(int situation){
   int ny = 100; // 0-120 km deep
   int nt = 100; // number of time steps
   double dx = 0.01; // step length [1.2 km]: 0.01*[1.2 km]*100 points = 120 km
-  double dt = 0.01; // 1 = [10^9 yr]: 100*dt = 1 Gyr
-
-  // Initial conditions
+  double dt = 0.01; // 1 = [10^9 yr]: 100*dt = 1 Ga
   mat u = zeros<mat>(nx+1,ny+1); // Scaled from 0-1 -> 8-1300 deg Celsius
   if (situation==1) {
     boundaryNoHeat(u,nx,ny);
@@ -51,25 +50,24 @@ void JacobiMethodLithosphere(int situation){
   mat u_old = u;
 
   // Constants and variables
-  int maxiter = 20000; // No. of iterations each time step in Jacobi Method
-  double delta, diff, Q, time;
+  int maxiter = 20000; // Max no. of iterations each time step in Jacobi Method
+  double delta, diff, Q, time; // temporary constant that will be used
   double scale = (nx+1)*(ny+1); // No. of points in matrix
   double tol = 1e-10; // tolerance for convergence in Jacobi method
   double alpha = dt/(dx*dx);
-  double rho = 3.51*1e3; // density [1000 kg/m^3]
+  double rho = 3.51*1e3; // density [kg/m^3]
   double cp = 1000; // heat capacity [J/kg/deg Celsius]
   double k = 2.5; // thermal conductivity [W/m/deg Celsius]
   double uscale = 1292; // temperature scale
   double tscale = 3.1557e16; // time scale
   double xscale = 120000; // distance scale
-  double eqScale = tscale*k/(rho*cp*xscale*xscale);
+  double beta = tscale*k/(rho*cp*xscale*xscale);
   double Qscale = 1e-6*tscale*dt/(rho*cp*uscale);
-  double factor1 = eqScale*alpha;
+  double factor1 = beta*alpha;
   double factor2 = 1/(1 + 4*factor1);
 
-  // Construction of Qvec: Q1, Q2 are doubles, Q3: Q3(natural) + Qtime(enrichment)
-  // Constant natural heat production in zones:
-  vec Qvec = zeros<vec>(ny+1); // represent constant heat source as a func of depth
+  // Construction of Qvec: stores constant heat production in zones:
+  vec Qvec = zeros<vec>(ny+1);
   if (situation != 1) {
     double Q1 = 1.4*Qscale;
     double Q2 = 0.35*Qscale;
@@ -78,9 +76,10 @@ void JacobiMethodLithosphere(int situation){
     for (int i=17; i<34; i++) Qvec(i) = Q2; // 20-40 km depth
     for (int i=34; i<=ny; i++) Qvec(i) = Q3; // 40+ km depth
   }
-  // Extra decaying enrichment (time dependent):
+
+  // EConstruction of Qtime: stores time dependet heat production (due to decay):
   vec Qtime = zeros<vec>(nt+1);
-  if (situation==4) {
+  if (situation==4) { // Qtime is simply 0 for cases 1-3
     double U_enrich, Th_enrich, K_enrich;
     for (int t=0; t<=nt; t++) {
       time = (double) t/nt;
@@ -91,21 +90,21 @@ void JacobiMethodLithosphere(int situation){
     }
   }
 
-  // reachNaturalHeatEquilibrium(u,maxiter,tol,factor1,factor2,Qvec,nx,ny,nt,scale);
   // time loop
   for (int t=1; t<=nt; t++)
   {
     int iter = 0;
     double diff=1;
-    mat u_guess = u;
+    mat u_guess = u; // Guess matrix, can be anything
+    // Jacobi method loop
     while (iter < maxiter && diff > tol)
     {
       diff = 0;
       for (int j=1; j<ny; j++) {
-        for (int i=1; i<nx; i++) {
           // Situation separation
-          Q=Qvec(j);
-          if (j >= 34) Q += Qtime(t); // Zone 3: decay (is zeros for other situations)
+          Q=Qvec(j); // constant Q for depth at index j
+          if (j >= 34) Q += Qtime(t); // time dependent Q, only at depth j>=34
+        for (int i=1; i<nx; i++) {
           // Jacobi method algorithm, u should converge towards solution
           delta = (u_guess(i,j+1)+u_guess(i,j-1)+u_guess(i+1,j)+u_guess(i-1,j));
           u(i,j) = factor2*(factor1*delta + Q + u_old(i,j));
@@ -115,14 +114,15 @@ void JacobiMethodLithosphere(int situation){
       u_guess = u;
       diff /= scale;
       iter++;
-    } // end iteration loop
+    } // end Jacobi method loop
     u_old = u;
     cout << "timestep: " <<  t << " iterations: " << iter << endl;
-    u.save(fn_base+to_string(t)+fn_end, raw_binary);
+    u.save(fn_base+to_string(t)+fn_end, raw_binary); // Save matrix to proper folder
   } // end time loop
 }
 
 void boundaryNoHeat(mat& u, int nx, int ny) {
+  // Creates boundary conditions for the case of Q = 0 everywhere
   for (int i=0; i<=nx; i++) {
     u(i,0) = 0;
     u(i,ny) = 1;
@@ -138,6 +138,7 @@ void boundaryNoHeat(mat& u, int nx, int ny) {
 
 void boundaryNaturalHeat(mat& u, int nx, int ny) {
   // Analytic solution to steady state Temp(depth) with natural heat production
+  // temperature is scaled [8-1300] -> [0-1292] -> [0,1]
   double y, temp;
   for (double j=0; j<17; j++) {
     y = j*1.2;
@@ -153,36 +154,5 @@ void boundaryNaturalHeat(mat& u, int nx, int ny) {
     y = j*1.2;
     temp = (-0.01*y*y + 10.46*y + 180)/1292.0;
     for (int i=0; i<=nx; i++) u(i,j) = temp;
-  }
-}
-
-void reachNaturalHeatEquilibrium(mat& u, int maxiter, double tol, double factor1,
-   double factor2, vec Qvec, int nx, int ny, int nt, double scale) {
-  cout << "Reaching numerical equilibrium as initial state\n";
-  mat u_old = u;
-  double Q, delta;
-  for (int t=1; t<=70; t++)
-  {
-    int iter = 0;
-    double diff=1;
-    mat u_guess = u;
-    while (iter < maxiter && diff > tol)
-    {
-      diff = 0;
-      for (int j=1; j<ny; j++) {
-        for (int i=1; i<nx; i++) {
-          Q=Qvec(j);
-          // Jacobi method algorithm, u should converge towards solution
-          delta = (u_guess(i,j+1)+u_guess(i,j-1)+u_guess(i+1,j)+u_guess(i-1,j));
-          u(i,j) = factor2*(factor1*delta + Q + u_old(i,j));
-          diff += fabs(u(i,j) - u_guess(i,j));
-        }
-      }
-      u_guess = u;
-      diff /= scale;
-      iter++;
-    } // end iteration loop
-    u_old = u;
-    cout << "timestep: " <<  t << " iterations: " << iter << endl;
   }
 }

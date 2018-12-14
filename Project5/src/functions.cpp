@@ -2,7 +2,10 @@
 
 void analytic1D(int nx, double dx, string filename) {
   /*
-   * Analytic solution for the one dimensional diffusion equation
+   * Analytic solution for the one dimensional diffusion equation,
+   * with boundary conditions:
+   * u(L,t) = 1 and u(0,t) = 0, for all t.
+   * u(x,0) = 0 for x < L.
    */
   int infty = 1000; // what is defined as numerical "infinity".
   float L=1; // scale the rod such that x goes from 0 to L=1.
@@ -31,12 +34,13 @@ void analytic1D(int nx, double dx, string filename) {
 void analytic2D(int nx, double dx, double t, double dt, string filename){
   /*
    * Analytic solution for the two dimensional diffusion equation at a
-   * given time. Boundary conditions are all equal to zero. A paraboloid
+   * given time. Boundary conditions are all equal to zero. A "sine-paraboloid"
    * which is centered in the middle of the medium is the initial condition.
+   * Boundary conditions are zeros.
    */
   mat u = zeros<mat>(nx+1, nx+1); // Assume a square grid
-  for (int x = 0; x<=nx; x++){
-    for (int y = 0; y<=nx; y++){
+  for (int x=0; x<=nx; x++){
+    for (int y=0; y<=nx; y++){
       u(x,y) = exp(-2*M_PI*M_PI * t*dt) * sin(M_PI*x*dx) * sin(M_PI*y*dx);
     }
   }
@@ -45,7 +49,11 @@ void analytic2D(int nx, double dx, double t, double dt, string filename){
 }
 
 void explicitForwardEuler(int nx, int nt, double dx, double dt, string filename) {
-  // Solves position in 1D for all times using the explicit forward Euler scheme
+  /*
+   * Solves position in 1D for all times
+   * using the explicit forward Euler scheme: straight forward method which
+   * is simply solved in a position loop in a time loop/
+   */
 
   // initialization
   int i,t,tp;
@@ -70,13 +78,17 @@ void explicitForwardEuler(int nx, int nt, double dx, double dt, string filename)
 }
 
 void implicitBackwardEuler(int nx, int nt, double dx, double dt, string filename) {
-  // Solves position in 1D for all times using the explicit forward Euler scheme
+  /*
+   * Solves position in 1D for all times using
+   * the implicit backward Euler scheme. Calls tridiagonalSolver with
+   * beta as diagonal elements, and -alpha as offdiagonal elements.
+   */
 
   // initialization
   int i,t,tn;
   double alpha = dt/dx/dx;
-  double beta = (1 + 2*alpha);
-  alpha *= -1;
+  double beta = (1 + 2*alpha); // diagonal elements
+  alpha *= -1; // offdiagonal elements
   mat u = zeros<mat>(nx+1,nt+1);
   vec u_new = zeros<vec>(nx+1);
 
@@ -93,8 +105,11 @@ void implicitBackwardEuler(int nx, int nt, double dx, double dt, string filename
 }
 
 void CrankNicolsonScheme(int nx, int nt, double dx, double dt, string filename) {
-  // call a combination of explicit and implicit. "First use explicit, then
-  // Thomas algorithm on the explicit solution." -Alexander Sexton, 2018
+  /*
+   * Uses a combination of the explicit and implicit scheme: Calls function
+   * tridiagonalSolver with a different tridiagonal matrix than the implicit
+   * scheme, this matrix is derived by hand.
+   */
 
   // initialization
   int i,t,tn,tp;
@@ -106,16 +121,18 @@ void CrankNicolsonScheme(int nx, int nt, double dx, double dt, string filename) 
   vec b = zeros<vec>(nx+1);
   vec u_new = zeros<vec>(nx+1);
 
-  // boundary conditions, [u(x,0)=0 and u(0,t)=0]
+  // boundary conditions
   for (t=0; t<=nt; t++) u(nx,t) = 1;
+
   // time loop
   for (t=1; t<=nt; t++) {
-    // Explicit
     tp = t-1; // previous time step
+
+    // Explicit part
     for (i=1; i<nx; i++) { // inner time points
       b(i) = alpha*(u(i-1,tp) + u(i+1,tp)) + beta*u(i,tp);
     }
-    // Implicit
+    // Implicit part
     u_new = u.col(t);
     tridiagonalSolver(u_new, b, diag, offdiag, nx);
     u.col(t) = u_new;
@@ -141,6 +158,7 @@ void tridiagonalSolver(vec& u, vec b, double diag, double offdiag, int n) {
     u_old(i) = b(i) - u_old(i-1)*btemp;
   }
 
+  // Special case, boundary conditions
   u(0) = 0;
   u(n) = 1;
 
@@ -167,9 +185,9 @@ void JacobiMethod(){
       u(i,j) = sin(i*M_PI/(double)nx)*sin(j*M_PI/(double)nx);
     }
   }
-  mat u_old = u;
 
-  // mat u_guess = zeros<mat>(nx+1,nx+1);
+  // Constants, variables
+  mat u_old = u;
   int maxiter = 1000;
   double delta, tol=1e-8;
   double alpha = dt/(dx*dx);
@@ -179,6 +197,7 @@ void JacobiMethod(){
   string fn_base = "data/twodim_dx0001_dt00001/u";
   string filename;
   string fn_end = ".bin";
+
   // time loop
   for (int t=1; t<=nt; t++)
   {
@@ -206,48 +225,6 @@ void JacobiMethod(){
     u.save(filename, raw_binary);
     cout << t << endl;
   } // end time loop
-
-  ofstream ofile;
-  ofile.open("data/twodimensions.txt");
-  ofile << nx << endl;
-  ofile << nt << endl;
-  ofile.close();
-}
-
-void Explicit2D(){
-  // initialization
-  int nx = 100;
-  int nt = 400;
-  double dx = 0.01;
-  double dt = 0.00001;
-  double alpha = dt/(dx*dx);
-  double delta;
-  string fn_base = "./data/images/u";
-  string filename;
-  string fn_end = ".bin";
-
-  // Initial conditions
-  mat u = zeros<mat>(nx+1,nx+1);
-  for (double i=1; i<nx; i++) {
-    for (double j=1; j<nx; j++) {
-      u(i,j) = sin(i*M_PI/(double)nx)*sin(j*M_PI/(double)nx);
-    }
-  }
-  mat u_old = u;
-
-  // time loop
-  for (int t=1; t<=nt; t++) {
-    for (int j=1; j<nx; j++) {
-      for (int i=1; i<nx; i++) {
-        delta = (u_old(i,j+1)+u_old(i,j-1)+u_old(i+1,j)+u_old(i-1,j));
-        u(i,j) = u_old(i,j) + alpha*(delta - 4*u_old(i,j));
-      }
-    } // end of double for loop
-    filename = fn_base + to_string(t) + fn_end;
-    u_old = u;
-    u.save(filename, raw_binary);
-  } // end time loop
-
   ofstream ofile;
   ofile.open("data/twodimensions.txt");
   ofile << nx << endl;

@@ -3,7 +3,6 @@
 #include <armadillo>
 #include <string>
 #include <fstream>
-#include <iomanip>
 #include <math.h>
 
 using namespace arma;
@@ -14,8 +13,7 @@ void analytic2D(int nx, double dx, double t, double dt, string filename);
 void explicitForwardEuler(int nx, int nt, double dx, double dt, string filename);
 void implicitBackwardEuler(int nx, int nt, double dx, double dt, string filename);
 void CrankNicolsonScheme(int nx, int nt, double dx, double dt, string filename);
-void JacobiMethod();
 void tridiagonalSolver(vec& u, vec b, double diag, double offdiag, int n);
-void Explicit2D();
+void JacobiMethod();
 
 #endif // FUNCTIONS_H
