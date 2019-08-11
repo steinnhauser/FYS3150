@@ -1,0 +1,16 @@
+Comparison of mandelbrot_1.py and mandelbrot_2.py:
+
+Both files had the following input parameters:
+xmin, xmax = -1.7, 0.6
+ymin, ymax = -1.5, 1.5
+Nx, Ny = 1000, 1000
+escape_time = 200
+
+Time it took to execute:
+Python only: 14.66s
+Numpy only : 4.44s
+
+Numpy was 3.3x faster than python only.
+
+Both methods produced excellent results
+despite the calculation time difference.
