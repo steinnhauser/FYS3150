@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Xdmf xmlns:xi="http://www.w3.org/2001/XInclude" Version="2.1">
+  <Domain>
+    <Grid Name="Structured Grid" GridType="Collection" CollectionType="Temporal">
+
+      <Grid GridType="Uniform">
+        <Geometry Type="ORIGIN_DXDYDZ">
+          <DataItem DataType="UInt" Dimensions="3" Format="XML" Precision="4">0 0 0</DataItem>
+          <DataItem DataType="Float" Dimensions="3" Format="XML" Precision="4">1 1 1</DataItem>
+        </Geometry>
+        <Topology Dimensions="129 129 129" Type="3DCoRectMesh"/>
+        <Attribute Name="phisp" Center="Node">
+          <DataItem Format="HDF" NumberType="Float" Precision="8" Dimensions="129 129 129">
+            phisp00_0000.h5:/phisp0000
+          </DataItem>
+        </Attribute>  
+      </Grid>
+    
+    </Grid>
+  </Domain>
+</Xdmf>  
