@@ -68,7 +68,7 @@ At the 4D Space Numerical Workshop in Kobe, our team used particle-in-cell simul
 <p align="center">
   <img src="docs/assets/ast2000-probe-landing.png" alt="Trajectory of a space probe spiralling down to land on a planet" width="54%">
   &nbsp;
-  <img src="bsc-reports/BSc-Reports/Year-3/Mandelbrot-Package/contest_images/contest_image4.png" alt="Deep zoom into the Mandelbrot set" width="41%">
+  <img src="docs/assets/mandelbrot-zoom.png" alt="Deep zoom into the Mandelbrot set near −0.7077 − 0.3528i" width="40%">
 </p>
 <p align="center"><sub>Left: landing a probe on a planet in a simulated solar system (AST2000). Right: a deep zoom computed with the Mandelbrot package.</sub></p>
 
