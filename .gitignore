@@ -1,0 +1,14 @@
+# Build output
+*.o
+*.out
+a.out
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Editors and OS
+.DS_Store
+.vscode/
+.idea/
